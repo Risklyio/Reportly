@@ -77,7 +77,6 @@ export async function ensureAssessmentControlRows(
       control_id: c.id,
       outcome: null,
       not_in_place_reason: "",
-      assessor_notes: "",
       corrective_action: "",
       evidence_notes: "",
       updated_at: ts,

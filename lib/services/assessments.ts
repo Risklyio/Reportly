@@ -8,6 +8,10 @@ import type {
 } from "@/lib/types";
 import { assertDatabaseReady, isSupabaseConfigured } from "@/lib/db";
 import {
+  assessorNotesPatch,
+  readAssessorNotes,
+} from "@/lib/db/assessor-notes-storage";
+import {
   ensureAssessmentControlRows,
   syncCatalogControls,
 } from "@/lib/db/sync-catalog";
@@ -155,7 +159,6 @@ export async function createAssessment(input: {
       control_id: c.id,
       outcome: null,
       not_in_place_reason: "",
-      assessor_notes: "",
       corrective_action: "",
       evidence_notes: "",
       updated_at: ts,
@@ -262,9 +265,9 @@ export async function getAssessmentControlStates(
       controlId: r.control_id,
       outcome: r.outcome as ControlOutcome,
       notInPlaceReason: r.not_in_place_reason ?? "",
-      assessorNotes: r.assessor_notes ?? "",
+      assessorNotes: readAssessorNotes(r),
       correctiveAction: r.corrective_action ?? "",
-      evidenceNotes: r.evidence_notes ?? "",
+      evidenceNotes: isSupabaseConfigured() ? "" : (r.evidence_notes ?? ""),
       updatedAt: r.updated_at ?? "",
     }));
     await ensureAssessmentControlRows(
@@ -281,9 +284,9 @@ export async function getAssessmentControlStates(
       controlId: r.control_id,
       outcome: r.outcome as ControlOutcome,
       notInPlaceReason: r.not_in_place_reason ?? "",
-      assessorNotes: r.assessor_notes ?? "",
+      assessorNotes: readAssessorNotes(r),
       correctiveAction: r.corrective_action ?? "",
-      evidenceNotes: r.evidence_notes ?? "",
+      evidenceNotes: isSupabaseConfigured() ? "" : (r.evidence_notes ?? ""),
       updatedAt: r.updated_at ?? "",
     }));
   }
@@ -338,11 +341,10 @@ export async function updateAssessmentControl(
     if (patch.outcome !== undefined) row.outcome = patch.outcome;
     if (patch.notInPlaceReason !== undefined)
       row.not_in_place_reason = patch.notInPlaceReason;
-    if (patch.assessorNotes !== undefined)
-      row.assessor_notes = patch.assessorNotes;
+    Object.assign(row, assessorNotesPatch(patch.assessorNotes));
     if (patch.correctiveAction !== undefined)
       row.corrective_action = patch.correctiveAction;
-    if (patch.evidenceNotes !== undefined)
+    if (patch.evidenceNotes !== undefined && !isSupabaseConfigured())
       row.evidence_notes = patch.evidenceNotes;
 
     const { data: existing } = await sb
@@ -365,9 +367,8 @@ export async function updateAssessmentControl(
         control_id: controlId,
         outcome: patch.outcome ?? null,
         not_in_place_reason: patch.notInPlaceReason ?? "",
-        assessor_notes: patch.assessorNotes ?? "",
         corrective_action: patch.correctiveAction ?? "",
-        evidence_notes: patch.evidenceNotes ?? "",
+        evidence_notes: patch.assessorNotes ?? "",
         updated_at: ts,
       });
       if (error) throw new Error(error.message);
