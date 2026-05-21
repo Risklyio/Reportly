@@ -75,10 +75,13 @@ OpenAI’s free tier is very limited; **quota exceeded** usually means no credit
 | `AI_PROVIDER` | `google` |
 | `GOOGLE_GENERATIVE_AI_API_KEY` | your Gemini API key |
 
-3. **Redeploy** the project (required).
-4. Try **Generate** on a control.
+3. **Redeploy** the project (required — env vars are not applied until you redeploy).
+4. **Settings → AI Generate** in the app (or open `https://YOUR-VERCEL-URL/api/controls` and look for `"ai":{"buildStamp":"multi-ai-v3","resolvedProvider":"google",...}`). If there is no `ai` block or build is not `multi-ai-v3`, the latest code is **not deployed** — push to GitHub and Redeploy.
+5. Try **Generate** on a control.
 
-Optional: `AI_MODEL=gemini-2.0-flash` (default if omitted).
+Optional: `AI_MODEL=gemini-2.0-flash` (default if omitted). `GEMINI_API_KEY` is accepted as an alias for `GOOGLE_GENERATIVE_AI_API_KEY`.
+
+**Still seeing OpenAI quota errors?** The app was still calling OpenAI. Set `AI_PROVIDER=google` explicitly (not optional when `OPENAI_API_KEY` is also set), add the Gemini key, redeploy, then confirm `/api/ai-config`.
 
 ### Alternative free tier: Groq
 

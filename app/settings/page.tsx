@@ -18,9 +18,20 @@ interface OverrideRow {
   links: string[];
 }
 
+interface AiDiagnostics {
+  buildStamp?: string;
+  explicitProvider?: string | null;
+  resolvedProvider?: string | null;
+  model?: string | null;
+  keysPresent?: { google: boolean; groq: boolean; openai: boolean };
+  configError?: string | null;
+}
+
 export default function SettingsPage() {
   const [templates, setTemplates] = useState<TemplateRow[]>([]);
   const [overrides, setOverrides] = useState<OverrideRow[]>([]);
+  const [ai, setAi] = useState<AiDiagnostics | null>(null);
+  const [aiLoadError, setAiLoadError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [overrideForm, setOverrideForm] = useState({
     controlId: "data-1",
@@ -29,6 +40,30 @@ export default function SettingsPage() {
     links: "",
   });
 
+  async function loadAiStatus() {
+    setAiLoadError(null);
+    try {
+      const res = await fetch("/api/controls", { cache: "no-store" });
+      if (!res.ok) {
+        setAiLoadError(`Could not load /api/controls (${res.status})`);
+        setAi(null);
+        return;
+      }
+      const data = await res.json();
+      if (data.ai?.buildStamp) {
+        setAi(data.ai as AiDiagnostics);
+      } else {
+        setAi(null);
+        setAiLoadError(
+          "Production is running an older build (no ai.buildStamp). Push the latest code to GitHub and Redeploy on Vercel."
+        );
+      }
+    } catch {
+      setAiLoadError("Could not reach /api/controls");
+      setAi(null);
+    }
+  }
+
   async function load() {
     const [t, o] = await Promise.all([
       fetch("/api/templates").then((r) => r.json()),
@@ -36,6 +71,7 @@ export default function SettingsPage() {
     ]);
     setTemplates(t);
     setOverrides(o);
+    await loadAiStatus();
   }
 
   useEffect(() => {
@@ -171,6 +207,69 @@ export default function SettingsPage() {
             ))}
           </ul>
         )}
+      </section>
+
+      <section className="card mt-6">
+        <h2 className="text-lg font-semibold text-text">AI Generate</h2>
+        <p className="mt-1 text-sm text-text-muted">
+          After changing Vercel environment variables, <strong>Redeploy</strong>{" "}
+          then refresh this page.
+        </p>
+        {aiLoadError && (
+          <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+            {aiLoadError}
+          </p>
+        )}
+        {ai && (
+          <dl className="mt-3 space-y-2 text-sm">
+            <div className="flex justify-between gap-4">
+              <dt className="text-text-muted">Build</dt>
+              <dd className="font-mono text-text">{ai.buildStamp}</dd>
+            </div>
+            <div className="flex justify-between gap-4">
+              <dt className="text-text-muted">AI_PROVIDER (env)</dt>
+              <dd className="font-mono text-text">
+                {ai.explicitProvider ?? "— not set —"}
+              </dd>
+            </div>
+            <div className="flex justify-between gap-4">
+              <dt className="text-text-muted">Active provider</dt>
+              <dd className="font-mono font-medium text-text">
+                {ai.resolvedProvider ?? "none"}
+              </dd>
+            </div>
+            <div className="flex justify-between gap-4">
+              <dt className="text-text-muted">Model</dt>
+              <dd className="font-mono text-text">{ai.model ?? "—"}</dd>
+            </div>
+            <div className="flex justify-between gap-4">
+              <dt className="text-text-muted">Keys detected</dt>
+              <dd className="font-mono text-xs text-text">
+                google={String(ai.keysPresent?.google)}
+                {" "}
+                groq={String(ai.keysPresent?.groq)} openai=
+                {String(ai.keysPresent?.openai)}
+              </dd>
+            </div>
+            {ai.configError && (
+              <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-red-800">
+                {ai.configError}
+              </p>
+            )}
+            {ai.resolvedProvider === "google" && (
+              <p className="text-green-800">
+                Gemini is configured. Try <strong>Generate</strong> on a control.
+              </p>
+            )}
+          </dl>
+        )}
+        <button
+          type="button"
+          className="btn-secondary mt-3"
+          onClick={() => loadAiStatus()}
+        >
+          Refresh AI status
+        </button>
       </section>
 
       <section className="card mt-6">

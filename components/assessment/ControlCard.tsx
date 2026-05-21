@@ -168,7 +168,15 @@ export function ControlCard({
       );
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(data.error ?? "Failed to generate corrective actions");
+        const hint =
+          data.ai?.buildStamp !== "multi-ai-v3"
+            ? " Deploy the latest Reportly build (Settings → AI Generate shows build stamp multi-ai-v3)."
+            : data.provider
+              ? ` (provider: ${data.provider})`
+              : "";
+        throw new Error(
+          (data.error ?? "Failed to generate corrective actions") + hint
+        );
       }
       const text = data.text as string;
       setDraftCorrective(text);

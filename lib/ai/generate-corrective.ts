@@ -1,7 +1,8 @@
 import { generateText } from "ai";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createGroq } from "@ai-sdk/groq";
 import { createOpenAI } from "@ai-sdk/openai";
+import { AI_BUILD_STAMP } from "@/lib/ai/build-stamp";
+import { generateWithGeminiRest } from "@/lib/ai/gemini-rest";
 import { formatControlRef, getControlById } from "@/lib/controls/catalog";
 import type { ControlOutcome } from "@/lib/types";
 
@@ -12,7 +13,7 @@ const OUTCOME_LABELS: Record<string, string> = {
   not_applicable: "Not applicable",
 };
 
-type AiProvider = "openai" | "google" | "groq";
+export type AiProvider = "openai" | "google" | "groq";
 
 const DEFAULT_MODELS: Record<AiProvider, string> = {
   openai: "gpt-4o-mini",
@@ -20,44 +21,78 @@ const DEFAULT_MODELS: Record<AiProvider, string> = {
   groq: "llama-3.3-70b-versatile",
 };
 
-function resolveProvider(): AiProvider {
+const PROVIDER_LABELS: Record<AiProvider, string> = {
+  openai: "OpenAI",
+  google: "Google Gemini",
+  groq: "Groq",
+};
+
+export function googleApiKey(): string | undefined {
+  return (
+    process.env.GOOGLE_GENERATIVE_AI_API_KEY?.trim() ||
+    process.env.GEMINI_API_KEY?.trim() ||
+    process.env.GOOGLE_API_KEY?.trim() ||
+    undefined
+  );
+}
+
+export function resolveProvider(): AiProvider {
   const explicit = process.env.AI_PROVIDER?.trim().toLowerCase();
   if (explicit === "openai" || explicit === "google" || explicit === "groq") {
     return explicit;
   }
-  if (process.env.GOOGLE_GENERATIVE_AI_API_KEY?.trim()) return "google";
+  if (googleApiKey()) return "google";
   if (process.env.GROQ_API_KEY?.trim()) return "groq";
-  if (process.env.OPENAI_API_KEY?.trim()) return "openai";
+  if (process.env.OPENAI_API_KEY?.trim()) {
+    throw new Error(
+      "OPENAI_API_KEY is set but AI_PROVIDER is missing — the app will not auto-use OpenAI. Set AI_PROVIDER=google and GOOGLE_GENERATIVE_AI_API_KEY (https://aistudio.google.com/apikey), then Redeploy. Or set AI_PROVIDER=openai only if you have OpenAI credits."
+    );
+  }
   throw new Error(
-    "No AI API key configured. For free testing, set AI_PROVIDER=google and GOOGLE_GENERATIVE_AI_API_KEY (get a key at https://aistudio.google.com/apikey), then redeploy on Vercel."
+    "No AI API key configured. Set AI_PROVIDER=google and GOOGLE_GENERATIVE_AI_API_KEY (https://aistudio.google.com/apikey), then Redeploy on Vercel."
   );
+}
+
+export function getAiProviderDiagnostics() {
+  const explicit = process.env.AI_PROVIDER?.trim().toLowerCase() || null;
+  let resolvedProvider: AiProvider | null = null;
+  let configError: string | null = null;
+  try {
+    resolvedProvider = resolveProvider();
+  } catch (e) {
+    configError = e instanceof Error ? e.message : String(e);
+  }
+
+  return {
+    buildStamp: AI_BUILD_STAMP,
+    explicitProvider: explicit,
+    resolvedProvider,
+    model: resolvedProvider
+      ? process.env.AI_MODEL?.trim() || DEFAULT_MODELS[resolvedProvider]
+      : null,
+    keysPresent: {
+      google: !!googleApiKey(),
+      groq: !!process.env.GROQ_API_KEY?.trim(),
+      openai: !!process.env.OPENAI_API_KEY?.trim(),
+    },
+    configError,
+  };
 }
 
 function requireKey(name: string, value: string | undefined, helpUrl: string): string {
   const key = value?.trim();
   if (!key) {
     throw new Error(
-      `${name} is required for the selected AI_PROVIDER. Get a key at ${helpUrl}, add it in Vercel → Environment Variables, then Redeploy.`
+      `${name} is required for AI_PROVIDER=${process.env.AI_PROVIDER ?? "?"}. Get a key at ${helpUrl}, add it in Vercel → Environment Variables, then Redeploy.`
     );
   }
   return key;
 }
 
-function getModel() {
-  const provider = resolveProvider();
+function getModelForProvider(provider: AiProvider) {
   const modelId = process.env.AI_MODEL?.trim() || DEFAULT_MODELS[provider];
 
   switch (provider) {
-    case "google": {
-      const google = createGoogleGenerativeAI({
-        apiKey: requireKey(
-          "GOOGLE_GENERATIVE_AI_API_KEY",
-          process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-          "https://aistudio.google.com/apikey"
-        ),
-      });
-      return google(modelId);
-    }
     case "groq": {
       const groq = createGroq({
         apiKey: requireKey(
@@ -81,15 +116,34 @@ function getModel() {
   }
 }
 
-function friendlyAiError(error: unknown): Error {
+function friendlyAiError(error: unknown, provider: AiProvider): Error {
   const msg = error instanceof Error ? error.message : String(error);
-  if (/quota|exceeded|429|insufficient_quota/i.test(msg)) {
-    return new Error(
-      "AI quota or billing limit reached for the current provider. For free testing, switch to Google Gemini: set AI_PROVIDER=google and GOOGLE_GENERATIVE_AI_API_KEY in Vercel (free key at https://aistudio.google.com/apikey), remove or keep OPENAI_API_KEY, then Redeploy."
-    );
+  const label = PROVIDER_LABELS[provider];
+
+  if (/quota|exceeded|429|insufficient_quota|RESOURCE_EXHAUSTED|rate.?limit/i.test(msg)) {
+    if (provider === "openai") {
+      return new Error(
+        `OpenAI quota or billing limit reached. In Vercel set AI_PROVIDER=google and GOOGLE_GENERATIVE_AI_API_KEY (https://aistudio.google.com/apikey), then Redeploy.`
+      );
+    }
+    if (provider === "google") {
+      return new Error(
+        `Google Gemini rate limit or quota (${msg}). Wait and retry, or use AI_PROVIDER=groq with GROQ_API_KEY.`
+      );
+    }
+    return new Error(`${label} rate limit or quota (${msg}). Wait and retry.`);
   }
-  return error instanceof Error ? error : new Error(msg);
+
+  return new Error(`${label}: ${msg}`);
 }
+
+const ASSESSOR_SYSTEM = `You are a senior Microsoft 365 Application Compliance Program assessor.
+Write corrective action text for an official audit report.
+Use professional, concise language suitable for a customer-facing compliance report.
+Do not invent evidence, tools, or dates the assessor did not mention.
+Structure with short paragraphs or bullet points when helpful.
+Do not include assessor-only working notes—only polished corrective actions.
+Do not wrap the response in markdown code fences.`;
 
 export async function generateCorrectiveFromAssessorNotes(input: {
   controlId: string;
@@ -112,18 +166,10 @@ export async function generateCorrectiveFromAssessorNotes(input: {
       ? OUTCOME_LABELS[input.outcome]
       : "Not specified";
 
-  let text: string;
-  try {
-    const result = await generateText({
-      model: getModel(),
-      system: `You are a senior Microsoft 365 Application Compliance Program assessor.
-Write corrective action text for an official audit report.
-Use professional, concise language suitable for a customer-facing compliance report.
-Do not invent evidence, tools, or dates the assessor did not mention.
-Structure with short paragraphs or bullet points when helpful.
-Do not include assessor-only working notes—only polished corrective actions.
-Do not wrap the response in markdown code fences.`,
-      prompt: `Control: ${formatControlRef(control)} — ${control.title}
+  const provider = resolveProvider();
+  const modelId = process.env.AI_MODEL?.trim() || DEFAULT_MODELS[provider];
+
+  const prompt = `Control: ${formatControlRef(control)} — ${control.title}
 Section: ${control.section}
 Requirement: ${control.intent}
 
@@ -133,11 +179,31 @@ Gap / reason: ${input.notInPlaceReason.trim() || "Not specified"}
 Assessor working notes (internal — rewrite for the report):
 ${notes}
 
-Write corrective actions the organization should take to close this gap.`,
-    });
-    text = result.text;
+Write corrective actions the organization should take to close this gap.`;
+
+  let text: string;
+  try {
+    if (provider === "google") {
+      text = await generateWithGeminiRest({
+        apiKey: requireKey(
+          "GOOGLE_GENERATIVE_AI_API_KEY",
+          googleApiKey(),
+          "https://aistudio.google.com/apikey"
+        ),
+        model: modelId,
+        system: ASSESSOR_SYSTEM,
+        prompt,
+      });
+    } else {
+      const result = await generateText({
+        model: getModelForProvider(provider),
+        system: ASSESSOR_SYSTEM,
+        prompt,
+      });
+      text = result.text;
+    }
   } catch (e) {
-    throw friendlyAiError(e);
+    throw friendlyAiError(e, provider);
   }
 
   const trimmed = text.trim();

@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
-import { generateCorrectiveFromAssessorNotes } from "@/lib/ai/generate-corrective";
+import {
+  generateCorrectiveFromAssessorNotes,
+  getAiProviderDiagnostics,
+} from "@/lib/ai/generate-corrective";
 import type { ControlOutcome } from "@/lib/types";
 
 export async function POST(
@@ -34,7 +37,16 @@ export async function POST(
     return NextResponse.json({ text });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Generation failed";
-    const status = message.includes("OPENAI_API_KEY") ? 503 : 500;
-    return NextResponse.json({ error: message }, { status });
+    const status =
+      message.includes("API key") ||
+      message.includes("No AI API key") ||
+      message.includes("AI_PROVIDER")
+        ? 503
+        : 500;
+    const ai = getAiProviderDiagnostics();
+    return NextResponse.json(
+      { error: message, provider: ai.resolvedProvider, ai },
+      { status }
+    );
   }
 }

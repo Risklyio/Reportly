@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
 import { getAiProviderDiagnostics } from "@/lib/ai/generate-corrective";
-import { ALL_CONTROLS } from "@/lib/controls/catalog";
 
 export const dynamic = "force-dynamic";
 
+/** Which AI provider Vercel will use (no secrets). Same data is on GET /api/controls under `ai`. */
 export async function GET() {
-  return NextResponse.json({
-    count: ALL_CONTROLS.length,
-    controls: ALL_CONTROLS,
-    ai: getAiProviderDiagnostics(),
-  });
+  return NextResponse.json(getAiProviderDiagnostics());
 }
