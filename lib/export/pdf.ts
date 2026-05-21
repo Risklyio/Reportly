@@ -1,22 +1,124 @@
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import fs from "fs";
+import path from "path";
 import type { AssessmentExportData, ExportControlRow } from "./report-data";
 import { DOMAIN_EXPORT_KEYS } from "./report-data";
 
 type PdfWithTable = jsPDF & { lastAutoTable?: { finalY: number } };
 
-function tableEndY(doc: jsPDF, fallback: number): number {
-  return (doc as PdfWithTable).lastAutoTable?.finalY ?? fallback;
-}
+const MARGIN = 14;
+const HEADER_H = 24;
+const FOOTER_Y_OFFSET = 10;
 
 const BRAND_HEADER: [number, number, number] = [26, 50, 51];
 const BRAND_MINT: [number, number, number] = [146, 252, 219];
 const BRAND_DARK: [number, number, number] = [1, 30, 31];
+const BRAND_APP: [number, number, number] = [242, 241, 237];
 
-function truncate(text: string, max = 120): string {
-  const t = text.replace(/\s+/g, " ").trim();
-  if (t.length <= max) return t;
-  return `${t.slice(0, max)}…`;
+/** Column index for outcome badge drawing */
+const COL_OUTCOME = 3;
+
+type OutcomeVisual = {
+  fill: [number, number, number];
+  ring: [number, number, number];
+  text: [number, number, number];
+  short: string;
+};
+
+const OUTCOME_VISUALS: Record<string, OutcomeVisual> = {
+  "In place": {
+    fill: [34, 197, 94],
+    ring: [21, 128, 61],
+    text: [255, 255, 255],
+    short: "In place",
+  },
+  "Not in place": {
+    fill: [239, 68, 68],
+    ring: [185, 28, 28],
+    text: [255, 255, 255],
+    short: "Not in place",
+  },
+  "Partially in place": {
+    fill: [245, 158, 11],
+    ring: [180, 83, 9],
+    text: [30, 30, 30],
+    short: "Partial",
+  },
+  "Not applicable": {
+    fill: [148, 163, 184],
+    ring: [100, 116, 139],
+    text: [255, 255, 255],
+    short: "N/A",
+  },
+  "Not reviewed": {
+    fill: [226, 232, 240],
+    ring: [148, 163, 184],
+    text: [71, 85, 105],
+    short: "Pending",
+  },
+};
+
+function tableEndY(doc: jsPDF, fallback: number): number {
+  return (doc as PdfWithTable).lastAutoTable?.finalY ?? fallback;
+}
+
+function pageWidth(doc: jsPDF): number {
+  return doc.internal.pageSize.getWidth();
+}
+
+function pageHeight(doc: jsPDF): number {
+  return doc.internal.pageSize.getHeight();
+}
+
+function contentBottom(doc: jsPDF): number {
+  return pageHeight(doc) - 14;
+}
+
+function loadLogoDataUri(): string | null {
+  const logoPath = path.join(
+    process.cwd(),
+    "public",
+    "brand",
+    "reportly-logo.png"
+  );
+  if (!fs.existsSync(logoPath)) return null;
+  const base64 = fs.readFileSync(logoPath).toString("base64");
+  return `data:image/png;base64,${base64}`;
+}
+
+function drawPageHeader(doc: jsPDF, logoDataUri: string | null) {
+  const w = pageWidth(doc);
+  doc.setFillColor(...BRAND_HEADER);
+  doc.rect(0, 0, w, HEADER_H, "F");
+
+  if (logoDataUri) {
+    try {
+      doc.addImage(logoDataUri, "PNG", MARGIN, 5, 52, 14);
+    } catch {
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "bold");
+      doc.text("Reportly.io", MARGIN, 14);
+    }
+  } else {
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text("Reportly.io", MARGIN, 14);
+  }
+
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.text("M365 Application Compliance Assessment", w - MARGIN, 14, {
+    align: "right",
+  });
+  doc.setTextColor(BRAND_DARK[0], BRAND_DARK[1], BRAND_DARK[2]);
+}
+
+function addLandscapePage(doc: jsPDF, logoDataUri: string | null) {
+  doc.addPage("a4", "landscape");
+  drawPageHeader(doc, logoDataUri);
 }
 
 function groupBySection(rows: ExportControlRow[]): Map<string, ExportControlRow[]> {
@@ -29,46 +131,91 @@ function groupBySection(rows: ExportControlRow[]): Map<string, ExportControlRow[
   return map;
 }
 
+function normalizeCellText(text: string): string {
+  return text.replace(/\r\n/g, "\n").trim() || "—";
+}
+
+function drawOutcomeBadge(
+  doc: jsPDF,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  outcome: string
+) {
+  const visual = OUTCOME_VISUALS[outcome] ?? OUTCOME_VISUALS["Not reviewed"];
+  const cx = x + width / 2;
+  const cy = y + height / 2;
+  const radius = Math.min(width, height) / 2 - 2.5;
+
+  doc.setLineWidth(0.6);
+  doc.setDrawColor(...visual.ring);
+  doc.circle(cx, cy, radius, "S");
+
+  doc.setFillColor(...visual.fill);
+  doc.circle(cx, cy, radius - 0.8, "F");
+
+  doc.setTextColor(...visual.text);
+  doc.setFont("helvetica", "bold");
+  const fontSize = outcome === "Partially in place" ? 5 : 5.5;
+  doc.setFontSize(fontSize);
+  const label =
+    outcome.length > 14 ? visual.short : outcome;
+  const lines = doc.splitTextToSize(label, radius * 1.6);
+  const lineHeight = fontSize * 0.42;
+  const blockH = lines.length * lineHeight;
+  let ty = cy - blockH / 2 + lineHeight * 0.35;
+  for (const line of lines) {
+    doc.text(line, cx, ty, { align: "center" });
+    ty += lineHeight;
+  }
+}
+
 function addFooter(doc: jsPDF) {
   const pages = doc.getNumberOfPages();
+  const w = pageWidth(doc);
+  const h = pageHeight(doc);
   for (let i = 1; i <= pages; i++) {
     doc.setPage(i);
     doc.setFontSize(8);
     doc.setTextColor(100, 100, 100);
     doc.text(
       `Reportly.io — M365 Application Compliance Assessment — Page ${i} of ${pages}`,
-      doc.internal.pageSize.getWidth() / 2,
-      doc.internal.pageSize.getHeight() - 10,
+      w / 2,
+      h - FOOTER_Y_OFFSET,
       { align: "center" }
     );
   }
   doc.setTextColor(BRAND_DARK[0], BRAND_DARK[1], BRAND_DARK[2]);
 }
 
+function controlTableBody(rows: ExportControlRow[]): string[][] {
+  return rows.map((r) => [
+    r.ref,
+    normalizeCellText(r.title),
+    normalizeCellText(r.requirement),
+    r.outcome,
+    r.hardFail,
+    normalizeCellText(r.reason),
+    normalizeCellText(r.correctiveAction),
+    normalizeCellText(r.evidenceNotes),
+  ]);
+}
+
 export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
-  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-  const pageWidth = doc.internal.pageSize.getWidth();
-  let y = 18;
+  const logoDataUri = loadLogoDataUri();
+  const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+  const w = pageWidth(doc);
+  let y = HEADER_H + 8;
 
-  doc.setFillColor(...BRAND_HEADER);
-  doc.rect(0, 0, pageWidth, 28, "F");
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(18);
-  doc.setFont("helvetica", "bold");
-  doc.text("Reportly.io", 14, 14);
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
-  doc.text("Compliance Assessment Report", 14, 21);
-
-  doc.setTextColor(BRAND_DARK[0], BRAND_DARK[1], BRAND_DARK[2]);
-  y = 38;
+  drawPageHeader(doc, logoDataUri);
 
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
-  doc.text(data.frameworkName, 14, y);
-  y += 10;
+  doc.text(data.frameworkName, MARGIN, y);
+  y += 9;
 
-  doc.setFontSize(10);
+  doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   const metaLines = [
     [`Client:`, data.clientName],
@@ -79,32 +226,32 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
   ];
   for (const [label, value] of metaLines) {
     doc.setFont("helvetica", "bold");
-    doc.text(label, 14, y);
+    doc.text(label, MARGIN, y);
     doc.setFont("helvetica", "normal");
-    doc.text(String(value), 48, y);
-    y += 6;
+    doc.text(String(value), 42, y);
+    y += 5;
   }
 
   if (data.scopeNotes) {
-    y += 2;
+    y += 1;
     doc.setFont("helvetica", "bold");
-    doc.text("Scope:", 14, y);
-    y += 5;
+    doc.text("Scope:", MARGIN, y);
+    y += 4;
     doc.setFont("helvetica", "normal");
-    const scopeLines = doc.splitTextToSize(data.scopeNotes, pageWidth - 28);
-    doc.text(scopeLines, 14, y);
-    y += scopeLines.length * 5 + 4;
+    const scopeLines = doc.splitTextToSize(data.scopeNotes, w - MARGIN * 2);
+    doc.text(scopeLines, MARGIN, y);
+    y += scopeLines.length * 4 + 3;
   }
 
-  y += 4;
+  y += 3;
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(12);
-  doc.text("Executive summary", 14, y);
-  y += 8;
+  doc.setFontSize(11);
+  doc.text("Executive summary", MARGIN, y);
+  y += 6;
 
   autoTable(doc, {
     startY: y,
-    margin: { left: 14, right: 14 },
+    margin: { left: MARGIN, right: MARGIN },
     head: [["Metric", "Count"]],
     body: [
       ["Total controls", String(data.summary.total)],
@@ -117,97 +264,111 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
       ["Hard-fail controls (total)", String(data.summary.hardFailTotal)],
       ["Hard-fail with gaps", String(data.summary.hardFailGaps)],
     ],
-    styles: { fontSize: 9, textColor: BRAND_DARK },
+    styles: { fontSize: 8, textColor: BRAND_DARK },
     headStyles: {
       fillColor: BRAND_HEADER,
       textColor: [255, 255, 255],
       fontStyle: "bold",
     },
-    alternateRowStyles: { fillColor: [242, 241, 237] },
+    alternateRowStyles: { fillColor: BRAND_APP },
   });
 
-  y = tableEndY(doc, y) + 12;
+  y = tableEndY(doc, y) + 10;
 
   for (const domain of DOMAIN_EXPORT_KEYS) {
     const controls = data[domain.controlsKey];
     if (controls.length === 0) continue;
 
-    if (y > 240) {
-      doc.addPage();
-      y = 20;
+    if (y > contentBottom(doc) - 40) {
+      addLandscapePage(doc, logoDataUri);
+      y = HEADER_H + 8;
     }
 
     doc.setFillColor(...BRAND_MINT);
-    doc.rect(14, y - 6, pageWidth - 28, 10, "F");
-    doc.setFontSize(12);
+    doc.rect(MARGIN, y - 5, w - MARGIN * 2, 9, "F");
+    doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(BRAND_DARK[0], BRAND_DARK[1], BRAND_DARK[2]);
-    doc.text(domain.label, 16, y);
-    y += 10;
+    doc.text(domain.label, MARGIN + 2, y);
+    y += 9;
 
     const sections = groupBySection(controls);
     for (const [section, rows] of sections) {
-      if (y > 250) {
-        doc.addPage();
-        y = 20;
+      if (y > contentBottom(doc) - 30) {
+        addLandscapePage(doc, logoDataUri);
+        y = HEADER_H + 8;
       }
 
-      doc.setFontSize(10);
+      doc.setFontSize(9);
       doc.setFont("helvetica", "bold");
-      doc.text(section, 14, y);
-      y += 4;
+      doc.text(section, MARGIN, y);
+      y += 3;
+
+      const tableBody = controlTableBody(rows);
+      const contentW = w - MARGIN * 2;
 
       autoTable(doc, {
         startY: y,
-        margin: { left: 14, right: 14 },
+        margin: { left: MARGIN, right: MARGIN },
         head: [
           [
             "#",
             "Control",
-            "Requirement",
+            "Requirement (full text)",
             "Outcome",
             "HF",
             "Gap / reason",
+            "Corrective action",
+            "Evidence notes",
           ],
         ],
-        body: rows.map((r) => [
-          r.ref,
-          truncate(r.title, 40),
-          truncate(r.requirement, 70),
-          r.outcome,
-          r.hardFail,
-          truncate(r.reason, 40),
-        ]),
-        styles: { fontSize: 7, cellPadding: 2, textColor: BRAND_DARK },
+        body: tableBody,
+        styles: {
+          fontSize: 6.5,
+          cellPadding: 2.5,
+          textColor: BRAND_DARK,
+          overflow: "linebreak",
+          valign: "top",
+        },
         headStyles: {
           fillColor: BRAND_HEADER,
           textColor: [255, 255, 255],
           fontStyle: "bold",
-          fontSize: 7,
+          fontSize: 6.5,
         },
         columnStyles: {
-          0: { cellWidth: 10 },
-          1: { cellWidth: 32 },
-          2: { cellWidth: 58 },
-          3: { cellWidth: 20 },
-          4: { cellWidth: 8 },
-          5: { cellWidth: 32 },
+          0: { cellWidth: 11 },
+          1: { cellWidth: contentW * 0.14 },
+          2: { cellWidth: contentW * 0.28 },
+          3: { cellWidth: 22, halign: "center", valign: "middle" },
+          4: { cellWidth: 8, halign: "center" },
+          5: { cellWidth: contentW * 0.14 },
+          6: { cellWidth: contentW * 0.14 },
+          7: { cellWidth: contentW * 0.1 },
         },
-        alternateRowStyles: { fillColor: [242, 241, 237] },
+        alternateRowStyles: { fillColor: BRAND_APP },
         didParseCell(hook) {
-          if (hook.section === "body" && hook.column.index === 3) {
-            const outcome = String(hook.cell.raw ?? "");
-            if (outcome === "Not in place") {
-              hook.cell.styles.textColor = [180, 40, 40];
-              hook.cell.styles.fontStyle = "bold";
-            } else if (outcome === "Partially in place") {
-              hook.cell.styles.textColor = [160, 100, 20];
-            }
+          if (hook.section === "body" && hook.column.index === COL_OUTCOME) {
+            hook.cell.text = [];
+          }
+        },
+        didDrawCell(hook) {
+          if (hook.section === "body" && hook.column.index === COL_OUTCOME) {
+            const row = rows[hook.row.index];
+            if (!row) return;
+            drawOutcomeBadge(
+              doc,
+              hook.cell.x,
+              hook.cell.y,
+              hook.cell.width,
+              hook.cell.height,
+              row.outcome
+            );
           }
         },
       });
 
-      y = tableEndY(doc, y) + 8;
+      y = tableEndY(doc, y) + 6;
     }
   }
 
