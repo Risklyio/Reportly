@@ -5,7 +5,6 @@ import {
   getAssessmentControlStates,
 } from "@/lib/services/assessments";
 import { ALL_CONTROLS } from "@/lib/controls/catalog";
-import "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
@@ -15,10 +14,10 @@ export default async function ExportPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const assessment = getAssessment(id);
+  const assessment = await getAssessment(id);
   if (!assessment) notFound();
 
-  const states = getAssessmentControlStates(id);
+  const states = await getAssessmentControlStates(id);
   const filled = states.filter((s) => s.outcome).length;
   const gaps = states.filter(
     (s) => s.outcome === "not_in_place" || s.outcome === "partially_in_place"
@@ -46,14 +45,6 @@ export default async function ExportPage({
           <dt className="text-text-muted">Gaps identified</dt>
           <dd>{gaps}</dd>
         </dl>
-
-        <p className="text-sm text-text-muted">
-          Merge fields: <code className="text-xs">clientName</code>,{" "}
-          <code className="text-xs">appName</code>,{" "}
-          <code className="text-xs">appControls</code>,{" "}
-          <code className="text-xs">opsControls</code>,{" "}
-          <code className="text-xs">dataControls</code>
-        </p>
 
         <div className="flex gap-3 pt-2">
           <a

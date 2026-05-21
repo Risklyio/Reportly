@@ -5,7 +5,6 @@ import {
 } from "@/lib/services/assessments";
 import { AssessmentWorkspace } from "@/components/assessment/AssessmentWorkspace";
 import type { DomainId } from "@/lib/types";
-import "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
@@ -18,10 +17,10 @@ export default async function AssessmentPage({
 }) {
   const { id } = await params;
   const { domain: domainParam } = await searchParams;
-  const assessment = getAssessment(id);
+  const assessment = await getAssessment(id);
   if (!assessment) notFound();
 
-  const controls = getAssessmentControlStates(id);
+  const controls = await getAssessmentControlStates(id);
   const initialDomain =
     (domainParam as DomainId) || "application_security";
 

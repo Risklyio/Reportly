@@ -5,17 +5,32 @@ import {
 } from "@/lib/services/assessments";
 
 export async function GET() {
-  return NextResponse.json(listAssessments());
+  try {
+    return NextResponse.json(await listAssessments());
+  } catch (e) {
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : "Server error" },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const created = createAssessment({
-    clientName: body.clientName ?? "",
-    appName: body.appName ?? "",
-    assessmentDate: body.assessmentDate ?? new Date().toISOString().slice(0, 10),
-    assessorName: body.assessorName,
-    scopeNotes: body.scopeNotes,
-  });
-  return NextResponse.json(created, { status: 201 });
+  try {
+    const body = await request.json();
+    const created = await createAssessment({
+      clientName: body.clientName ?? "",
+      appName: body.appName ?? "",
+      assessmentDate:
+        body.assessmentDate ?? new Date().toISOString().slice(0, 10),
+      assessorName: body.assessorName,
+      scopeNotes: body.scopeNotes,
+    });
+    return NextResponse.json(created, { status: 201 });
+  } catch (e) {
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : "Server error" },
+      { status: 500 }
+    );
+  }
 }

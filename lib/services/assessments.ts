@@ -1,61 +1,172 @@
 import { eq, desc, and } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
-import { getDb } from "@/lib/db";
-import {
-  assessments,
-  assessmentControls,
-  controls,
-} from "@/lib/db/schema";
 import { ALL_CONTROLS } from "@/lib/controls/catalog";
-import type { AssessmentMetadata, AssessmentControlState, ControlOutcome } from "@/lib/types";
-
-const FRAMEWORK_ID = "m365-app-compliance";
+import type {
+  AssessmentMetadata,
+  AssessmentControlState,
+  ControlOutcome,
+} from "@/lib/types";
+import { assertDatabaseReady, isSupabaseConfigured } from "@/lib/db";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
+import { FRAMEWORK_ID } from "@/lib/db/seed-data";
 
 function now() {
   return new Date().toISOString();
 }
 
-export function listAssessments(): AssessmentMetadata[] {
-  const db = getDb();
-  const rows = db
+function mapAssessmentRow(row: {
+  id: string;
+  framework_id?: string;
+  frameworkId?: string;
+  client_name?: string;
+  clientName?: string;
+  app_name?: string;
+  appName?: string;
+  assessment_date?: string;
+  assessmentDate?: string;
+  assessor_name?: string;
+  assessorName?: string;
+  scope_notes?: string;
+  scopeNotes?: string;
+  status: string;
+  created_at?: string;
+  createdAt?: string;
+  updated_at?: string;
+  updatedAt?: string;
+}): AssessmentMetadata {
+  return {
+    id: row.id,
+    clientName: row.client_name ?? row.clientName ?? "",
+    appName: row.app_name ?? row.appName ?? "",
+    assessmentDate: row.assessment_date ?? row.assessmentDate ?? "",
+    assessorName: row.assessor_name ?? row.assessorName ?? "",
+    scopeNotes: row.scope_notes ?? row.scopeNotes ?? "",
+    frameworkId: row.framework_id ?? row.frameworkId ?? FRAMEWORK_ID,
+    status: row.status as AssessmentMetadata["status"],
+    createdAt: row.created_at ?? row.createdAt ?? "",
+    updatedAt: row.updated_at ?? row.updatedAt ?? "",
+  };
+}
+
+export async function listAssessments(): Promise<AssessmentMetadata[]> {
+  await assertDatabaseReady();
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const { data, error } = await sb
+      .from("assessments")
+      .select("*")
+      .order("updated_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return (data ?? []).map(mapAssessmentRow);
+  }
+  const { getSqliteDb } = await import("@/lib/db/sqlite");
+  const { assessments } = await import("@/lib/db/schema");
+  const rows = getSqliteDb()
     .select()
     .from(assessments)
     .orderBy(desc(assessments.updatedAt))
     .all();
-  return rows.map(mapAssessment);
+  return rows.map((r) =>
+    mapAssessmentRow({
+      id: r.id,
+      frameworkId: r.frameworkId,
+      clientName: r.clientName,
+      appName: r.appName,
+      assessmentDate: r.assessmentDate,
+      assessorName: r.assessorName,
+      scopeNotes: r.scopeNotes,
+      status: r.status,
+      createdAt: r.createdAt,
+      updatedAt: r.updatedAt,
+    })
+  );
 }
 
-export function getAssessment(id: string): AssessmentMetadata | null {
-  const db = getDb();
-  const row = db.select().from(assessments).where(eq(assessments.id, id)).get();
-  return row ? mapAssessment(row) : null;
+export async function getAssessment(
+  id: string
+): Promise<AssessmentMetadata | null> {
+  await assertDatabaseReady();
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const { data, error } = await sb
+      .from("assessments")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return data ? mapAssessmentRow(data) : null;
+  }
+  const { getSqliteDb } = await import("@/lib/db/sqlite");
+  const { assessments } = await import("@/lib/db/schema");
+  const row = getSqliteDb()
+    .select()
+    .from(assessments)
+    .where(eq(assessments.id, id))
+    .get();
+  return row
+    ? mapAssessmentRow({
+        id: row.id,
+        frameworkId: row.frameworkId,
+        clientName: row.clientName,
+        appName: row.appName,
+        assessmentDate: row.assessmentDate,
+        assessorName: row.assessorName,
+        scopeNotes: row.scopeNotes,
+        status: row.status,
+        createdAt: row.createdAt,
+        updatedAt: row.updatedAt,
+      })
+    : null;
 }
 
-function mapAssessment(row: typeof assessments.$inferSelect): AssessmentMetadata {
-  return {
-    id: row.id,
-    clientName: row.clientName,
-    appName: row.appName,
-    assessmentDate: row.assessmentDate,
-    assessorName: row.assessorName,
-    scopeNotes: row.scopeNotes,
-    frameworkId: row.frameworkId,
-    status: row.status as AssessmentMetadata["status"],
-    createdAt: row.createdAt,
-    updatedAt: row.updatedAt,
-  };
-}
-
-export function createAssessment(input: {
+export async function createAssessment(input: {
   clientName: string;
   appName: string;
   assessmentDate: string;
   assessorName?: string;
   scopeNotes?: string;
-}): AssessmentMetadata {
-  const db = getDb();
+}): Promise<AssessmentMetadata> {
+  await assertDatabaseReady();
   const id = uuidv4();
   const ts = now();
+
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const { error: aErr } = await sb.from("assessments").insert({
+      id,
+      framework_id: FRAMEWORK_ID,
+      client_name: input.clientName,
+      app_name: input.appName,
+      assessment_date: input.assessmentDate,
+      assessor_name: input.assessorName ?? "",
+      scope_notes: input.scopeNotes ?? "",
+      status: "draft",
+      created_at: ts,
+      updated_at: ts,
+    });
+    if (aErr) throw new Error(aErr.message);
+
+    const controlRows = ALL_CONTROLS.map((c) => ({
+      assessment_id: id,
+      control_id: c.id,
+      outcome: null,
+      not_in_place_reason: "",
+      corrective_action: "",
+      evidence_notes: "",
+      updated_at: ts,
+    }));
+    for (let i = 0; i < controlRows.length; i += 50) {
+      const { error } = await sb
+        .from("assessment_controls")
+        .insert(controlRows.slice(i, i + 50));
+      if (error) throw new Error(error.message);
+    }
+    return (await getAssessment(id))!;
+  }
+
+  const { getSqliteDb } = await import("@/lib/db/sqlite");
+  const { assessments, assessmentControls } = await import("@/lib/db/schema");
+  const db = getSqliteDb();
   db.insert(assessments)
     .values({
       id,
@@ -70,7 +181,6 @@ export function createAssessment(input: {
       updatedAt: ts,
     })
     .run();
-
   const ts2 = now();
   for (const c of ALL_CONTROLS) {
     db.insert(assessmentControls)
@@ -85,11 +195,10 @@ export function createAssessment(input: {
       })
       .run();
   }
-
-  return getAssessment(id)!;
+  return (await getAssessment(id))!;
 }
 
-export function updateAssessment(
+export async function updateAssessment(
   id: string,
   patch: Partial<{
     clientName: string;
@@ -99,22 +208,61 @@ export function updateAssessment(
     scopeNotes: string;
     status: AssessmentMetadata["status"];
   }>
-): AssessmentMetadata | null {
-  const db = getDb();
-  const existing = getAssessment(id);
+): Promise<AssessmentMetadata | null> {
+  await assertDatabaseReady();
+  const existing = await getAssessment(id);
   if (!existing) return null;
-  db.update(assessments)
+
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const row: Record<string, string> = { updated_at: now() };
+    if (patch.clientName !== undefined) row.client_name = patch.clientName;
+    if (patch.appName !== undefined) row.app_name = patch.appName;
+    if (patch.assessmentDate !== undefined)
+      row.assessment_date = patch.assessmentDate;
+    if (patch.assessorName !== undefined) row.assessor_name = patch.assessorName;
+    if (patch.scopeNotes !== undefined) row.scope_notes = patch.scopeNotes;
+    if (patch.status !== undefined) row.status = patch.status;
+    const { error } = await sb.from("assessments").update(row).eq("id", id);
+    if (error) throw new Error(error.message);
+    return getAssessment(id);
+  }
+
+  const { getSqliteDb } = await import("@/lib/db/sqlite");
+  const { assessments } = await import("@/lib/db/schema");
+  getSqliteDb()
+    .update(assessments)
     .set({ ...patch, updatedAt: now() })
     .where(eq(assessments.id, id))
     .run();
   return getAssessment(id);
 }
 
-export function getAssessmentControlStates(
+export async function getAssessmentControlStates(
   assessmentId: string
-): AssessmentControlState[] {
-  const db = getDb();
-  const rows = db
+): Promise<AssessmentControlState[]> {
+  await assertDatabaseReady();
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const { data, error } = await sb
+      .from("assessment_controls")
+      .select("*")
+      .eq("assessment_id", assessmentId);
+    if (error) throw new Error(error.message);
+    return (data ?? []).map((r) => ({
+      assessmentId: r.assessment_id,
+      controlId: r.control_id,
+      outcome: r.outcome as ControlOutcome,
+      notInPlaceReason: r.not_in_place_reason ?? "",
+      correctiveAction: r.corrective_action ?? "",
+      evidenceNotes: r.evidence_notes ?? "",
+      updatedAt: r.updated_at ?? "",
+    }));
+  }
+
+  const { getSqliteDb } = await import("@/lib/db/sqlite");
+  const { assessmentControls } = await import("@/lib/db/schema");
+  const rows = getSqliteDb()
     .select()
     .from(assessmentControls)
     .where(eq(assessmentControls.assessmentId, assessmentId))
@@ -130,7 +278,7 @@ export function getAssessmentControlStates(
   }));
 }
 
-export function updateAssessmentControl(
+export async function updateAssessmentControl(
   assessmentId: string,
   controlId: string,
   patch: Partial<{
@@ -139,10 +287,34 @@ export function updateAssessmentControl(
     correctiveAction: string;
     evidenceNotes: string;
   }>
-): void {
-  const db = getDb();
-  db.update(assessmentControls)
-    .set({ ...patch, updatedAt: now() })
+): Promise<void> {
+  await assertDatabaseReady();
+  const ts = now();
+
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const row: Record<string, string | null> = { updated_at: ts };
+    if (patch.outcome !== undefined) row.outcome = patch.outcome;
+    if (patch.notInPlaceReason !== undefined)
+      row.not_in_place_reason = patch.notInPlaceReason;
+    if (patch.correctiveAction !== undefined)
+      row.corrective_action = patch.correctiveAction;
+    if (patch.evidenceNotes !== undefined)
+      row.evidence_notes = patch.evidenceNotes;
+    const { error } = await sb
+      .from("assessment_controls")
+      .update(row)
+      .eq("assessment_id", assessmentId)
+      .eq("control_id", controlId);
+    if (error) throw new Error(error.message);
+    return;
+  }
+
+  const { getSqliteDb } = await import("@/lib/db/sqlite");
+  const { assessmentControls } = await import("@/lib/db/schema");
+  getSqliteDb()
+    .update(assessmentControls)
+    .set({ ...patch, updatedAt: ts })
     .where(
       and(
         eq(assessmentControls.assessmentId, assessmentId),
@@ -152,15 +324,19 @@ export function updateAssessmentControl(
     .run();
 }
 
-export function deleteAssessment(id: string): void {
-  const db = getDb();
+export async function deleteAssessment(id: string): Promise<void> {
+  await assertDatabaseReady();
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    await sb.from("assessment_controls").delete().eq("assessment_id", id);
+    await sb.from("assessments").delete().eq("id", id);
+    return;
+  }
+  const { getSqliteDb } = await import("@/lib/db/sqlite");
+  const { assessments, assessmentControls } = await import("@/lib/db/schema");
+  const db = getSqliteDb();
   db.delete(assessmentControls)
     .where(eq(assessmentControls.assessmentId, id))
     .run();
   db.delete(assessments).where(eq(assessments.id, id)).run();
-}
-
-export function getControlsFromDb() {
-  const db = getDb();
-  return db.select().from(controls).all();
 }

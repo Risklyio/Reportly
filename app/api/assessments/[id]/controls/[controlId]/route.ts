@@ -7,8 +7,15 @@ export async function PATCH(
     params,
   }: { params: Promise<{ id: string; controlId: string }> }
 ) {
-  const { id, controlId } = await params;
-  const body = await request.json();
-  updateAssessmentControl(id, controlId, body);
-  return NextResponse.json({ ok: true });
+  try {
+    const { id, controlId } = await params;
+    const body = await request.json();
+    await updateAssessmentControl(id, controlId, body);
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : "Server error" },
+      { status: 500 }
+    );
+  }
 }
