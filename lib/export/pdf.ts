@@ -164,19 +164,19 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
           [
             "#",
             "Control",
+            "Requirement",
             "Outcome",
             "HF",
             "Gap / reason",
-            "Corrective action",
           ],
         ],
         body: rows.map((r) => [
-          String(r.number),
-          truncate(r.title, 55),
+          r.ref,
+          truncate(r.title, 40),
+          truncate(r.requirement, 70),
           r.outcome,
           r.hardFail,
-          truncate(r.reason, 45),
-          truncate(r.correctiveAction, 55),
+          truncate(r.reason, 40),
         ]),
         styles: { fontSize: 7, cellPadding: 2, textColor: BRAND_DARK },
         headStyles: {
@@ -186,14 +186,16 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
           fontSize: 7,
         },
         columnStyles: {
-          0: { cellWidth: 8 },
-          1: { cellWidth: 42 },
-          2: { cellWidth: 22 },
-          3: { cellWidth: 8 },
+          0: { cellWidth: 10 },
+          1: { cellWidth: 32 },
+          2: { cellWidth: 58 },
+          3: { cellWidth: 20 },
+          4: { cellWidth: 8 },
+          5: { cellWidth: 32 },
         },
         alternateRowStyles: { fillColor: [242, 241, 237] },
         didParseCell(hook) {
-          if (hook.section === "body" && hook.column.index === 2) {
+          if (hook.section === "body" && hook.column.index === 3) {
             const outcome = String(hook.cell.raw ?? "");
             if (outcome === "Not in place") {
               hook.cell.styles.textColor = [180, 40, 40];

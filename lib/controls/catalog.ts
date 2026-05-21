@@ -1,9 +1,8 @@
 import type { ControlDefinition, DomainId } from "@/lib/types";
+import { operationalControls } from "./operational-controls";
 
 const APP_BASE =
   "https://learn.microsoft.com/en-us/microsoft-365-app-certification/docs/seg2_app";
-const OPS_BASE =
-  "https://learn.microsoft.com/en-us/microsoft-365-app-certification/docs/seg2_ops";
 const DATA_BASE =
   "https://learn.microsoft.com/en-us/microsoft-365-app-certification/docs/seg2_data";
 
@@ -37,35 +36,17 @@ function app(
   };
 }
 
-function ops(
-  n: number,
-  section: string,
-  title: string,
-  hardFail = false,
-  extra: Partial<ControlDefinition> = {}
-): ControlDefinition {
-  return {
-    id: `ops-${n}`,
-    domain: "operational_security",
-    number: n,
-    title,
-    section,
-    hardFail,
-    intent: extra.intent ?? title,
-    evidenceRequirements: extra.evidenceRequirements ?? [
-      "Provide screenshots, policies, and records demonstrating control operation.",
-    ],
-    docUrl: `${OPS_BASE}#control-no-${n}`,
-    defaultNotInPlaceReasons: extra.defaultNotInPlaceReasons ?? [
-      "Policy or procedure not documented",
-      "Technical control not deployed across in-scope systems",
-      "Evidence incomplete for sampled components",
-    ],
-    correctiveActionHints: extra.correctiveActionHints ?? [
-      "Document and implement required operational security control.",
-      "Extend coverage to all in-scope system components.",
-    ],
-  };
+export function formatControlRef(c: ControlDefinition): string {
+  return c.subId ? `${c.number}${c.subId}` : String(c.number);
+}
+
+export function compareControls(
+  a: ControlDefinition,
+  b: ControlDefinition
+): number {
+  const sa = a.sortOrder ?? a.number * 10;
+  const sb = b.sortOrder ?? b.number * 10;
+  return sa - sb || a.id.localeCompare(b.id);
 }
 
 function data(
@@ -176,49 +157,6 @@ const applicationControls: ControlDefinition[] = [
   }),
 ];
 
-const operationalControls: ControlDefinition[] = [
-  ops(1, "Awareness training", "Security awareness training program"),
-  ops(2, "Malware protection/anti-malware", "Anti-malware on all sampled components", true, {
-    defaultNotInPlaceReasons: [
-      "AV/EDR not on all in-scope systems",
-      "Signatures older than one day",
-      "On-access scanning disabled",
-    ],
-    correctiveActionHints: [
-      "Deploy Microsoft Defender or EDR with real-time protection on all sampled hosts.",
-      "Enable automatic quarantine and verify signature update cadence.",
-    ],
-  }),
-  ops(3, "Malware protection/application control", "Approved application allow list", true),
-  ops(4, "Patch management/patching and risk ranking", "Patch management policy and risk ranking"),
-  ops(5, "Patch management/patching and risk ranking", "Patch deployment within defined windows", true),
-  ops(6, "Vulnerability scanning", "Internal and external vulnerability scanning"),
-  ops(7, "Vulnerability scanning", "Rescan after remediation of findings", true),
-  ops(8, "Network Security Controls (NSC)", "NSC installed on environment boundaries", true),
-  ops(9, "Network Security Controls (NSC)", "NSC default-deny and six-month rule reviews"),
-  ops(10, "Change control", "Change control policy and procedures"),
-  ops(11, "Change control", "Change testing and approval before production", true),
-  ops(12, "Secure software development/deployment", "Secure SDLC practices"),
-  ops(13, "Secure software development/deployment", "Code review and security testing in CI/CD"),
-  ops(14, "Account management", "Default credentials removed or disabled"),
-  ops(15, "Account management", "Unique IDs and authentication for users and admins"),
-  ops(16, "Account management", "Privileged access management", true),
-  ops(17, "Security event logging, reviewing and alerting", "Audit logging enabled"),
-  ops(18, "Security event logging, reviewing and alerting", "Log retention and storage"),
-  ops(19, "Security event logging, reviewing and alerting", "Log review procedures"),
-  ops(20, "Security event logging, reviewing and alerting", "Security alerting configured", true),
-  ops(21, "Information security risk management", "Risk management program"),
-  ops(22, "Information security risk management", "Risk register maintained", true),
-  ops(23, "Information security risk management", "Risk treatment and acceptance"),
-  ops(24, "Information security risk management", "Management review of risk posture"),
-  ops(25, "Security incident response", "Incident response plan", true),
-  ops(26, "Security incident response", "Incident response testing"),
-  ops(27, "Security incident response", "Incident reporting to Microsoft when required"),
-  ops(28, "Business continuity plan and disaster recovery plan", "BCP documented and maintained"),
-  ops(29, "Business continuity plan and disaster recovery plan", "DR plan and recovery objectives"),
-  ops(30, "Business continuity plan and disaster recovery plan", "BCP/DR testing evidence"),
-];
-
 const dataControls: ControlDefinition[] = [
   data(1, "Data in Transit", "TLS 1.2+ and certificate inventory", true, {
     defaultNotInPlaceReasons: ["TLS below 1.2 enabled", "Certificate inventory missing"],
@@ -276,7 +214,7 @@ export const DOMAINS: {
 ];
 
 export function getControlsByDomain(domain: DomainId): ControlDefinition[] {
-  return ALL_CONTROLS.filter((c) => c.domain === domain);
+  return ALL_CONTROLS.filter((c) => c.domain === domain).sort(compareControls);
 }
 
 export function getControlById(id: string): ControlDefinition | undefined {

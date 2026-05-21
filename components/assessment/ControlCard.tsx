@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { formatControlRef } from "@/lib/controls/catalog";
 import type { ControlDefinition, ControlOutcome } from "@/lib/types";
 import { OutcomeSelector } from "./OutcomeSelector";
 
@@ -63,7 +64,8 @@ export function ControlCard({
         <div>
           <p className="text-xs font-medium text-text-muted">{control.section}</p>
           <h3 className="text-base font-semibold text-text">
-            <span className="text-text-muted">#{control.number}</span> {control.title}
+            <span className="text-text-muted">{formatControlRef(control)}</span>{" "}
+            {control.title}
           </h3>
         </div>
         <div className="flex gap-2">

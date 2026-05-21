@@ -50,19 +50,22 @@ function buildMinimalDocxBuffer(): Buffer {
     <w:p><w:r><w:t>Generated: {generatedAt}</w:t></w:r></w:p>
     <w:p><w:r><w:t>--- Application Security ---</w:t></w:r></w:p>
     {#appControls}
-    <w:p><w:r><w:t>{number}. {title} — {outcome}</w:t></w:r></w:p>
+    <w:p><w:r><w:t>{ref}. {title} — {outcome}</w:t></w:r></w:p>
+    <w:p><w:r><w:t>{requirement}</w:t></w:r></w:p>
     <w:p><w:r><w:t>Reason: {reason}</w:t></w:r></w:p>
     <w:p><w:r><w:t>Corrective: {correctiveAction}</w:t></w:r></w:p>
     {/appControls}
     <w:p><w:r><w:t>--- Operational Security ---</w:t></w:r></w:p>
     {#opsControls}
-    <w:p><w:r><w:t>{number}. {title} — {outcome}</w:t></w:r></w:p>
+    <w:p><w:r><w:t>{ref}. {title} — {outcome}</w:t></w:r></w:p>
+    <w:p><w:r><w:t>{requirement}</w:t></w:r></w:p>
     <w:p><w:r><w:t>Reason: {reason}</w:t></w:r></w:p>
     <w:p><w:r><w:t>Corrective: {correctiveAction}</w:t></w:r></w:p>
     {/opsControls}
     <w:p><w:r><w:t>--- Data Handling ---</w:t></w:r></w:p>
     {#dataControls}
-    <w:p><w:r><w:t>{number}. {title} — {outcome}</w:t></w:r></w:p>
+    <w:p><w:r><w:t>{ref}. {title} — {outcome}</w:t></w:r></w:p>
+    <w:p><w:r><w:t>{requirement}</w:t></w:r></w:p>
     <w:p><w:r><w:t>Reason: {reason}</w:t></w:r></w:p>
     <w:p><w:r><w:t>Corrective: {correctiveAction}</w:t></w:r></w:p>
     {/dataControls}

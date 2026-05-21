@@ -14,6 +14,10 @@ export interface ControlDefinition {
   id: string;
   domain: DomainId;
   number: number;
+  /** Sub-control label within a theme, e.g. "A" for control 1A */
+  subId?: string;
+  /** Sort key (defaults to number × 10 + sub-letter offset) */
+  sortOrder?: number;
   title: string;
   section: string;
   hardFail: boolean;

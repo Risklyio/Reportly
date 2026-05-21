@@ -1,4 +1,9 @@
-import { ALL_CONTROLS, DOMAINS } from "@/lib/controls/catalog";
+import {
+  ALL_CONTROLS,
+  DOMAINS,
+  compareControls,
+  formatControlRef,
+} from "@/lib/controls/catalog";
 import type { AssessmentControlState } from "@/lib/types";
 
 export const OUTCOME_LABELS: Record<string, string> = {
@@ -9,8 +14,10 @@ export const OUTCOME_LABELS: Record<string, string> = {
 };
 
 export type ExportControlRow = {
+  ref: string;
   number: number;
   title: string;
+  requirement: string;
   section: string;
   outcome: string;
   reason: string;
@@ -51,8 +58,10 @@ function formatControlRow(
   const c = ALL_CONTROLS.find((x) => x.id === controlId);
   const s = states.get(controlId);
   return {
+    ref: c ? formatControlRef(c) : controlId,
     number: c?.number ?? 0,
     title: c?.title ?? controlId,
+    requirement: c?.intent ?? "",
     section: c?.section ?? "",
     outcome: s?.outcome ? OUTCOME_LABELS[s.outcome] ?? s.outcome : "Not reviewed",
     reason: s?.notInPlaceReason ?? "",
@@ -96,7 +105,7 @@ export function buildExportData(
 
   const byDomain = (domain: string) =>
     ALL_CONTROLS.filter((c) => c.domain === domain)
-      .sort((a, b) => a.number - b.number)
+      .sort(compareControls)
       .map((c) => formatControlRow(c.id, stateMap));
 
   const allControls = ALL_CONTROLS.map((c) => formatControlRow(c.id, stateMap));

@@ -37,7 +37,7 @@ export default async function DashboardPage() {
         <div className="card text-center text-text-muted">
           <p>No assessments yet.</p>
           <p className="mt-2 text-sm">
-            Create one to review 76 M365 certification controls across three
+            Create one to review 81 M365 certification controls across three
             domains.
           </p>
         </div>

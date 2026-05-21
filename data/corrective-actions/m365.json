@@ -10,7 +10,7 @@
       ]
     },
     {
-      "controlId": "ops-2",
+      "controlId": "ops-2a",
       "reasonMatch": ["AV", "EDR", "malware", "Defender", "signature"],
       "actionText": "Deploy and verify anti-malware or EDR on every in-scope system component. Enable real-time/on-access scanning, automatic quarantine, and daily signature updates. Provide console screenshots for all sampled hosts.",
       "links": [
