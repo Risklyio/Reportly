@@ -8,7 +8,8 @@ export async function PATCH(
   }: { params: Promise<{ id: string; controlId: string }> }
 ) {
   try {
-    const { id, controlId } = await params;
+    const { id, controlId: rawControlId } = await params;
+    const controlId = decodeURIComponent(rawControlId);
     const body = await request.json();
     await updateAssessmentControl(id, controlId, body);
     return NextResponse.json({ ok: true });

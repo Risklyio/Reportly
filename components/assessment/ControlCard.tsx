@@ -10,7 +10,6 @@ export function ControlCard({
   outcome,
   notInPlaceReason,
   correctiveAction,
-  evidenceNotes,
   onSave,
   onSuggest,
 }: {
@@ -18,12 +17,10 @@ export function ControlCard({
   outcome: ControlOutcome;
   notInPlaceReason: string;
   correctiveAction: string;
-  evidenceNotes: string;
   onSave: (patch: {
     outcome?: ControlOutcome;
     notInPlaceReason?: string;
     correctiveAction?: string;
-    evidenceNotes?: string;
   }) => Promise<void>;
   onSuggest: () => Promise<{ text: string; links: string[] }>;
 }) {
@@ -144,18 +141,6 @@ export function ControlCard({
             </div>
           </>
         )}
-
-        <div>
-          <label className="label">Evidence notes</label>
-          <textarea
-            className="input min-h-[72px]"
-            rows={2}
-            value={evidenceNotes}
-            onChange={(e) => save({ evidenceNotes: e.target.value })}
-            onBlur={(e) => save({ evidenceNotes: e.target.value })}
-            placeholder="Screenshots, policies, ticket IDs…"
-          />
-        </div>
       </div>
       {saving && (
         <p className="mt-2 text-xs text-text-muted">Saving…</p>

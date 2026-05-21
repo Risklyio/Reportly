@@ -7,6 +7,10 @@ import type {
   ControlOutcome,
 } from "@/lib/types";
 import { assertDatabaseReady, isSupabaseConfigured } from "@/lib/db";
+import {
+  ensureAssessmentControlRows,
+  syncCatalogControls,
+} from "@/lib/db/sync-catalog";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { FRAMEWORK_ID } from "@/lib/db/seed-data";
 
@@ -242,6 +246,8 @@ export async function getAssessmentControlStates(
   assessmentId: string
 ): Promise<AssessmentControlState[]> {
   await assertDatabaseReady();
+  await syncCatalogControls();
+
   if (isSupabaseConfigured()) {
     const sb = getSupabaseAdmin();
     const { data, error } = await sb
@@ -249,7 +255,25 @@ export async function getAssessmentControlStates(
       .select("*")
       .eq("assessment_id", assessmentId);
     if (error) throw new Error(error.message);
-    return (data ?? []).map((r) => ({
+    const mapped = (data ?? []).map((r) => ({
+      assessmentId: r.assessment_id,
+      controlId: r.control_id,
+      outcome: r.outcome as ControlOutcome,
+      notInPlaceReason: r.not_in_place_reason ?? "",
+      correctiveAction: r.corrective_action ?? "",
+      evidenceNotes: r.evidence_notes ?? "",
+      updatedAt: r.updated_at ?? "",
+    }));
+    await ensureAssessmentControlRows(
+      assessmentId,
+      new Set(mapped.map((r) => r.controlId))
+    );
+    const { data: refreshed, error: refetchErr } = await sb
+      .from("assessment_controls")
+      .select("*")
+      .eq("assessment_id", assessmentId);
+    if (refetchErr) throw new Error(refetchErr.message);
+    return (refreshed ?? []).map((r) => ({
       assessmentId: r.assessment_id,
       controlId: r.control_id,
       outcome: r.outcome as ControlOutcome,
@@ -262,7 +286,17 @@ export async function getAssessmentControlStates(
 
   const { getSqliteDb } = await import("@/lib/db/sqlite");
   const { assessmentControls } = await import("@/lib/db/schema");
-  const rows = (await getSqliteDb())
+  const db = await getSqliteDb();
+  let rows = db
+    .select()
+    .from(assessmentControls)
+    .where(eq(assessmentControls.assessmentId, assessmentId))
+    .all();
+  await ensureAssessmentControlRows(
+    assessmentId,
+    new Set(rows.map((r) => r.controlId))
+  );
+  rows = db
     .select()
     .from(assessmentControls)
     .where(eq(assessmentControls.assessmentId, assessmentId))
@@ -289,6 +323,7 @@ export async function updateAssessmentControl(
   }>
 ): Promise<void> {
   await assertDatabaseReady();
+  await syncCatalogControls();
   const ts = now();
 
   if (isSupabaseConfigured()) {
@@ -333,16 +368,41 @@ export async function updateAssessmentControl(
 
   const { getSqliteDb } = await import("@/lib/db/sqlite");
   const { assessmentControls } = await import("@/lib/db/schema");
-  (await getSqliteDb())
-    .update(assessmentControls)
-    .set({ ...patch, updatedAt: ts })
+  const db = await getSqliteDb();
+  const existing = db
+    .select()
+    .from(assessmentControls)
     .where(
       and(
         eq(assessmentControls.assessmentId, assessmentId),
         eq(assessmentControls.controlId, controlId)
       )
     )
-    .run();
+    .get();
+
+  if (existing) {
+    db.update(assessmentControls)
+      .set({ ...patch, updatedAt: ts })
+      .where(
+        and(
+          eq(assessmentControls.assessmentId, assessmentId),
+          eq(assessmentControls.controlId, controlId)
+        )
+      )
+      .run();
+  } else {
+    db.insert(assessmentControls)
+      .values({
+        assessmentId,
+        controlId,
+        outcome: patch.outcome ?? null,
+        notInPlaceReason: patch.notInPlaceReason ?? "",
+        correctiveAction: patch.correctiveAction ?? "",
+        evidenceNotes: patch.evidenceNotes ?? "",
+        updatedAt: ts,
+      })
+      .run();
+  }
 }
 
 export async function deleteAssessment(id: string): Promise<void> {

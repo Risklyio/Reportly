@@ -99,11 +99,10 @@ export function AssessmentWorkspace({
         outcome: ControlOutcome;
         notInPlaceReason: string;
         correctiveAction: string;
-        evidenceNotes: string;
       }>
     ) => {
       const res = await fetch(
-        `/api/assessments/${assessment.id}/controls/${controlId}`,
+        `/api/assessments/${assessment.id}/controls/${encodeURIComponent(controlId)}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -221,7 +220,6 @@ export function AssessmentWorkspace({
                     outcome={st.outcome}
                     notInPlaceReason={st.notInPlaceReason}
                     correctiveAction={st.correctiveAction}
-                    evidenceNotes={st.evidenceNotes}
                     onSave={(patch) => updateControl(control.id, patch)}
                     onSuggest={() =>
                       suggest(control.id, st.notInPlaceReason)
