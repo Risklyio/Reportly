@@ -52,8 +52,12 @@ async function main() {
   });
   await client.connect();
   await client.query(schema);
+  await client.query(`
+    alter table assessment_controls
+    add column if not exists assessor_notes text not null default '';
+  `);
   await client.end();
-  console.log("   Tables created.");
+  console.log("   Tables created / migrations applied.");
 
   console.log("2/3 Creating storage bucket reportly-templates …");
   const { error: bucketErr } = await sb.storage.createBucket(

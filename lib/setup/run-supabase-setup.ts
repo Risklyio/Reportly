@@ -32,8 +32,12 @@ export async function runSupabaseSetup(): Promise<string[]> {
   });
   await client.connect();
   await client.query(schema);
+  await client.query(`
+    alter table assessment_controls
+    add column if not exists assessor_notes text not null default '';
+  `);
   await client.end();
-  logs.push("Schema applied.");
+  logs.push("Schema applied (including assessor_notes column).");
 
   logs.push("Creating storage bucket…");
   const sb = getSupabaseAdmin();

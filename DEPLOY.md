@@ -25,7 +25,12 @@ npm run supabase:setup
 
 5. Add the **same variables** plus `OPENAI_API_KEY` to Vercel → Environment Variables → **Redeploy**.
 
-6. For existing Supabase DBs, run `supabase/migrations/add-assessor-notes.sql` in the SQL editor.
+6. For existing Supabase DBs, add the `assessor_notes` column (pick one):
+   - **SQL Editor** (fastest): paste and run `supabase/migrations/add-assessor-notes.sql`
+   - **Or** add `DATABASE_URL` on Vercel and open once:  
+     `https://YOUR-APP.vercel.app/api/migrate-assessor-notes?secret=YOUR_SETUP_SECRET`  
+     (same `SETUP_SECRET` as `/api/setup`)
+   - Wait ~30 seconds after either method so Supabase refreshes its schema cache.
 
 ## Option B — Setup on Vercel (no local terminal)
 
