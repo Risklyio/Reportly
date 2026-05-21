@@ -25,8 +25,8 @@ export function OutcomeSelector({
           onClick={() => onChange(o.value)}
           className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
             value === o.value
-              ? "border-primary bg-primary text-white"
-              : "border-border bg-surface text-text hover:border-primary/50"
+              ? "border-primary bg-primary font-semibold text-primary-foreground"
+              : "border-border bg-surface text-text hover:border-topbar/30"
           }`}
         >
           {o.label}

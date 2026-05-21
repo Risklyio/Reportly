@@ -31,7 +31,7 @@ export function MobileAssessmentNav({ assessmentId }: { assessmentId: string }) 
             href={href(d.id, filter)}
             className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium ${
               domain === d.id
-                ? "bg-primary text-white"
+                ? "bg-primary font-semibold text-primary-foreground"
                 : "border border-border bg-surface text-text"
             }`}
           >
@@ -46,7 +46,7 @@ export function MobileAssessmentNav({ assessmentId }: { assessmentId: string }) 
             href={href(domain, f.id)}
             className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium ${
               filter === f.id
-                ? "bg-accent text-white"
+                ? "bg-primary font-semibold text-primary-foreground"
                 : "border border-border bg-surface text-text"
             }`}
           >

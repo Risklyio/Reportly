@@ -33,7 +33,7 @@ export function CollapsibleSidebar() {
     return `/assessments/${assessmentId}?domain=${domain}&filter=${filter}`;
   }
 
-  const asideClass = `shrink-0 border-border bg-surface transition-all flex flex-col ${
+  const asideClass = `shrink-0 border-white/10 bg-sidebar transition-all flex flex-col ${
     collapsed ? "w-12" : "w-72"
   } border-r`;
 
@@ -42,13 +42,12 @@ export function CollapsibleSidebar() {
       <aside className={`${asideClass} hidden lg:flex`}>
         <SidebarToggle
           collapsed={collapsed}
-          side="left"
           onToggle={() => setCollapsed(!collapsed)}
         />
         {!collapsed && (
-          <div className="p-4 text-sm text-text-muted">
-            <p className="mb-2 font-medium text-text">Frameworks</p>
-            <p className="rounded-lg border border-border bg-muted p-3 text-xs">
+          <div className="p-4 text-sm text-on-dark-muted">
+            <p className="mb-2 font-medium text-on-dark">Frameworks</p>
+            <p className="rounded-lg border border-white/10 bg-white/5 p-3 text-xs text-on-dark">
               {FRAMEWORK_NAME}
             </p>
             <p className="mt-3 text-xs">
@@ -64,26 +63,25 @@ export function CollapsibleSidebar() {
     <aside className={`${asideClass} hidden lg:flex`}>
       <SidebarToggle
         collapsed={collapsed}
-        side="left"
         onToggle={() => setCollapsed(!collapsed)}
       />
       {!collapsed && (
         <div className="flex flex-col overflow-y-auto p-4">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-text-muted">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-dark-muted">
             Framework
           </p>
           <button
             type="button"
             onClick={() => setFrameworkOpen(!frameworkOpen)}
-            className="flex w-full items-center justify-between rounded-lg border border-border bg-muted px-3 py-2 text-left text-sm font-medium text-text hover:bg-primary/5"
+            className="flex w-full items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-left text-sm font-medium text-on-dark hover:bg-white/10"
           >
             <span className="line-clamp-2">{FRAMEWORK_NAME}</span>
-            <span className="text-text-muted">{frameworkOpen ? "−" : "+"}</span>
+            <span className="text-on-dark-muted">{frameworkOpen ? "−" : "+"}</span>
           </button>
 
           {frameworkOpen && (
             <>
-              <p className="mb-2 mt-5 text-xs font-semibold uppercase tracking-wide text-text-muted">
+              <p className="mb-2 mt-5 text-xs font-semibold uppercase tracking-wide text-on-dark-muted">
                 Domains
               </p>
               <ul className="space-y-1">
@@ -96,8 +94,8 @@ export function CollapsibleSidebar() {
                         href={href}
                         className={`block rounded-lg px-3 py-2 text-sm transition ${
                           active
-                            ? "bg-primary font-medium text-white"
-                            : "text-text hover:bg-muted"
+                            ? "bg-primary font-semibold text-primary-foreground"
+                            : "text-on-dark hover:bg-white/10"
                         }`}
                       >
                         {d.label}
@@ -107,7 +105,7 @@ export function CollapsibleSidebar() {
                 })}
               </ul>
 
-              <p className="mb-2 mt-5 text-xs font-semibold uppercase tracking-wide text-text-muted">
+              <p className="mb-2 mt-5 text-xs font-semibold uppercase tracking-wide text-on-dark-muted">
                 Filter
               </p>
               <ul className="space-y-1">
@@ -120,8 +118,8 @@ export function CollapsibleSidebar() {
                         href={href}
                         className={`block rounded-lg px-3 py-2 text-sm transition ${
                           active
-                            ? "bg-accent font-medium text-white"
-                            : "text-text hover:bg-muted"
+                            ? "bg-primary/90 font-semibold text-primary-foreground"
+                            : "text-on-dark hover:bg-white/10"
                         }`}
                       >
                         {f.label}
@@ -140,30 +138,19 @@ export function CollapsibleSidebar() {
 
 function SidebarToggle({
   collapsed,
-  side,
   onToggle,
 }: {
   collapsed: boolean;
-  side: "left" | "right";
   onToggle: () => void;
 }) {
-  const icon =
-    side === "left"
-      ? collapsed
-        ? "»"
-        : "«"
-      : collapsed
-        ? "«"
-        : "»";
-
   return (
     <button
       type="button"
       onClick={onToggle}
-      className="flex h-10 items-center justify-center border-b border-border text-text-muted hover:bg-muted hover:text-text"
+      className="flex h-10 items-center justify-center border-b border-white/10 text-on-dark-muted transition hover:bg-white/10 hover:text-on-dark"
       aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
     >
-      {icon}
+      {collapsed ? "»" : "«"}
     </button>
   );
 }

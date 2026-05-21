@@ -152,7 +152,7 @@ export default function SettingsPage() {
                 <span>
                   {t.name} ({t.filename})
                   {t.isDefault && (
-                    <span className="ml-2 text-xs text-primary">default</span>
+                    <span className="ml-2 text-xs font-medium text-topbar">default</span>
                   )}
                 </span>
                 <button

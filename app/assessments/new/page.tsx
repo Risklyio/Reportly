@@ -30,12 +30,12 @@ export default function NewAssessmentPage() {
         M365 Application Compliance Program
       </p>
 
-      <div className="card mt-4 border-primary/20 bg-primary/5 p-4 text-sm">
+      <div className="card mt-4 border-topbar/20 bg-primary/15 p-4 text-sm">
         <p className="font-medium text-text">Report template (optional)</p>
         <p className="mt-1 text-text-muted">
           Upload your Word report template before or after starting the review.
           Go to{" "}
-          <Link href="/settings" className="font-medium text-primary underline">
+          <Link href="/settings" className="font-medium text-topbar underline">
             Settings → Report templates
           </Link>{" "}
           and upload a <strong>.docx</strong> file with merge fields such as{" "}

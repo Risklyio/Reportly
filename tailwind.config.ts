@@ -9,26 +9,33 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        topbar: "#1a3233",
+        sidebar: "#011e1f",
+        app: "#f2f1ed",
         primary: {
-          DEFAULT: "#2563eb",
-          hover: "#1d4ed8",
-          light: "#dbeafe",
+          DEFAULT: "#92fcdb",
+          hover: "#7ae8c8",
+          foreground: "#011e1f",
         },
-        accent: "#6366f1",
+        accent: "#92fcdb",
         surface: "#ffffff",
-        muted: "#f8fafc",
-        border: "#e2e8f0",
+        muted: "#f2f1ed",
+        border: "#d4d2cb",
         text: {
-          DEFAULT: "#0f172a",
-          muted: "#64748b",
+          DEFAULT: "#011e1f",
+          muted: "#4a5c5d",
+        },
+        "on-dark": {
+          DEFAULT: "#f2f1ed",
+          muted: "#a8b8b9",
         },
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
       boxShadow: {
-        card: "0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06)",
-        elevated: "0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06)",
+        card: "0 1px 3px 0 rgb(1 30 31 / 0.06), 0 1px 2px -1px rgb(1 30 31 / 0.06)",
+        elevated: "0 4px 6px -1px rgb(1 30 31 / 0.08), 0 2px 4px -2px rgb(1 30 31 / 0.06)",
       },
     },
   },
