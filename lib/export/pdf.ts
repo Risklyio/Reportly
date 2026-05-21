@@ -137,14 +137,51 @@ function groupBySection(rows: ExportControlRow[]): Map<string, ExportControlRow[
   return map;
 }
 
+const BULLET_INDENT = "   ";
+const TABLE_LINE_H = 2.55;
+const BADGE_CORNER_RADIUS = 2;
+
 function normalizeCellText(text: string): string {
-  return text.replace(/\r\n/g, "\n").trim() || "—";
+  const trimmed = text.replace(/\r\n/g, "\n").trim() || "—";
+  return indentBulletLines(trimmed);
 }
 
-function outcomeBadgeMetrics(
+/** Slight indent for lines that start with bullet characters */
+function indentBulletLines(text: string): string {
+  return text
+    .split("\n")
+    .map((line) => {
+      if (/^\s*•\s?/.test(line)) {
+        return line.replace(/^(\s*)•\s?/, `$1${BULLET_INDENT}• `);
+      }
+      if (/^\s*-\s+/.test(line)) {
+        return line.replace(/^(\s*)-\s+/, `$1${BULLET_INDENT}- `);
+      }
+      return line;
+    })
+    .join("\n");
+}
+
+function drawRoundedRect(
+  doc: jsPDF,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  radius: number,
+  style: "S" | "F" | "FD"
+) {
+  if (typeof doc.roundedRect === "function") {
+    doc.roundedRect(x, y, w, h, radius, radius, style);
+  } else {
+    doc.rect(x, y, w, h, style);
+  }
+}
+
+function outcomeBadgeBox(
   doc: jsPDF,
   label: string
-): { lines: string[]; radius: number; textW: number; textH: number } {
+): { lines: string[]; boxW: number; boxH: number } {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(OUTCOME_FONT_SIZE);
   const lines = doc.splitTextToSize(label, OUTCOME_MAX_TEXT_W);
@@ -153,11 +190,14 @@ function outcomeBadgeMetrics(
     textW = Math.max(textW, doc.getTextWidth(line));
   }
   const textH = lines.length * OUTCOME_LINE_H;
-  const radius = Math.max(textW / 2, textH / 2) + OUTCOME_PAD;
-  return { lines, radius, textW, textH };
+  return {
+    lines,
+    boxW: textW + OUTCOME_PAD * 2,
+    boxH: textH + OUTCOME_PAD * 2,
+  };
 }
 
-/** Fixed-size badge centered in the cell (ignores tall requirement rows). */
+/** Fixed-size pill badge centered in the cell (ignores tall requirement rows). */
 function drawOutcomeBadge(
   doc: jsPDF,
   x: number,
@@ -168,17 +208,27 @@ function drawOutcomeBadge(
 ) {
   const visual = OUTCOME_VISUALS[outcome] ?? OUTCOME_VISUALS["Not reviewed"];
   const label = visual.short;
-  const { lines, radius } = outcomeBadgeMetrics(doc, label);
+  const { lines, boxW, boxH } = outcomeBadgeBox(doc, label);
 
   const cx = x + width / 2;
   const cy = y + height / 2;
+  const rx = cx - boxW / 2;
+  const ry = cy - boxH / 2;
 
-  doc.setLineWidth(0.55);
+  doc.setLineWidth(0.5);
   doc.setDrawColor(...visual.ring);
-  doc.circle(cx, cy, radius, "S");
+  drawRoundedRect(doc, rx, ry, boxW, boxH, BADGE_CORNER_RADIUS, "S");
 
   doc.setFillColor(...visual.fill);
-  doc.circle(cx, cy, radius - 0.7, "F");
+  drawRoundedRect(
+    doc,
+    rx + 0.4,
+    ry + 0.4,
+    boxW - 0.8,
+    boxH - 0.8,
+    BADGE_CORNER_RADIUS - 0.3,
+    "F"
+  );
 
   doc.setTextColor(...visual.text);
   doc.setFont("helvetica", "bold");
@@ -192,29 +242,33 @@ function drawOutcomeBadge(
   }
 }
 
-function drawHardFailTag(doc: jsPDF, x: number, y: number, width: number) {
-  const tagW = 19;
-  const tagH = 5;
-  const tagX = x + width - tagW - 2;
-  const tagY = y + 2;
+/** Small HARD FAIL tag under control title, left-aligned */
+function drawHardFailTag(doc: jsPDF, x: number, y: number) {
+  const tagW = 14;
+  const tagH = 3.2;
+  const tagX = x;
+  const tagY = y;
 
   doc.setFillColor(254, 226, 226);
   doc.setDrawColor(180, 35, 35);
-  doc.setLineWidth(0.35);
-  if (typeof doc.roundedRect === "function") {
-    doc.roundedRect(tagX, tagY, tagW, tagH, 1, 1, "FD");
-  } else {
-    doc.rect(tagX, tagY, tagW, tagH, "FD");
-  }
+  doc.setLineWidth(0.3);
+  drawRoundedRect(doc, tagX, tagY, tagW, tagH, 0.8, "FD");
 
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(5.5);
+  doc.setFontSize(4.5);
   doc.setTextColor(180, 35, 35);
-  doc.text("HARD FAIL", tagX + tagW / 2, tagY + tagH / 2 + 0.5, {
-    align: "center",
+  doc.text("HARD FAIL", tagX + 1.2, tagY + tagH / 2 + 0.15, {
     baseline: "middle",
   });
   doc.setTextColor(BRAND_DARK[0], BRAND_DARK[1], BRAND_DARK[2]);
+}
+
+function hardFailTagY(
+  cellY: number,
+  cellPaddingTop: number,
+  titleLineCount: number
+): number {
+  return cellY + cellPaddingTop + titleLineCount * TABLE_LINE_H + 0.6;
 }
 
 function addFooter(doc: jsPDF) {
@@ -394,11 +448,12 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
             hook.cell.text = [];
           }
           if (hook.column.index === COL_CONTROL && row?.hardFail === "Yes") {
+            const pad = 2.5;
             hook.cell.styles.cellPadding = {
-              top: 9,
-              right: 2,
-              bottom: 2,
-              left: 2,
+              top: pad,
+              right: pad,
+              bottom: pad + 4.5,
+              left: pad,
             };
           }
         },
@@ -408,7 +463,15 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
           if (!row) return;
 
           if (hook.column.index === COL_CONTROL && row.hardFail === "Yes") {
-            drawHardFailTag(doc, hook.cell.x, hook.cell.y, hook.cell.width);
+            const pad =
+              typeof hook.cell.padding === "function"
+                ? hook.cell.padding("top")
+                : 2.5;
+            const titleLines = Array.isArray(hook.cell.text)
+              ? hook.cell.text.length
+              : 1;
+            const tagY = hardFailTagY(hook.cell.y, pad, titleLines);
+            drawHardFailTag(doc, hook.cell.x + pad, tagY);
           }
 
           if (hook.column.index === COL_OUTCOME) {
