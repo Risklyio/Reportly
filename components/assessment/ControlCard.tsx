@@ -28,6 +28,7 @@ export function ControlCard({
 }) {
   const [saving, setSaving] = useState(false);
   const [suggesting, setSuggesting] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const showGapFields =
     outcome === "not_in_place" || outcome === "partially_in_place";
 
@@ -46,8 +47,11 @@ export function ControlCard({
 
   async function save(patch: Parameters<typeof onSave>[0]) {
     setSaving(true);
+    setSaveError(null);
     try {
       await onSave(patch);
+    } catch (e) {
+      setSaveError(e instanceof Error ? e.message : "Failed to save");
     } finally {
       setSaving(false);
     }
@@ -153,6 +157,11 @@ export function ControlCard({
       </div>
       {saving && (
         <p className="mt-2 text-xs text-text-muted">Saving…</p>
+      )}
+      {saveError && (
+        <p className="mt-2 text-xs text-red-600" role="alert">
+          {saveError}
+        </p>
       )}
     </article>
   );

@@ -1,34 +1,38 @@
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import {
   getAssessment,
   getAssessmentControlStates,
 } from "@/lib/services/assessments";
+import { normalizeControlStates } from "@/lib/assessments/normalize-states";
 import { AssessmentWorkspace } from "@/components/assessment/AssessmentWorkspace";
-import type { DomainId } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
+function WorkspaceFallback() {
+  return (
+    <div className="px-4 py-10 text-sm text-text-muted">Loading controls…</div>
+  );
+}
+
 export default async function AssessmentPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ domain?: string }>;
 }) {
   const { id } = await params;
-  const { domain: domainParam } = await searchParams;
   const assessment = await getAssessment(id);
   if (!assessment) notFound();
 
-  const controls = await getAssessmentControlStates(id);
-  const initialDomain =
-    (domainParam as DomainId) || "application_security";
+  const rows = await getAssessmentControlStates(id);
+  const controlStates = normalizeControlStates(id, rows);
 
   return (
-    <AssessmentWorkspace
-      assessment={assessment}
-      controlStates={controls}
-      initialDomain={initialDomain}
-    />
+    <Suspense fallback={<WorkspaceFallback />}>
+      <AssessmentWorkspace
+        assessment={assessment}
+        controlStates={controlStates}
+      />
+    </Suspense>
   );
 }

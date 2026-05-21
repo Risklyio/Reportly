@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   ALL_CONTROLS,
   DOMAINS,
@@ -15,30 +15,52 @@ import type {
   DomainId,
 } from "@/lib/types";
 import { ControlCard } from "./ControlCard";
+import { MobileAssessmentNav } from "./MobileAssessmentNav";
 
 type Filter = "all" | "open" | "not_in_place" | "hard_fail";
+
+function buildStateMap(
+  assessmentId: string,
+  initialStates: AssessmentControlState[]
+) {
+  const map = new Map<string, AssessmentControlState>();
+  for (const c of ALL_CONTROLS) {
+    const existing = initialStates.find((s) => s.controlId === c.id);
+    map.set(
+      c.id,
+      existing ?? {
+        assessmentId,
+        controlId: c.id,
+        outcome: null,
+        notInPlaceReason: "",
+        correctiveAction: "",
+        evidenceNotes: "",
+        updatedAt: new Date().toISOString(),
+      }
+    );
+  }
+  return map;
+}
 
 export function AssessmentWorkspace({
   assessment: initialAssessment,
   controlStates: initialStates,
-  initialDomain,
 }: {
   assessment: AssessmentMetadata;
   controlStates: AssessmentControlState[];
-  initialDomain: DomainId;
 }) {
-  const [assessment, setAssessment] = useState(initialAssessment);
-  const [states, setStates] = useState(
-    new Map(initialStates.map((s) => [s.controlId, s]))
-  );
-  const router = useRouter();
-  const [domain, setDomain] = useState<DomainId>(initialDomain);
-  const [filter, setFilter] = useState<Filter>("all");
+  const searchParams = useSearchParams();
+  const domain =
+    (searchParams.get("domain") as DomainId) || "application_security";
+  const filter = (searchParams.get("filter") as Filter) || "all";
 
-  function selectDomain(d: DomainId) {
-    setDomain(d);
-    router.push(`/assessments/${assessment.id}?domain=${d}`);
-  }
+  const [assessment, setAssessment] = useState(initialAssessment);
+  const [states, setStates] = useState(() =>
+    buildStateMap(initialAssessment.id, initialStates)
+  );
+
+  const domainLabel =
+    DOMAINS.find((d) => d.id === domain)?.label ?? "Controls";
 
   const stateList = useMemo(() => Array.from(states.values()), [states]);
 
@@ -80,7 +102,7 @@ export function AssessmentWorkspace({
         evidenceNotes: string;
       }>
     ) => {
-      await fetch(
+      const res = await fetch(
         `/api/assessments/${assessment.id}/controls/${controlId}`,
         {
           method: "PATCH",
@@ -88,6 +110,10 @@ export function AssessmentWorkspace({
           body: JSON.stringify(patch),
         }
       );
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? "Failed to save control");
+      }
       setStates((prev) => {
         const next = new Map(prev);
         const cur = next.get(controlId)!;
@@ -117,19 +143,23 @@ export function AssessmentWorkspace({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ controlId, notInPlaceReason: reason }),
       });
+      if (!res.ok) {
+        throw new Error("Suggest failed");
+      }
       return res.json();
     },
     [assessment.id]
   );
 
   return (
-    <div className="px-4 py-6 lg:px-8">
+    <div className="px-4 py-6 lg:pl-6 lg:pr-8">
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-text">{assessment.clientName}</h1>
           <p className="text-sm text-text-muted">
             {assessment.appName} · {assessment.assessmentDate}
           </p>
+          <p className="mt-1 text-sm font-medium text-primary">{domainLabel}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Link
@@ -148,58 +178,23 @@ export function AssessmentWorkspace({
         </div>
       </div>
 
-      <div className="mb-4 card flex flex-wrap items-center gap-4">
-        <div className="flex-1 min-w-[200px]">
-          <p className="text-sm font-medium text-text">Progress</p>
-          <div className="mt-2 h-2 w-full rounded-full bg-muted overflow-hidden">
-            <div
-              className="h-full bg-primary transition-all"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <p className="mt-1 text-xs text-text-muted">
-            {progress}% complete ({stateList.filter((s) => s.outcome).length}/
-            {ALL_CONTROLS.length} controls)
-          </p>
+      <div className="card mb-6">
+        <p className="text-sm font-medium text-text">Progress</p>
+        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
+          <div
+            className="h-full bg-primary transition-all"
+            style={{ width: `${progress}%` }}
+          />
         </div>
-        <div className="flex flex-wrap gap-2">
-          {(["all", "open", "not_in_place", "hard_fail"] as Filter[]).map(
-            (f) => (
-              <button
-                key={f}
-                type="button"
-                onClick={() => setFilter(f)}
-                className={`rounded-lg px-3 py-1 text-xs font-medium ${
-                  filter === f
-                    ? "bg-primary text-white"
-                    : "bg-muted text-text"
-                }`}
-              >
-                {f.replace(/_/g, " ")}
-              </button>
-            )
-          )}
-        </div>
+        <p className="mt-1 text-xs text-text-muted">
+          {progress}% complete ({stateList.filter((s) => s.outcome).length}/
+          {ALL_CONTROLS.length} controls)
+        </p>
       </div>
 
-      <div className="mb-4 flex gap-2 border-b border-border">
-        {DOMAINS.map((d) => (
-          <button
-            key={d.id}
-            type="button"
-            onClick={() => selectDomain(d.id)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition ${
-              domain === d.id
-                ? "border-primary text-primary"
-                : "border-transparent text-text-muted hover:text-text"
-            }`}
-          >
-            {d.shortLabel}
-          </button>
-        ))}
-      </div>
+      <MobileAssessmentNav assessmentId={assessment.id} />
 
-      <div className="space-y-8 max-w-3xl">
+      <div className="space-y-8">
         {Array.from(domainControls.entries()).map(([section, controls]) => (
           <section key={section}>
             <h2 className="mb-3 text-lg font-semibold text-text">{section}</h2>
@@ -225,7 +220,9 @@ export function AssessmentWorkspace({
           </section>
         ))}
         {domainControls.size === 0 && (
-          <p className="text-sm text-text-muted">No controls match this filter.</p>
+          <p className="text-sm text-text-muted">
+            No controls match this filter. Try another filter in the left sidebar.
+          </p>
         )}
       </div>
     </div>

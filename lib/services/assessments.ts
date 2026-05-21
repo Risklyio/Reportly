@@ -301,12 +301,33 @@ export async function updateAssessmentControl(
       row.corrective_action = patch.correctiveAction;
     if (patch.evidenceNotes !== undefined)
       row.evidence_notes = patch.evidenceNotes;
-    const { error } = await sb
+
+    const { data: existing } = await sb
       .from("assessment_controls")
-      .update(row)
+      .select("control_id")
       .eq("assessment_id", assessmentId)
-      .eq("control_id", controlId);
-    if (error) throw new Error(error.message);
+      .eq("control_id", controlId)
+      .maybeSingle();
+
+    if (existing) {
+      const { error } = await sb
+        .from("assessment_controls")
+        .update(row)
+        .eq("assessment_id", assessmentId)
+        .eq("control_id", controlId);
+      if (error) throw new Error(error.message);
+    } else {
+      const { error } = await sb.from("assessment_controls").insert({
+        assessment_id: assessmentId,
+        control_id: controlId,
+        outcome: patch.outcome ?? null,
+        not_in_place_reason: patch.notInPlaceReason ?? "",
+        corrective_action: patch.correctiveAction ?? "",
+        evidence_notes: patch.evidenceNotes ?? "",
+        updated_at: ts,
+      });
+      if (error) throw new Error(error.message);
+    }
     return;
   }
 
