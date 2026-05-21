@@ -1,9 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatControlRef } from "@/lib/controls/catalog";
 import type { ControlDefinition, ControlOutcome } from "@/lib/types";
 import { OutcomeSelector } from "./OutcomeSelector";
+
+const OUTCOME_LABELS: Record<string, string> = {
+  in_place: "In place",
+  not_in_place: "Not in place",
+  partially_in_place: "Partially in place",
+  not_applicable: "Not applicable",
+};
+
+function outcomeBadgeClass(outcome: ControlOutcome): string {
+  switch (outcome) {
+    case "in_place":
+      return "bg-green-100 text-green-800";
+    case "not_in_place":
+      return "bg-red-100 text-red-800";
+    case "partially_in_place":
+      return "bg-amber-100 text-amber-900";
+    case "not_applicable":
+      return "bg-slate-200 text-slate-700";
+    default:
+      return "bg-muted text-text-muted";
+  }
+}
 
 export function ControlCard({
   control,
@@ -24,7 +46,14 @@ export function ControlCard({
   }) => Promise<void>;
   onSuggest: () => Promise<{ text: string; links: string[] }>;
 }) {
+  const [expanded, setExpanded] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash === `#${control.id}`) {
+      setExpanded(true);
+    }
+  }, [control.id]);
   const [suggesting, setSuggesting] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const showGapFields =
@@ -55,6 +84,43 @@ export function ControlCard({
     }
   }
 
+  const outcomeLabel = outcome ? OUTCOME_LABELS[outcome] : "Not reviewed";
+
+  if (!expanded) {
+    return (
+      <article className="card p-0" id={control.id}>
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="flex w-full items-center gap-3 rounded-xl px-5 py-4 text-left transition hover:bg-muted/40"
+          aria-expanded={false}
+          aria-controls={`${control.id}-panel`}
+        >
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-medium text-text-muted">{control.section}</p>
+            <p className="mt-0.5 text-sm font-semibold text-text">
+              <span className="text-text-muted">{formatControlRef(control)}</span>{" "}
+              {control.title}
+            </p>
+          </div>
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+            <span
+              className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${outcomeBadgeClass(outcome)}`}
+            >
+              {outcomeLabel}
+            </span>
+            {control.hardFail && (
+              <span className="badge-hard-fail">HARD FAIL</span>
+            )}
+            <span className="text-text-muted" aria-hidden>
+              ▼
+            </span>
+          </div>
+        </button>
+      </article>
+    );
+  }
+
   return (
     <article className="card" id={control.id}>
       <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
@@ -65,7 +131,7 @@ export function ControlCard({
             {control.title}
           </h3>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {control.hardFail && (
             <span className="badge-hard-fail">HARD FAIL</span>
           )}
@@ -77,11 +143,21 @@ export function ControlCard({
           >
             Microsoft docs
           </a>
+          <button
+            type="button"
+            onClick={() => setExpanded(false)}
+            className="rounded-lg border border-border px-2 py-1 text-xs font-medium text-text-muted hover:bg-muted"
+            aria-label="Collapse control"
+          >
+            ▲
+          </button>
         </div>
       </div>
-      <p className="mb-4 text-sm text-text-muted">{control.intent}</p>
+      <p className="mb-4 text-sm text-text-muted whitespace-pre-line">
+        {control.intent}
+      </p>
 
-      <div className="space-y-4">
+      <div id={`${control.id}-panel`} className="space-y-4">
         <div>
           <label className="label">Outcome</label>
           <OutcomeSelector
@@ -142,14 +218,24 @@ export function ControlCard({
           </>
         )}
       </div>
-      {saving && (
-        <p className="mt-2 text-xs text-text-muted">Saving…</p>
-      )}
-      {saveError && (
-        <p className="mt-2 text-xs text-red-600" role="alert">
-          {saveError}
-        </p>
-      )}
+
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+        {saving && (
+          <p className="text-xs text-text-muted">Saving…</p>
+        )}
+        {saveError && (
+          <p className="text-xs text-red-600" role="alert">
+            {saveError}
+          </p>
+        )}
+        <button
+          type="button"
+          className="btn-primary ml-auto"
+          onClick={() => setExpanded(false)}
+        >
+          Complete
+        </button>
+      </div>
     </article>
   );
 }
