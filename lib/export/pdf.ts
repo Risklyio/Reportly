@@ -4,7 +4,7 @@ import fs from "fs";
 import path from "path";
 import type { AssessmentExportData, ExportControlRow } from "./report-data";
 import { DOMAIN_EXPORT_KEYS } from "./report-data";
-import { drawPortraitCoverPage } from "./pdf-cover";
+import { drawLandscapeCoverPage } from "./pdf-cover";
 
 type PdfWithTable = jsPDF & { lastAutoTable?: { finalY: number } };
 
@@ -323,9 +323,9 @@ function controlTableBody(rows: ExportControlRow[]): string[][] {
 
 export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
   const logoDataUri = loadLogoDataUri();
-  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
 
-  drawPortraitCoverPage(doc, data, logoDataUri);
+  drawLandscapeCoverPage(doc, data, logoDataUri);
   doc.addPage("a4", "landscape");
 
   const w = pageWidth(doc);

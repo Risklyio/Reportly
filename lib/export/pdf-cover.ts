@@ -59,7 +59,7 @@ function drawCoverAccent(doc: jsPDF, w: number, h: number) {
   }
 }
 
-export function drawPortraitCoverPage(
+export function drawLandscapeCoverPage(
   doc: jsPDF,
   data: AssessmentExportData,
   logoDataUri: string | null
@@ -78,19 +78,19 @@ export function drawPortraitCoverPage(
   doc.text(formatCoverDate(data.assessmentDate), COVER_MARGIN, COVER_MARGIN + 4);
 
   const titleX = COVER_MARGIN;
-  const titleY = h * 0.36;
+  const titleY = h * 0.4;
 
   doc.setTextColor(...COVER_TEXT);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(34);
+  doc.setFontSize(36);
   doc.text("M365 Application", titleX, titleY);
 
-  doc.setFontSize(34);
-  doc.text("Compliance", titleX, titleY + 14);
+  doc.setFontSize(36);
+  doc.text("Compliance", titleX, titleY + 15);
 
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(30);
-  doc.text("Assessment Report", titleX, titleY + 28);
+  doc.setFontSize(32);
+  doc.text("Assessment Report", titleX, titleY + 30);
 
   doc.setFontSize(11);
   doc.setFont("helvetica", "normal");
@@ -125,10 +125,6 @@ export function drawPortraitCoverPage(
   if (logoDataUri) {
     try {
       doc.addImage(logoDataUri, "PNG", COVER_MARGIN, logoY, logoW, LOGO_H);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(14);
-      doc.setTextColor(...COVER_TEXT);
-      doc.text("Reportly.io", COVER_MARGIN + logoW + 4, footerY - 2);
     } catch {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(16);
