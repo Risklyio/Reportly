@@ -98,26 +98,23 @@ export function ControlCard({
         >
           <div className="min-w-0 flex-1">
             <p className="text-xs font-medium text-text-muted">{control.section}</p>
-            <p className="mt-0.5 text-sm font-semibold text-text">
-              <span className="text-text-muted">{formatControlRef(control)}</span>{" "}
-              {control.title}
+            <p className="mt-0.5 flex flex-wrap items-center gap-2 text-sm font-semibold text-text">
+              <span>
+                <span className="text-text-muted">{formatControlRef(control)}</span>{" "}
+                {control.title}
+              </span>
+              {control.hardFail && (
+                <span className="badge-hard-fail shrink-0">HARD FAIL</span>
+              )}
             </p>
           </div>
-          <div className="grid w-[13.5rem] shrink-0 grid-cols-[4.75rem_6.75rem_1rem] items-center gap-1.5">
+          <div className="flex w-[9.75rem] shrink-0 items-center justify-end gap-2">
             <span
-              className={`inline-flex justify-center ${
-                control.hardFail ? "" : "invisible"
-              }`}
-              aria-hidden={!control.hardFail}
-            >
-              <span className="badge-hard-fail whitespace-nowrap">HARD FAIL</span>
-            </span>
-            <span
-              className={`inline-flex justify-center rounded-full px-2 py-0.5 text-xs font-semibold ${outcomeBadgeClass(outcome)}`}
+              className={`inline-flex shrink-0 whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold ${outcomeBadgeClass(outcome)}`}
             >
               {outcomeLabel}
             </span>
-            <span className="text-center text-text-muted" aria-hidden>
+            <span className="shrink-0 text-text-muted" aria-hidden>
               ▼
             </span>
           </div>
@@ -131,15 +128,17 @@ export function ControlCard({
       <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
         <div>
           <p className="text-xs font-medium text-text-muted">{control.section}</p>
-          <h3 className="text-base font-semibold text-text">
-            <span className="text-text-muted">{formatControlRef(control)}</span>{" "}
-            {control.title}
+          <h3 className="flex flex-wrap items-center gap-2 text-base font-semibold text-text">
+            <span>
+              <span className="text-text-muted">{formatControlRef(control)}</span>{" "}
+              {control.title}
+            </span>
+            {control.hardFail && (
+              <span className="badge-hard-fail shrink-0">HARD FAIL</span>
+            )}
           </h3>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {control.hardFail && (
-            <span className="badge-hard-fail">HARD FAIL</span>
-          )}
           <a
             href={control.docUrl}
             target="_blank"

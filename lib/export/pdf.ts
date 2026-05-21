@@ -8,10 +8,9 @@ import { DOMAIN_EXPORT_KEYS } from "./report-data";
 type PdfWithTable = jsPDF & { lastAutoTable?: { finalY: number } };
 
 const MARGIN = 14;
-const HEADER_H = 22;
-const TITLE_BAND_H = 18;
+const HEADER_H = 26;
 const LOGO_ASPECT = 200 / 44;
-const LOGO_DISPLAY_H = 10;
+const LOGO_DISPLAY_H = 11;
 const LOGO_DISPLAY_W = LOGO_DISPLAY_H * LOGO_ASPECT;
 const FOOTER_Y_OFFSET = 10;
 
@@ -102,19 +101,9 @@ function drawPageHeader(doc: jsPDF, logoDataUri: string | null) {
   doc.setFillColor(...BRAND_HEADER);
   doc.rect(0, 0, w, HEADER_H, "F");
 
-  doc.setFontSize(9);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(255, 255, 255);
-  doc.text("M365 Application Compliance Assessment", w - MARGIN, 13, {
-    align: "right",
-  });
-
-  doc.setFillColor(...BRAND_APP);
-  doc.rect(0, HEADER_H, w, TITLE_BAND_H, "F");
-
+  const logoY = (HEADER_H - LOGO_DISPLAY_H) / 2;
   if (logoDataUri) {
     try {
-      const logoY = HEADER_H + (TITLE_BAND_H - LOGO_DISPLAY_H) / 2;
       doc.addImage(
         logoDataUri,
         "PNG",
@@ -124,23 +113,30 @@ function drawPageHeader(doc: jsPDF, logoDataUri: string | null) {
         LOGO_DISPLAY_H
       );
     } catch {
-      doc.setTextColor(BRAND_DARK[0], BRAND_DARK[1], BRAND_DARK[2]);
+      doc.setTextColor(255, 255, 255);
       doc.setFontSize(14);
       doc.setFont("helvetica", "bold");
-      doc.text("Reportly.io", MARGIN, HEADER_H + 12);
+      doc.text("Reportly.io", MARGIN, 15);
     }
   } else {
-    doc.setTextColor(BRAND_DARK[0], BRAND_DARK[1], BRAND_DARK[2]);
+    doc.setTextColor(255, 255, 255);
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
-    doc.text("Reportly.io", MARGIN, HEADER_H + 12);
+    doc.text("Reportly.io", MARGIN, 15);
   }
+
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(255, 255, 255);
+  doc.text("M365 Application Compliance Assessment", w - MARGIN, 15, {
+    align: "right",
+  });
 
   doc.setTextColor(BRAND_DARK[0], BRAND_DARK[1], BRAND_DARK[2]);
 }
 
 function contentStartY(): number {
-  return HEADER_H + TITLE_BAND_H + 6;
+  return HEADER_H + 8;
 }
 
 function addLandscapePage(doc: jsPDF, logoDataUri: string | null) {
