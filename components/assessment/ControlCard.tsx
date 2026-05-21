@@ -103,16 +103,21 @@ export function ControlCard({
               {control.title}
             </p>
           </div>
-          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+          <div className="grid w-[13.5rem] shrink-0 grid-cols-[4.75rem_6.75rem_1rem] items-center gap-1.5">
             <span
-              className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${outcomeBadgeClass(outcome)}`}
+              className={`inline-flex justify-center ${
+                control.hardFail ? "" : "invisible"
+              }`}
+              aria-hidden={!control.hardFail}
+            >
+              <span className="badge-hard-fail whitespace-nowrap">HARD FAIL</span>
+            </span>
+            <span
+              className={`inline-flex justify-center rounded-full px-2 py-0.5 text-xs font-semibold ${outcomeBadgeClass(outcome)}`}
             >
               {outcomeLabel}
             </span>
-            {control.hardFail && (
-              <span className="badge-hard-fail">HARD FAIL</span>
-            )}
-            <span className="text-text-muted" aria-hidden>
+            <span className="text-center text-text-muted" aria-hidden>
               ▼
             </span>
           </div>

@@ -8,7 +8,11 @@ import { DOMAIN_EXPORT_KEYS } from "./report-data";
 type PdfWithTable = jsPDF & { lastAutoTable?: { finalY: number } };
 
 const MARGIN = 14;
-const HEADER_H = 24;
+const HEADER_H = 22;
+const TITLE_BAND_H = 18;
+const LOGO_ASPECT = 200 / 44;
+const LOGO_DISPLAY_H = 10;
+const LOGO_DISPLAY_W = LOGO_DISPLAY_H * LOGO_ASPECT;
 const FOOTER_Y_OFFSET = 10;
 
 const BRAND_HEADER: [number, number, number] = [26, 50, 51];
@@ -98,28 +102,45 @@ function drawPageHeader(doc: jsPDF, logoDataUri: string | null) {
   doc.setFillColor(...BRAND_HEADER);
   doc.rect(0, 0, w, HEADER_H, "F");
 
-  if (logoDataUri) {
-    try {
-      doc.addImage(logoDataUri, "PNG", MARGIN, 5, 52, 14);
-    } catch {
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(16);
-      doc.setFont("helvetica", "bold");
-      doc.text("Reportly.io", MARGIN, 14);
-    }
-  } else {
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(16);
-    doc.setFont("helvetica", "bold");
-    doc.text("Reportly.io", MARGIN, 14);
-  }
-
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
-  doc.text("M365 Application Compliance Assessment", w - MARGIN, 14, {
+  doc.setTextColor(255, 255, 255);
+  doc.text("M365 Application Compliance Assessment", w - MARGIN, 13, {
     align: "right",
   });
+
+  doc.setFillColor(...BRAND_APP);
+  doc.rect(0, HEADER_H, w, TITLE_BAND_H, "F");
+
+  if (logoDataUri) {
+    try {
+      const logoY = HEADER_H + (TITLE_BAND_H - LOGO_DISPLAY_H) / 2;
+      doc.addImage(
+        logoDataUri,
+        "PNG",
+        MARGIN,
+        logoY,
+        LOGO_DISPLAY_W,
+        LOGO_DISPLAY_H
+      );
+    } catch {
+      doc.setTextColor(BRAND_DARK[0], BRAND_DARK[1], BRAND_DARK[2]);
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text("Reportly.io", MARGIN, HEADER_H + 12);
+    }
+  } else {
+    doc.setTextColor(BRAND_DARK[0], BRAND_DARK[1], BRAND_DARK[2]);
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("Reportly.io", MARGIN, HEADER_H + 12);
+  }
+
   doc.setTextColor(BRAND_DARK[0], BRAND_DARK[1], BRAND_DARK[2]);
+}
+
+function contentStartY(): number {
+  return HEADER_H + TITLE_BAND_H + 6;
 }
 
 function addLandscapePage(doc: jsPDF, logoDataUri: string | null) {
@@ -304,12 +325,13 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
   const logoDataUri = loadLogoDataUri();
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
   const w = pageWidth(doc);
-  let y = HEADER_H + 8;
+  let y = contentStartY();
 
   drawPageHeader(doc, logoDataUri);
 
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
+  doc.setTextColor(BRAND_DARK[0], BRAND_DARK[1], BRAND_DARK[2]);
   doc.text(data.frameworkName, MARGIN, y);
   y += 9;
 
@@ -379,7 +401,7 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
 
     if (y > contentBottom(doc) - 40) {
       addLandscapePage(doc, logoDataUri);
-      y = HEADER_H + 8;
+      y = contentStartY();
     }
 
     doc.setFillColor(...BRAND_MINT);
@@ -394,7 +416,7 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
     for (const [section, rows] of sections) {
       if (y > contentBottom(doc) - 30) {
         addLandscapePage(doc, logoDataUri);
-        y = HEADER_H + 8;
+        y = contentStartY();
       }
 
       doc.setFontSize(9);
