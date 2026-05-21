@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { listAssessments } from "@/lib/services/assessments";
+import { listAssessmentsWithProgress } from "@/lib/services/assessments";
+import { ALL_CONTROLS } from "@/lib/controls/catalog";
 import { isSupabaseConfigured, isVercel } from "@/lib/db/env";
 import { SetupRequired } from "@/components/setup/SetupRequired";
+import { AssessmentDashboard } from "@/components/dashboard/AssessmentDashboard";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +12,7 @@ export default async function DashboardPage() {
     return <SetupRequired />;
   }
 
-  const assessments = await listAssessments();
+  const assessments = await listAssessmentsWithProgress();
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 lg:px-8">
@@ -37,29 +39,12 @@ export default async function DashboardPage() {
         <div className="card text-center text-text-muted">
           <p>No assessments yet.</p>
           <p className="mt-2 text-sm">
-            Create one to review 81 M365 certification controls across three
-            domains.
+            Create one to review {ALL_CONTROLS.length} M365 certification
+            controls across three domains.
           </p>
         </div>
       ) : (
-        <ul className="space-y-3">
-          {assessments.map((a) => (
-            <li key={a.id}>
-              <Link
-                href={`/assessments/${a.id}`}
-                className="card flex items-center justify-between transition hover:shadow-elevated"
-              >
-                <div>
-                  <p className="font-semibold text-text">{a.clientName}</p>
-                  <p className="text-sm text-text-muted">
-                    {a.appName} · {a.assessmentDate}
-                  </p>
-                </div>
-                <span className="badge-complete capitalize">{a.status}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <AssessmentDashboard assessments={assessments} />
       )}
     </div>
   );

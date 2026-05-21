@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { ALL_CONTROLS } from "@/lib/controls/catalog";
 import type {
   AssessmentMetadata,
+  AssessmentListItem,
   AssessmentControlState,
   ControlOutcome,
 } from "@/lib/types";
@@ -54,6 +55,56 @@ function mapAssessmentRow(row: {
     createdAt: row.created_at ?? row.createdAt ?? "",
     updatedAt: row.updated_at ?? row.updatedAt ?? "",
   };
+}
+
+function isReviewedOutcome(outcome: string | null | undefined): boolean {
+  return outcome != null && outcome !== "";
+}
+
+async function countReviewedControlsByAssessment(): Promise<Map<string, number>> {
+  const counts = new Map<string, number>();
+
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const { data, error } = await sb
+      .from("assessment_controls")
+      .select("assessment_id, outcome");
+    if (error) throw new Error(error.message);
+    for (const row of data ?? []) {
+      if (!isReviewedOutcome(row.outcome)) continue;
+      const id = row.assessment_id as string;
+      counts.set(id, (counts.get(id) ?? 0) + 1);
+    }
+    return counts;
+  }
+
+  const { getSqliteDb } = await import("@/lib/db/sqlite");
+  const { assessmentControls } = await import("@/lib/db/schema");
+  const rows = (await getSqliteDb()).select().from(assessmentControls).all();
+  for (const row of rows) {
+    if (!isReviewedOutcome(row.outcome)) continue;
+    counts.set(row.assessmentId, (counts.get(row.assessmentId) ?? 0) + 1);
+  }
+  return counts;
+}
+
+export async function listAssessmentsWithProgress(): Promise<AssessmentListItem[]> {
+  const assessments = await listAssessments();
+  const reviewedByAssessment = await countReviewedControlsByAssessment();
+  const totalControls = ALL_CONTROLS.length;
+
+  return assessments.map((a) => {
+    const reviewedCount = reviewedByAssessment.get(a.id) ?? 0;
+    const progressPercent = Math.round((reviewedCount / totalControls) * 100);
+    const isFullyReviewed = reviewedCount >= totalControls;
+    return {
+      ...a,
+      reviewedCount,
+      totalControls,
+      progressPercent,
+      isFullyReviewed,
+    };
+  });
 }
 
 export async function listAssessments(): Promise<AssessmentMetadata[]> {

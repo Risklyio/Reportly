@@ -41,6 +41,14 @@ export interface AssessmentMetadata {
   updatedAt: string;
 }
 
+export interface AssessmentListItem extends AssessmentMetadata {
+  reviewedCount: number;
+  totalControls: number;
+  progressPercent: number;
+  /** True when every control has an outcome (not “Not reviewed”) */
+  isFullyReviewed: boolean;
+}
+
 export interface AssessmentControlState {
   assessmentId: string;
   controlId: string;
