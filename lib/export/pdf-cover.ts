@@ -47,20 +47,16 @@ function drawCoverAccent(doc: jsPDF, w: number, h: number) {
     doc.triangle(w, h, w * 0.52, h, w, h * 0.68, "F");
 
     doc.setFillColor(...BRAND_MINT);
-    doc.setGlobalAlpha?.(0.85);
     doc.triangle(w, h, w * 0.78, h, w, h * 0.82, "F");
-    doc.setGlobalAlpha?.(1);
+
+    doc.setFillColor(72, 120, 118);
+    doc.triangle(w * 0.55, h * 0.72, w * 0.88, h * 0.88, w * 0.72, h, "F");
   } else {
     doc.setFillColor(...ACCENT_TEAL);
     doc.rect(w * 0.5, h * 0.55, w * 0.5, h * 0.45, "F");
     doc.setFillColor(...ACCENT_VIOLET);
     doc.rect(w * 0.65, h * 0.7, w * 0.35, h * 0.3, "F");
   }
-
-  doc.setFillColor(255, 255, 255);
-  doc.setGlobalAlpha?.(0.06);
-  doc.triangle?.(w * 0.55, h * 0.72, w * 0.88, h * 0.88, w * 0.72, h, "F");
-  doc.setGlobalAlpha?.(1);
 }
 
 export function drawPortraitCoverPage(
