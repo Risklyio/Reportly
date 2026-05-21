@@ -55,7 +55,42 @@ https://YOUR-APP.vercel.app/api/setup?secret=YOUR_SETUP_SECRET
 | `NEXT_PUBLIC_SUPABASE_URL` | Yes |
 | `SUPABASE_SERVICE_ROLE_KEY` | Yes |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Recommended |
-| `OPENAI_API_KEY` | Yes (for **Generate** corrective actions) |
-| `AI_MODEL` | Optional (default `gpt-4o-mini`) |
+| `AI_PROVIDER` | `google`, `groq`, or `openai` (see below) |
+| `GOOGLE_GENERATIVE_AI_API_KEY` | For free testing with Gemini |
+| `GROQ_API_KEY` | Optional free alternative |
+| `OPENAI_API_KEY` | If using OpenAI (paid) |
+| `AI_MODEL` | Optional (provider-specific default if omitted) |
+
+## Enable AI **Generate**
+
+### Free testing (recommended): Google Gemini
+
+OpenAI’s free tier is very limited; **quota exceeded** usually means no credits left. For testing, use **Google Gemini** (free API key):
+
+1. Open [aistudio.google.com/apikey](https://aistudio.google.com/apikey) → **Create API key** (Google account).
+2. Vercel → **Reportly** → **Settings** → **Environment Variables** → add:
+
+| Name | Value |
+|------|--------|
+| `AI_PROVIDER` | `google` |
+| `GOOGLE_GENERATIVE_AI_API_KEY` | your Gemini API key |
+
+3. **Redeploy** the project (required).
+4. Try **Generate** on a control.
+
+Optional: `AI_MODEL=gemini-2.0-flash` (default if omitted).
+
+### Alternative free tier: Groq
+
+1. Key from [console.groq.com/keys](https://console.groq.com/keys)
+2. Vercel env: `AI_PROVIDER=groq`, `GROQ_API_KEY=...`
+3. Redeploy. Default model: `llama-3.3-70b-versatile`
+
+### OpenAI (paid)
+
+| `AI_PROVIDER` | `openai` |
+| `OPENAI_API_KEY` | `sk-...` from [platform.openai.com/api-keys](https://platform.openai.com/api-keys) |
+
+Requires billing and available quota on your OpenAI account.
 | `DATABASE_URL` | Only for setup (can remove after) |
 | `SETUP_SECRET` | Only for Option B (remove after) |
