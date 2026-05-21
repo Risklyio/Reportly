@@ -16,8 +16,14 @@ const BRAND_MINT: [number, number, number] = [146, 252, 219];
 const BRAND_DARK: [number, number, number] = [1, 30, 31];
 const BRAND_APP: [number, number, number] = [242, 241, 237];
 
-/** Column index for outcome badge drawing */
+const COL_CONTROL = 1;
 const COL_OUTCOME = 3;
+
+/** Fixed outcome badge typography (does not scale with row height) */
+const OUTCOME_FONT_SIZE = 6;
+const OUTCOME_LINE_H = 2.7;
+const OUTCOME_PAD = 1.6;
+const OUTCOME_MAX_TEXT_W = 18;
 
 type OutcomeVisual = {
   fill: [number, number, number];
@@ -135,6 +141,23 @@ function normalizeCellText(text: string): string {
   return text.replace(/\r\n/g, "\n").trim() || "—";
 }
 
+function outcomeBadgeMetrics(
+  doc: jsPDF,
+  label: string
+): { lines: string[]; radius: number; textW: number; textH: number } {
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(OUTCOME_FONT_SIZE);
+  const lines = doc.splitTextToSize(label, OUTCOME_MAX_TEXT_W);
+  let textW = 0;
+  for (const line of lines) {
+    textW = Math.max(textW, doc.getTextWidth(line));
+  }
+  const textH = lines.length * OUTCOME_LINE_H;
+  const radius = Math.max(textW / 2, textH / 2) + OUTCOME_PAD;
+  return { lines, radius, textW, textH };
+}
+
+/** Fixed-size badge centered in the cell (ignores tall requirement rows). */
 function drawOutcomeBadge(
   doc: jsPDF,
   x: number,
@@ -144,31 +167,54 @@ function drawOutcomeBadge(
   outcome: string
 ) {
   const visual = OUTCOME_VISUALS[outcome] ?? OUTCOME_VISUALS["Not reviewed"];
+  const label = visual.short;
+  const { lines, radius } = outcomeBadgeMetrics(doc, label);
+
   const cx = x + width / 2;
   const cy = y + height / 2;
-  const radius = Math.min(width, height) / 2 - 2.5;
 
-  doc.setLineWidth(0.6);
+  doc.setLineWidth(0.55);
   doc.setDrawColor(...visual.ring);
   doc.circle(cx, cy, radius, "S");
 
   doc.setFillColor(...visual.fill);
-  doc.circle(cx, cy, radius - 0.8, "F");
+  doc.circle(cx, cy, radius - 0.7, "F");
 
   doc.setTextColor(...visual.text);
   doc.setFont("helvetica", "bold");
-  const fontSize = outcome === "Partially in place" ? 5 : 5.5;
-  doc.setFontSize(fontSize);
-  const label =
-    outcome.length > 14 ? visual.short : outcome;
-  const lines = doc.splitTextToSize(label, radius * 1.6);
-  const lineHeight = fontSize * 0.42;
-  const blockH = lines.length * lineHeight;
-  let ty = cy - blockH / 2 + lineHeight * 0.35;
+  doc.setFontSize(OUTCOME_FONT_SIZE);
+
+  const blockH = lines.length * OUTCOME_LINE_H;
+  let ty = cy - blockH / 2 + OUTCOME_LINE_H * 0.72;
   for (const line of lines) {
-    doc.text(line, cx, ty, { align: "center" });
-    ty += lineHeight;
+    doc.text(line, cx, ty, { align: "center", baseline: "middle" });
+    ty += OUTCOME_LINE_H;
   }
+}
+
+function drawHardFailTag(doc: jsPDF, x: number, y: number, width: number) {
+  const tagW = 19;
+  const tagH = 5;
+  const tagX = x + width - tagW - 2;
+  const tagY = y + 2;
+
+  doc.setFillColor(254, 226, 226);
+  doc.setDrawColor(180, 35, 35);
+  doc.setLineWidth(0.35);
+  if (typeof doc.roundedRect === "function") {
+    doc.roundedRect(tagX, tagY, tagW, tagH, 1, 1, "FD");
+  } else {
+    doc.rect(tagX, tagY, tagW, tagH, "FD");
+  }
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(5.5);
+  doc.setTextColor(180, 35, 35);
+  doc.text("HARD FAIL", tagX + tagW / 2, tagY + tagH / 2 + 0.5, {
+    align: "center",
+    baseline: "middle",
+  });
+  doc.setTextColor(BRAND_DARK[0], BRAND_DARK[1], BRAND_DARK[2]);
 }
 
 function addFooter(doc: jsPDF) {
@@ -195,10 +241,8 @@ function controlTableBody(rows: ExportControlRow[]): string[][] {
     normalizeCellText(r.title),
     normalizeCellText(r.requirement),
     r.outcome,
-    r.hardFail,
     normalizeCellText(r.reason),
     normalizeCellText(r.correctiveAction),
-    normalizeCellText(r.evidenceNotes),
   ]);
 }
 
@@ -316,10 +360,8 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
             "Control",
             "Requirement (full text)",
             "Outcome",
-            "HF",
             "Gap / reason",
             "Corrective action",
-            "Evidence notes",
           ],
         ],
         body: tableBody,
@@ -337,25 +379,39 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
           fontSize: 6.5,
         },
         columnStyles: {
-          0: { cellWidth: 11 },
-          1: { cellWidth: contentW * 0.14 },
-          2: { cellWidth: contentW * 0.28 },
-          3: { cellWidth: 22, halign: "center", valign: "middle" },
-          4: { cellWidth: 8, halign: "center" },
-          5: { cellWidth: contentW * 0.14 },
-          6: { cellWidth: contentW * 0.14 },
-          7: { cellWidth: contentW * 0.1 },
+          0: { cellWidth: 10 },
+          1: { cellWidth: contentW * 0.16 },
+          2: { cellWidth: contentW * 0.27 },
+          3: { cellWidth: 26, halign: "center", valign: "middle" },
+          4: { cellWidth: contentW * 0.17 },
+          5: { cellWidth: contentW * 0.28 },
         },
         alternateRowStyles: { fillColor: BRAND_APP },
         didParseCell(hook) {
-          if (hook.section === "body" && hook.column.index === COL_OUTCOME) {
+          if (hook.section !== "body") return;
+          const row = rows[hook.row.index];
+          if (hook.column.index === COL_OUTCOME) {
             hook.cell.text = [];
+          }
+          if (hook.column.index === COL_CONTROL && row?.hardFail === "Yes") {
+            hook.cell.styles.cellPadding = {
+              top: 9,
+              right: 2,
+              bottom: 2,
+              left: 2,
+            };
           }
         },
         didDrawCell(hook) {
-          if (hook.section === "body" && hook.column.index === COL_OUTCOME) {
-            const row = rows[hook.row.index];
-            if (!row) return;
+          if (hook.section !== "body") return;
+          const row = rows[hook.row.index];
+          if (!row) return;
+
+          if (hook.column.index === COL_CONTROL && row.hardFail === "Yes") {
+            drawHardFailTag(doc, hook.cell.x, hook.cell.y, hook.cell.width);
+          }
+
+          if (hook.column.index === COL_OUTCOME) {
             drawOutcomeBadge(
               doc,
               hook.cell.x,
