@@ -17,6 +17,8 @@
     "@supabase/supabase-js": "^2.47.10",
     "pg": "^8.13.1",
     "docxtemplater": "^3.55.0",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
     "drizzle-orm": "^0.38.3",
     "next": "^15.1.0",
     "pizzip": "^3.1.7",

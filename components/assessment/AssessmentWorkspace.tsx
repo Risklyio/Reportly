@@ -166,14 +166,21 @@ export function AssessmentWorkspace({
             href={`/assessments/${assessment.id}/export`}
             className="btn-secondary"
           >
-            Export report
+            Export
           </Link>
           <a
-            href={`/api/assessments/${assessment.id}/export`}
+            href={`/api/assessments/${assessment.id}/export/pdf`}
             className="btn-primary"
             download
           >
-            Download DOCX
+            PDF
+          </a>
+          <a
+            href={`/api/assessments/${assessment.id}/export`}
+            className="btn-secondary"
+            download
+          >
+            DOCX
           </a>
           <Link
             href="/settings#report-templates"

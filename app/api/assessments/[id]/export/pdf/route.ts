@@ -3,17 +3,8 @@ import {
   getAssessment,
   getAssessmentControlStates,
 } from "@/lib/services/assessments";
-import {
-  getDefaultTemplate,
-  readTemplateBuffer,
-} from "@/lib/services/templates";
-import {
-  buildExportData,
-  exportFilename,
-  renderDocx,
-  ensureStarterTemplate,
-} from "@/lib/export/docx";
-import fs from "fs";
+import { buildExportData, exportFilename } from "@/lib/export/report-data";
+import { renderAssessmentPdf } from "@/lib/export/pdf";
 
 export async function GET(
   _request: Request,
@@ -38,35 +29,22 @@ export async function GET(
       states
     );
 
-    let templateBuffer: Buffer;
-    const tmpl = await getDefaultTemplate();
-    if (tmpl) {
-      try {
-        templateBuffer = await readTemplateBuffer(tmpl);
-      } catch {
-        templateBuffer = fs.readFileSync(ensureStarterTemplate());
-      }
-    } else {
-      templateBuffer = fs.readFileSync(ensureStarterTemplate());
-    }
-
-    const out = renderDocx(templateBuffer, data);
+    const pdf = renderAssessmentPdf(data);
     const filename = exportFilename(
       assessment.clientName,
       assessment.assessmentDate,
-      "docx"
+      "pdf"
     );
 
-    return new NextResponse(new Uint8Array(out), {
+    return new NextResponse(new Uint8Array(pdf), {
       headers: {
-        "Content-Type":
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="${filename}"`,
       },
     });
   } catch (e) {
     return NextResponse.json(
-      { error: e instanceof Error ? e.message : "Server error" },
+      { error: e instanceof Error ? e.message : "PDF export failed" },
       { status: 500 }
     );
   }

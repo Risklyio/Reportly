@@ -46,10 +46,24 @@ export default async function ExportPage({
           <dd>{gaps}</dd>
         </dl>
 
-        <div className="flex gap-3 pt-2">
+        <p className="text-sm text-text-muted">
+          Reports include all control outcomes, gap reasons, corrective actions,
+          and an executive summary. PDF is generated from your assessment data.
+          DOCX uses your uploaded Word template from Settings (or the built-in
+          starter).
+        </p>
+
+        <div className="flex flex-wrap gap-3 pt-2">
+          <a
+            href={`/api/assessments/${id}/export/pdf`}
+            className="btn-primary"
+            download
+          >
+            Download PDF
+          </a>
           <a
             href={`/api/assessments/${id}/export`}
-            className="btn-primary"
+            className="btn-secondary"
             download
           >
             Download DOCX

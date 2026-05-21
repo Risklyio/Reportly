@@ -2,66 +2,9 @@ import Docxtemplater from "docxtemplater";
 import PizZip from "pizzip";
 import fs from "fs";
 import path from "path";
-import { ALL_CONTROLS, DOMAINS } from "@/lib/controls/catalog";
-import type { AssessmentControlState } from "@/lib/types";
+import { buildExportData } from "./report-data";
 
-const OUTCOME_LABELS: Record<string, string> = {
-  in_place: "In place",
-  not_in_place: "Not in place",
-  partially_in_place: "Partially in place",
-  not_applicable: "Not applicable",
-};
-
-function formatControlRow(
-  controlId: string,
-  states: Map<string, AssessmentControlState>
-) {
-  const c = ALL_CONTROLS.find((x) => x.id === controlId);
-  const s = states.get(controlId);
-  return {
-    number: c?.number ?? 0,
-    title: c?.title ?? controlId,
-    section: c?.section ?? "",
-    outcome: s?.outcome ? OUTCOME_LABELS[s.outcome] ?? s.outcome : "—",
-    reason: s?.notInPlaceReason ?? "",
-    correctiveAction: s?.correctiveAction ?? "",
-    evidenceNotes: s?.evidenceNotes ?? "",
-    hardFail: c?.hardFail ? "Yes" : "No",
-  };
-}
-
-export function buildExportData(
-  meta: {
-    clientName: string;
-    appName: string;
-    assessmentDate: string;
-    assessorName: string;
-    scopeNotes: string;
-  },
-  states: AssessmentControlState[]
-) {
-  const stateMap = new Map(states.map((s) => [s.controlId, s]));
-
-  const byDomain = (domain: string) =>
-    ALL_CONTROLS.filter((c) => c.domain === domain)
-      .sort((a, b) => a.number - b.number)
-      .map((c) => formatControlRow(c.id, stateMap));
-
-  return {
-    clientName: meta.clientName,
-    appName: meta.appName,
-    assessmentDate: meta.assessmentDate,
-    assessorName: meta.assessorName,
-    scopeNotes: meta.scopeNotes,
-    frameworkName: "M365 Application Compliance Program",
-    generatedAt: new Date().toISOString().slice(0, 10),
-    appControls: byDomain("application_security"),
-    opsControls: byDomain("operational_security"),
-    dataControls: byDomain("data_handling"),
-    allControls: ALL_CONTROLS.map((c) => formatControlRow(c.id, stateMap)),
-    domainLabels: DOMAINS.map((d) => d.label),
-  };
-}
+export { buildExportData, exportFilename } from "./report-data";
 
 export function renderDocx(
   templateBuffer: Buffer,
