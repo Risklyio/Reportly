@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import type { AssessmentExportData, ExportControlRow } from "./report-data";
 import { DOMAIN_EXPORT_KEYS } from "./report-data";
+import { drawPortraitCoverPage } from "./pdf-cover";
 
 type PdfWithTable = jsPDF & { lastAutoTable?: { finalY: number } };
 
@@ -288,16 +289,19 @@ function hardFailTagY(
   return cellY + cellPaddingTop + titleLineCount * TABLE_LINE_H + 0.6;
 }
 
-function addFooter(doc: jsPDF) {
+function addFooter(doc: jsPDF, coverPageCount = 1) {
   const pages = doc.getNumberOfPages();
   const w = pageWidth(doc);
   const h = pageHeight(doc);
+  const contentPages = pages - coverPageCount;
   for (let i = 1; i <= pages; i++) {
+    if (i <= coverPageCount) continue;
     doc.setPage(i);
     doc.setFontSize(8);
     doc.setTextColor(100, 100, 100);
+    const contentIndex = i - coverPageCount;
     doc.text(
-      `Reportly.io — M365 Application Compliance Assessment — Page ${i} of ${pages}`,
+      `Reportly.io — M365 Application Compliance Assessment — Page ${contentIndex} of ${contentPages}`,
       w / 2,
       h - FOOTER_Y_OFFSET,
       { align: "center" }
@@ -319,7 +323,11 @@ function controlTableBody(rows: ExportControlRow[]): string[][] {
 
 export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
   const logoDataUri = loadLogoDataUri();
-  const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+
+  drawPortraitCoverPage(doc, data, logoDataUri);
+  doc.addPage("a4", "landscape");
+
   const w = pageWidth(doc);
   let y = contentStartY();
 
@@ -509,7 +517,7 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
     }
   }
 
-  addFooter(doc);
+  addFooter(doc, 1);
 
   const arrayBuffer = doc.output("arraybuffer");
   return Buffer.from(arrayBuffer);

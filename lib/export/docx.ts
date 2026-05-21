@@ -41,6 +41,12 @@ function buildMinimalDocxBuffer(): Buffer {
   const documentXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
   <w:body>
+    <w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="48"/></w:rPr><w:t>M365 Application Compliance</w:t></w:r></w:p>
+    <w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:sz w:val="40"/></w:rPr><w:t>Assessment Report</w:t></w:r></w:p>
+    <w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:t>{clientName}</w:t></w:r></w:p>
+    <w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:t>{appName} — {assessmentDate}</w:t></w:r></w:p>
+    <w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:t>Prepared by Reportly.io</w:t></w:r></w:p>
+    <w:p><w:r><w:br w:type="page"/></w:r></w:p>
     <w:p><w:r><w:t>Reportly.io — M365 Application Compliance Assessment</w:t></w:r></w:p>
     <w:p><w:r><w:t>Client: {clientName}</w:t></w:r></w:p>
     <w:p><w:r><w:t>Application: {appName}</w:t></w:r></w:p>
