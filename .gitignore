@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+build
+*.db
+data/reportly.db
+uploads
+.env*.local
+.DS_Store

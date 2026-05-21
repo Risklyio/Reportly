@@ -1,0 +1,54 @@
+{
+  "entries": [
+    {
+      "controlId": "data-1",
+      "reasonMatch": ["TLS", "tls", "1.2", "certificate"],
+      "actionText": "Run Qualys SSL Server Test on all public endpoints (enable 'Do not show on boards'). Disable TLS 1.0/1.1 and enforce TLS 1.2+. Maintain an inventory of trusted keys and certificates in Azure Key Vault or equivalent with access controls.",
+      "links": [
+        "https://www.ssllabs.com/ssltest/",
+        "https://learn.microsoft.com/en-us/microsoft-365-app-certification/docs/appendix"
+      ]
+    },
+    {
+      "controlId": "ops-2",
+      "reasonMatch": ["AV", "EDR", "malware", "Defender", "signature"],
+      "actionText": "Deploy and verify anti-malware or EDR on every in-scope system component. Enable real-time/on-access scanning, automatic quarantine, and daily signature updates. Provide console screenshots for all sampled hosts.",
+      "links": [
+        "https://learn.microsoft.com/en-us/microsoft-365-app-certification/docs/seg2_ops"
+      ]
+    },
+    {
+      "controlId": "app-1",
+      "reasonMatch": ["pentest", "penetration", "annual"],
+      "actionText": "Engage a reputable independent firm for annual authenticated and unauthenticated web application and infrastructure penetration tests covering the full external footprint. Remediate critical/high findings within one month and obtain retest evidence.",
+      "links": [
+        "https://learn.microsoft.com/en-us/microsoft-365-app-certification/docs/seg2_app"
+      ]
+    },
+    {
+      "controlId": "app-17",
+      "reasonMatch": ["Graph", "permission", "API"],
+      "actionText": "Publish a permission matrix mapping each Microsoft Graph permission to endpoints, methods, and business features. Remove excess Application permissions, document credential custody (Key Vault/certificate), and validate least privilege in Entra app registration screenshots.",
+      "links": [
+        "https://learn.microsoft.com/en-us/graph/permissions-reference"
+      ]
+    },
+    {
+      "controlId": "app-18",
+      "reasonMatch": ["AI", "Copilot", "RAI"],
+      "actionText": "Document AI integration architecture. For Copilot agents, list agents and automated tasks per Microsoft guidance. For custom engine agents, complete the Microsoft RAI Impact Assessment and attach review evidence.",
+      "links": [
+        "https://learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/",
+        "https://blogs.microsoft.com/wp-content/uploads/prod/sites/5/2022/06/Microsoft-RAI-Impact-Assessment-Template.pdf"
+      ]
+    },
+    {
+      "controlId": "ops-25",
+      "reasonMatch": ["incident", "IR", "response"],
+      "actionText": "Maintain a documented incident response plan covering roles, escalation, Microsoft notification requirements, and tabletop test records at least annually.",
+      "links": [
+        "https://learn.microsoft.com/en-us/microsoft-365-app-certification/docs/seg2_ops"
+      ]
+    }
+  ]
+}

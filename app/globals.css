@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #2563eb;
+  --accent: #6366f1;
+  --surface: #ffffff;
+  --muted: #f8fafc;
+  --text: #0f172a;
+  --border: #e2e8f0;
+}
+
+body {
+  @apply bg-muted text-text antialiased;
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-text transition hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+  }
+  .card {
+    @apply rounded-xl border border-border bg-surface p-5 shadow-card;
+  }
+  .input {
+    @apply w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text placeholder:text-text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary;
+  }
+  .label {
+    @apply mb-1 block text-sm font-medium text-text;
+  }
+  .badge-hard-fail {
+    @apply inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-800;
+  }
+  .badge-complete {
+    @apply inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800;
+  }
+}
