@@ -41,12 +41,12 @@ async function main() {
   });
 
   console.log("1/3 Running schema.sql …");
-  const pg = await import("pg");
+  const { Client } = await import("pg");
   const schema = fs.readFileSync(
     path.join(process.cwd(), "supabase", "schema.sql"),
     "utf8"
   );
-  const client = new pg.Client({
+  const client = new Client({
     connectionString: databaseUrl,
     ssl: { rejectUnauthorized: false },
   });

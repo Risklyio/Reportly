@@ -21,12 +21,12 @@ export async function runSupabaseSetup(): Promise<string[]> {
   }
 
   logs.push("Running schema…");
-  const pg = await import("pg");
+  const { Client } = await import("pg");
   const schema = fs.readFileSync(
     path.join(process.cwd(), "supabase", "schema.sql"),
     "utf8"
   );
-  const client = new pg.Client({
+  const client = new Client({
     connectionString: databaseUrl,
     ssl: { rejectUnauthorized: false },
   });

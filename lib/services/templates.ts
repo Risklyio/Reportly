@@ -40,7 +40,7 @@ export async function listTemplates(): Promise<TemplateRecord[]> {
   }
   const { getSqliteDb } = await import("@/lib/db/sqlite");
   const { templates } = await import("@/lib/db/schema");
-  return getSqliteDb()
+  return (await getSqliteDb())
     .select()
     .from(templates)
     .all()
@@ -100,7 +100,7 @@ export async function saveTemplate(
   const filePath = path.join(UPLOAD_DIR, `${id}-${filename}`);
   fs.writeFileSync(filePath, buffer);
   const existing = await listTemplates();
-  getSqliteDb()
+  (await getSqliteDb())
     .insert(templates)
     .values({
       id,
@@ -131,7 +131,8 @@ export async function deleteTemplate(id: string): Promise<void> {
   }
   const { getSqliteDb } = await import("@/lib/db/sqlite");
   const { templates } = await import("@/lib/db/schema");
-  const row = getSqliteDb()
+  const db = await getSqliteDb();
+  const row = db
     .select()
     .from(templates)
     .where(eq(templates.id, id))
@@ -139,7 +140,7 @@ export async function deleteTemplate(id: string): Promise<void> {
   if (row?.filePath && fs.existsSync(row.filePath)) {
     fs.unlinkSync(row.filePath);
   }
-  getSqliteDb().delete(templates).where(eq(templates.id, id)).run();
+  db.delete(templates).where(eq(templates.id, id)).run();
 }
 
 export async function readTemplateBuffer(

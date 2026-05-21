@@ -22,7 +22,7 @@ export async function listOverrides() {
   }
   const { getSqliteDb } = await import("@/lib/db/sqlite");
   const { userCorrectiveOverrides } = await import("@/lib/db/schema");
-  return getSqliteDb()
+  return (await getSqliteDb())
     .select()
     .from(userCorrectiveOverrides)
     .all()
@@ -62,7 +62,7 @@ export async function createOverride(input: {
 
   const { getSqliteDb } = await import("@/lib/db/sqlite");
   const { userCorrectiveOverrides } = await import("@/lib/db/schema");
-  getSqliteDb()
+  (await getSqliteDb())
     .insert(userCorrectiveOverrides)
     .values({
       id,
@@ -85,7 +85,7 @@ export async function deleteOverride(id: string) {
   }
   const { getSqliteDb } = await import("@/lib/db/sqlite");
   const { userCorrectiveOverrides } = await import("@/lib/db/schema");
-  getSqliteDb()
+  (await getSqliteDb())
     .delete(userCorrectiveOverrides)
     .where(eq(userCorrectiveOverrides.id, id))
     .run();

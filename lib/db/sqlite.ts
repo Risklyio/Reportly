@@ -1,34 +1,34 @@
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
+import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
 import * as schema from "./schema";
 import { frameworks, domains, controls } from "./schema";
-import { controlRows, domainRows, frameworkRow, FRAMEWORK_ID } from "./seed-data";
+import { controlRows, domainRows, frameworkRow } from "./seed-data";
 import path from "path";
 import fs from "fs";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const DB_PATH = path.join(DATA_DIR, "reportly.db");
 
-let _db: ReturnType<typeof drizzle<typeof schema>> | null = null;
-let _sqlite: Database.Database | null = null;
+let _db: BetterSQLite3Database<typeof schema> | null = null;
 let _seeded = false;
 
-export function getSqliteDb() {
+export async function getSqliteDb(): Promise<BetterSQLite3Database<typeof schema>> {
   if (!_db) {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
-    _sqlite = new Database(DB_PATH);
-    _sqlite.pragma("journal_mode = WAL");
-    _sqlite.pragma("foreign_keys = ON");
-    _db = drizzle(_sqlite, { schema });
-    ensureSqliteTables(_sqlite);
+    const Database = (await import("better-sqlite3")).default;
+    const { drizzle } = await import("drizzle-orm/better-sqlite3");
+    const sqlite = new Database(DB_PATH);
+    sqlite.pragma("journal_mode = WAL");
+    sqlite.pragma("foreign_keys = ON");
+    _db = drizzle(sqlite, { schema });
+    ensureSqliteTables(sqlite);
     ensureSqliteSeeded();
   }
   return _db;
 }
 
-function ensureSqliteTables(sqlite: Database.Database) {
+function ensureSqliteTables(sqlite: import("better-sqlite3").Database) {
   sqlite.exec(`
     CREATE TABLE IF NOT EXISTS frameworks (
       id TEXT PRIMARY KEY,
@@ -97,8 +97,8 @@ function ensureSqliteTables(sqlite: Database.Database) {
 }
 
 function ensureSqliteSeeded() {
-  if (_seeded) return;
-  const db = _db!;
+  if (_seeded || !_db) return;
+  const db = _db;
   const existing = db.select().from(frameworks).get();
   if (existing) {
     _seeded = true;

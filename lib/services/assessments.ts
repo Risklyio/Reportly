@@ -61,7 +61,7 @@ export async function listAssessments(): Promise<AssessmentMetadata[]> {
   }
   const { getSqliteDb } = await import("@/lib/db/sqlite");
   const { assessments } = await import("@/lib/db/schema");
-  const rows = getSqliteDb()
+  const rows = (await getSqliteDb())
     .select()
     .from(assessments)
     .orderBy(desc(assessments.updatedAt))
@@ -98,7 +98,7 @@ export async function getAssessment(
   }
   const { getSqliteDb } = await import("@/lib/db/sqlite");
   const { assessments } = await import("@/lib/db/schema");
-  const row = getSqliteDb()
+  const row = (await getSqliteDb())
     .select()
     .from(assessments)
     .where(eq(assessments.id, id))
@@ -166,7 +166,7 @@ export async function createAssessment(input: {
 
   const { getSqliteDb } = await import("@/lib/db/sqlite");
   const { assessments, assessmentControls } = await import("@/lib/db/schema");
-  const db = getSqliteDb();
+  const db = await getSqliteDb();
   db.insert(assessments)
     .values({
       id,
@@ -230,7 +230,7 @@ export async function updateAssessment(
 
   const { getSqliteDb } = await import("@/lib/db/sqlite");
   const { assessments } = await import("@/lib/db/schema");
-  getSqliteDb()
+  (await getSqliteDb())
     .update(assessments)
     .set({ ...patch, updatedAt: now() })
     .where(eq(assessments.id, id))
@@ -262,7 +262,7 @@ export async function getAssessmentControlStates(
 
   const { getSqliteDb } = await import("@/lib/db/sqlite");
   const { assessmentControls } = await import("@/lib/db/schema");
-  const rows = getSqliteDb()
+  const rows = (await getSqliteDb())
     .select()
     .from(assessmentControls)
     .where(eq(assessmentControls.assessmentId, assessmentId))
@@ -333,7 +333,7 @@ export async function updateAssessmentControl(
 
   const { getSqliteDb } = await import("@/lib/db/sqlite");
   const { assessmentControls } = await import("@/lib/db/schema");
-  getSqliteDb()
+  (await getSqliteDb())
     .update(assessmentControls)
     .set({ ...patch, updatedAt: ts })
     .where(
@@ -355,7 +355,7 @@ export async function deleteAssessment(id: string): Promise<void> {
   }
   const { getSqliteDb } = await import("@/lib/db/sqlite");
   const { assessments, assessmentControls } = await import("@/lib/db/schema");
-  const db = getSqliteDb();
+  const db = await getSqliteDb();
   db.delete(assessmentControls)
     .where(eq(assessmentControls.assessmentId, id))
     .run();

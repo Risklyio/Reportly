@@ -9,7 +9,7 @@ async function main() {
     console.log("Supabase seed complete.");
   } else {
     const { getSqliteDb } = await import("../lib/db/sqlite");
-    getSqliteDb();
+    await getSqliteDb();
     console.log("SQLite seed complete.");
   }
 
