@@ -34,7 +34,7 @@ Wait until status is **Ready** (not Error). If **Error**, open the build log and
 ## 4. Verify
 
 1. Open the live site → **Settings** → **AI Generate**
-2. You should see **Build: multi-ai-v3** and **Active provider: google**
+2. You should see **Build: multi-ai-v4** and **Active provider: google** (or **groq** if you switched)
 3. Try **Generate** on a control with assessor notes
 
 Or in the browser: `https://YOUR-APP.vercel.app/api/controls` — JSON should include `"ai":{"buildStamp":"multi-ai-v3",...}`.

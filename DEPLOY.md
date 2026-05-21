@@ -63,9 +63,19 @@ https://YOUR-APP.vercel.app/api/setup?secret=YOUR_SETUP_SECRET
 
 ## Enable AI **Generate**
 
-### Free testing (recommended): Google Gemini
+### Free testing (recommended): Groq
 
-OpenAI’s free tier is very limited; **quota exceeded** usually means no credits left. For testing, use **Google Gemini** (free API key):
+**Groq** has a reliable free tier for API use. If Gemini shows `limit: 0` on `gemini-2.0-flash`, use Groq:
+
+1. [console.groq.com/keys](https://console.groq.com/keys) → create API key
+2. Vercel: `AI_PROVIDER=groq`, `GROQ_API_KEY=...`
+3. Redeploy
+
+Default model: `llama-3.3-70b-versatile`
+
+### Alternative: Google Gemini
+
+OpenAI’s free tier is very limited; **quota exceeded** usually means no credits left. **Gemini 2.0 Flash** free quota is often exhausted (`limit: 0`); the app defaults to **gemini-2.0-flash-lite** and tries other models automatically.
 
 1. Open [aistudio.google.com/apikey](https://aistudio.google.com/apikey) → **Create API key** (Google account).
 2. Vercel → **Reportly** → **Settings** → **Environment Variables** → add:
@@ -76,10 +86,10 @@ OpenAI’s free tier is very limited; **quota exceeded** usually means no credit
 | `GOOGLE_GENERATIVE_AI_API_KEY` | your Gemini API key |
 
 3. **Redeploy** the project (required — env vars are not applied until you redeploy).
-4. **Settings → AI Generate** in the app (or open `https://YOUR-VERCEL-URL/api/controls` and look for `"ai":{"buildStamp":"multi-ai-v3","resolvedProvider":"google",...}`). If there is no `ai` block or build is not `multi-ai-v3`, the latest code is **not deployed** — push to GitHub and Redeploy.
+4. **Settings → AI Generate** in the app (or open `https://YOUR-VERCEL-URL/api/controls` and look for `"ai":{"buildStamp":"multi-ai-v4",...}`). If there is no `ai` block or build is not `multi-ai-v4`, push to GitHub and Redeploy.
 5. Try **Generate** on a control.
 
-Optional: `AI_MODEL=gemini-2.0-flash` (default if omitted). `GEMINI_API_KEY` is accepted as an alias for `GOOGLE_GENERATIVE_AI_API_KEY`.
+Optional: `AI_MODEL=gemini-2.0-flash-lite` (default if omitted). Remove `AI_MODEL=gemini-2.0-flash` from Vercel if you set it earlier — that model often has no free quota left. `GEMINI_API_KEY` is accepted as an alias for `GOOGLE_GENERATIVE_AI_API_KEY`.
 
 **Still seeing OpenAI quota errors?** The app was still calling OpenAI. Set `AI_PROVIDER=google` explicitly (not optional when `OPENAI_API_KEY` is also set), add the Gemini key, redeploy, then confirm `/api/ai-config`.
 

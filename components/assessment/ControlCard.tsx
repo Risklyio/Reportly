@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { AI_BUILD_STAMP } from "@/lib/ai/build-stamp";
 import { formatControlRef } from "@/lib/controls/catalog";
 import type { ControlDefinition, ControlOutcome } from "@/lib/types";
 import { OutcomeSelector } from "./OutcomeSelector";
@@ -169,8 +170,8 @@ export function ControlCard({
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         const hint =
-          data.ai?.buildStamp !== "multi-ai-v3"
-            ? " Deploy the latest Reportly build (Settings → AI Generate shows build stamp multi-ai-v3)."
+          data.ai?.buildStamp !== AI_BUILD_STAMP
+            ? ` Deploy latest build (Settings → AI Generate should show ${AI_BUILD_STAMP}).`
             : data.provider
               ? ` (provider: ${data.provider})`
               : "";

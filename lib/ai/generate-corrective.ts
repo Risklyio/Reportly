@@ -2,7 +2,7 @@ import { generateText } from "ai";
 import { createGroq } from "@ai-sdk/groq";
 import { createOpenAI } from "@ai-sdk/openai";
 import { AI_BUILD_STAMP } from "@/lib/ai/build-stamp";
-import { generateWithGeminiRest } from "@/lib/ai/gemini-rest";
+import { generateWithGeminiRestWithFallback } from "@/lib/ai/gemini-rest";
 import { formatControlRef, getControlById } from "@/lib/controls/catalog";
 import type { ControlOutcome } from "@/lib/types";
 
@@ -17,7 +17,7 @@ export type AiProvider = "openai" | "google" | "groq";
 
 const DEFAULT_MODELS: Record<AiProvider, string> = {
   openai: "gpt-4o-mini",
-  google: "gemini-2.0-flash",
+  google: "gemini-2.0-flash-lite",
   groq: "llama-3.3-70b-versatile",
 };
 
@@ -128,7 +128,7 @@ function friendlyAiError(error: unknown, provider: AiProvider): Error {
     }
     if (provider === "google") {
       return new Error(
-        `Google Gemini rate limit or quota (${msg}). Wait and retry, or use AI_PROVIDER=groq with GROQ_API_KEY.`
+        `Google Gemini free tier is exhausted (${msg.slice(0, 200)}…). Best fix: set AI_PROVIDER=groq and GROQ_API_KEY (free at https://console.groq.com/keys) in Vercel, then Redeploy. Or set AI_MODEL=gemini-2.0-flash-lite, push latest code, and retry in ~17s.`
       );
     }
     return new Error(`${label} rate limit or quota (${msg}). Wait and retry.`);
@@ -184,7 +184,7 @@ Write corrective actions the organization should take to close this gap.`;
   let text: string;
   try {
     if (provider === "google") {
-      text = await generateWithGeminiRest({
+      const { text: geminiText } = await generateWithGeminiRestWithFallback({
         apiKey: requireKey(
           "GOOGLE_GENERATIVE_AI_API_KEY",
           googleApiKey(),
@@ -194,6 +194,7 @@ Write corrective actions the organization should take to close this gap.`;
         system: ASSESSOR_SYSTEM,
         prompt,
       });
+      text = geminiText;
     } else {
       const result = await generateText({
         model: getModelForProvider(provider),
