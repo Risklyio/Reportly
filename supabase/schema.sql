@@ -46,6 +46,7 @@ create table if not exists assessment_controls (
   control_id text not null references controls(id),
   outcome text,
   not_in_place_reason text not null default '',
+  assessor_notes text not null default '',
   corrective_action text not null default '',
   evidence_notes text not null default '',
   updated_at timestamptz not null default now(),

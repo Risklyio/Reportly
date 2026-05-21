@@ -56,6 +56,7 @@ export const assessmentControls = sqliteTable("assessment_controls", {
     .references(() => controls.id),
   outcome: text("outcome"),
   notInPlaceReason: text("not_in_place_reason").notNull().default(""),
+  assessorNotes: text("assessor_notes").notNull().default(""),
   correctiveAction: text("corrective_action").notNull().default(""),
   evidenceNotes: text("evidence_notes").notNull().default(""),
   updatedAt: text("updated_at").notNull(),

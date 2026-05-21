@@ -28,32 +28,40 @@ function outcomeBadgeClass(outcome: ControlOutcome): string {
 }
 
 export function ControlCard({
+  assessmentId,
   control,
   outcome,
   notInPlaceReason,
+  assessorNotes,
   correctiveAction,
   onSave,
   onSuggest,
 }: {
+  assessmentId: string;
   control: ControlDefinition;
   outcome: ControlOutcome;
   notInPlaceReason: string;
+  assessorNotes: string;
   correctiveAction: string;
   onSave: (patch: {
     outcome?: ControlOutcome;
     notInPlaceReason?: string;
+    assessorNotes?: string;
     correctiveAction?: string;
   }) => Promise<void>;
   onSuggest: () => Promise<{ text: string; links: string[] }>;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [generateError, setGenerateError] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.location.hash === `#${control.id}`) {
       setExpanded(true);
     }
   }, [control.id]);
+
   const [suggesting, setSuggesting] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const showGapFields =
@@ -69,6 +77,35 @@ export function ControlCard({
       await onSave({ correctiveAction: result.text + linksBlock });
     } finally {
       setSuggesting(false);
+    }
+  }
+
+  async function handleGenerate() {
+    setGenerating(true);
+    setGenerateError(null);
+    try {
+      const res = await fetch(
+        `/api/assessments/${assessmentId}/generate-corrective`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            controlId: control.id,
+            outcome,
+            notInPlaceReason,
+            assessorNotes,
+          }),
+        }
+      );
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error ?? "Failed to generate corrective actions");
+      }
+      await onSave({ correctiveAction: data.text as string });
+    } catch (e) {
+      setGenerateError(e instanceof Error ? e.message : "Generation failed");
+    } finally {
+      setGenerating(false);
     }
   }
 
@@ -157,7 +194,7 @@ export function ControlCard({
           </button>
         </div>
       </div>
-      <p className="mb-4 text-sm text-text-muted whitespace-pre-line">
+      <p className="mb-4 whitespace-pre-line text-sm text-text-muted">
         {control.intent}
       </p>
 
@@ -194,6 +231,22 @@ export function ControlCard({
                 onBlur={(e) => save({ notInPlaceReason: e.target.value })}
               />
             </div>
+
+            <div>
+              <label className="label">Assessor notes</label>
+              <p className="mb-1 text-xs text-text-muted">
+                Internal working notes only — not included in the PDF or Word export.
+              </p>
+              <textarea
+                className="input min-h-[88px]"
+                rows={3}
+                value={assessorNotes}
+                onChange={(e) => save({ assessorNotes: e.target.value })}
+                onBlur={(e) => save({ assessorNotes: e.target.value })}
+                placeholder="Observations, evidence references, interview notes…"
+              />
+            </div>
+
             <div>
               <div className="mb-1 flex items-center justify-between">
                 <label className="label mb-0">Corrective actions</label>
@@ -216,12 +269,18 @@ export function ControlCard({
                 onBlur={(e) =>
                   save({ correctiveAction: e.target.value })
                 }
-                placeholder="Document planned or completed remediation…"
+                placeholder="Report-ready corrective actions (use Generate from assessor notes)…"
               />
             </div>
           </>
         )}
       </div>
+
+      {generateError && (
+        <p className="mt-3 text-xs text-red-600" role="alert">
+          {generateError}
+        </p>
+      )}
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
         {saving && (
@@ -232,13 +291,30 @@ export function ControlCard({
             {saveError}
           </p>
         )}
-        <button
-          type="button"
-          className="btn-primary ml-auto"
-          onClick={() => setExpanded(false)}
-        >
-          Complete
-        </button>
+        <div className="ml-auto flex flex-wrap gap-2">
+          {showGapFields && (
+            <button
+              type="button"
+              className="btn-secondary"
+              disabled={generating || !assessorNotes.trim()}
+              onClick={handleGenerate}
+              title={
+                !assessorNotes.trim()
+                  ? "Add assessor notes first"
+                  : "Generate report-ready corrective actions with AI"
+              }
+            >
+              {generating ? "Generating…" : "Generate"}
+            </button>
+          )}
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={() => setExpanded(false)}
+          >
+            Complete
+          </button>
+        </div>
       </div>
     </article>
   );

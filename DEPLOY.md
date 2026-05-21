@@ -23,7 +23,9 @@ npm install
 npm run supabase:setup
 ```
 
-5. Add the **same four variables** to Vercel → Environment Variables → **Redeploy**.
+5. Add the **same variables** plus `OPENAI_API_KEY` to Vercel → Environment Variables → **Redeploy**.
+
+6. For existing Supabase DBs, run `supabase/migrations/add-assessor-notes.sql` in the SQL editor.
 
 ## Option B — Setup on Vercel (no local terminal)
 
@@ -48,5 +50,7 @@ https://YOUR-APP.vercel.app/api/setup?secret=YOUR_SETUP_SECRET
 | `NEXT_PUBLIC_SUPABASE_URL` | Yes |
 | `SUPABASE_SERVICE_ROLE_KEY` | Yes |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Recommended |
+| `OPENAI_API_KEY` | Yes (for **Generate** corrective actions) |
+| `AI_MODEL` | Optional (default `gpt-4o-mini`) |
 | `DATABASE_URL` | Only for setup (can remove after) |
 | `SETUP_SECRET` | Only for Option B (remove after) |

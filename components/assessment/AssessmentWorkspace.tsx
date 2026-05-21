@@ -33,6 +33,7 @@ function buildStateMap(
         controlId: c.id,
         outcome: null,
         notInPlaceReason: "",
+        assessorNotes: "",
         correctiveAction: "",
         evidenceNotes: "",
         updatedAt: new Date().toISOString(),
@@ -98,6 +99,7 @@ export function AssessmentWorkspace({
       patch: Partial<{
         outcome: ControlOutcome;
         notInPlaceReason: string;
+        assessorNotes: string;
         correctiveAction: string;
       }>
     ) => {
@@ -216,9 +218,11 @@ export function AssessmentWorkspace({
                 return (
                   <ControlCard
                     key={control.id}
+                    assessmentId={assessment.id}
                     control={control}
                     outcome={st.outcome}
                     notInPlaceReason={st.notInPlaceReason}
+                    assessorNotes={st.assessorNotes}
                     correctiveAction={st.correctiveAction}
                     onSave={(patch) => updateControl(control.id, patch)}
                     onSuggest={() =>

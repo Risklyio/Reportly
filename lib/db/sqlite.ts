@@ -72,6 +72,7 @@ function ensureSqliteTables(sqlite: import("better-sqlite3").Database) {
       control_id TEXT NOT NULL REFERENCES controls(id),
       outcome TEXT,
       not_in_place_reason TEXT NOT NULL DEFAULT '',
+      assessor_notes TEXT NOT NULL DEFAULT '',
       corrective_action TEXT NOT NULL DEFAULT '',
       evidence_notes TEXT NOT NULL DEFAULT '',
       updated_at TEXT NOT NULL,
@@ -94,6 +95,19 @@ function ensureSqliteTables(sqlite: import("better-sqlite3").Database) {
       created_at TEXT NOT NULL
     );
   `);
+  ensureSqliteColumnMigrations(sqlite);
+}
+
+function ensureSqliteColumnMigrations(sqlite: import("better-sqlite3").Database) {
+  const cols = sqlite
+    .prepare("PRAGMA table_info(assessment_controls)")
+    .all() as { name: string }[];
+  const names = new Set(cols.map((c) => c.name));
+  if (!names.has("assessor_notes")) {
+    sqlite.exec(
+      `ALTER TABLE assessment_controls ADD COLUMN assessor_notes TEXT NOT NULL DEFAULT ''`
+    );
+  }
 }
 
 function ensureSqliteSeeded() {

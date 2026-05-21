@@ -41,6 +41,7 @@ export function normalizeControlStates(
       controlId: c.id,
       outcome: null,
       notInPlaceReason: "",
+      assessorNotes: "",
       correctiveAction: "",
       evidenceNotes: "",
       updatedAt: now,

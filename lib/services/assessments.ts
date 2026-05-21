@@ -155,6 +155,7 @@ export async function createAssessment(input: {
       control_id: c.id,
       outcome: null,
       not_in_place_reason: "",
+      assessor_notes: "",
       corrective_action: "",
       evidence_notes: "",
       updated_at: ts,
@@ -193,6 +194,7 @@ export async function createAssessment(input: {
         controlId: c.id,
         outcome: null,
         notInPlaceReason: "",
+        assessorNotes: "",
         correctiveAction: "",
         evidenceNotes: "",
         updatedAt: ts2,
@@ -260,6 +262,7 @@ export async function getAssessmentControlStates(
       controlId: r.control_id,
       outcome: r.outcome as ControlOutcome,
       notInPlaceReason: r.not_in_place_reason ?? "",
+      assessorNotes: r.assessor_notes ?? "",
       correctiveAction: r.corrective_action ?? "",
       evidenceNotes: r.evidence_notes ?? "",
       updatedAt: r.updated_at ?? "",
@@ -278,6 +281,7 @@ export async function getAssessmentControlStates(
       controlId: r.control_id,
       outcome: r.outcome as ControlOutcome,
       notInPlaceReason: r.not_in_place_reason ?? "",
+      assessorNotes: r.assessor_notes ?? "",
       correctiveAction: r.corrective_action ?? "",
       evidenceNotes: r.evidence_notes ?? "",
       updatedAt: r.updated_at ?? "",
@@ -306,6 +310,7 @@ export async function getAssessmentControlStates(
     controlId: r.controlId,
     outcome: r.outcome as ControlOutcome,
     notInPlaceReason: r.notInPlaceReason,
+    assessorNotes: r.assessorNotes ?? "",
     correctiveAction: r.correctiveAction,
     evidenceNotes: r.evidenceNotes,
     updatedAt: r.updatedAt,
@@ -318,6 +323,7 @@ export async function updateAssessmentControl(
   patch: Partial<{
     outcome: ControlOutcome;
     notInPlaceReason: string;
+    assessorNotes: string;
     correctiveAction: string;
     evidenceNotes: string;
   }>
@@ -332,6 +338,8 @@ export async function updateAssessmentControl(
     if (patch.outcome !== undefined) row.outcome = patch.outcome;
     if (patch.notInPlaceReason !== undefined)
       row.not_in_place_reason = patch.notInPlaceReason;
+    if (patch.assessorNotes !== undefined)
+      row.assessor_notes = patch.assessorNotes;
     if (patch.correctiveAction !== undefined)
       row.corrective_action = patch.correctiveAction;
     if (patch.evidenceNotes !== undefined)
@@ -357,6 +365,7 @@ export async function updateAssessmentControl(
         control_id: controlId,
         outcome: patch.outcome ?? null,
         not_in_place_reason: patch.notInPlaceReason ?? "",
+        assessor_notes: patch.assessorNotes ?? "",
         corrective_action: patch.correctiveAction ?? "",
         evidence_notes: patch.evidenceNotes ?? "",
         updated_at: ts,
@@ -397,6 +406,7 @@ export async function updateAssessmentControl(
         controlId,
         outcome: patch.outcome ?? null,
         notInPlaceReason: patch.notInPlaceReason ?? "",
+        assessorNotes: patch.assessorNotes ?? "",
         correctiveAction: patch.correctiveAction ?? "",
         evidenceNotes: patch.evidenceNotes ?? "",
         updatedAt: ts,
