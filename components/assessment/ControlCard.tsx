@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { formatControlRef } from "@/lib/controls/catalog";
 import type { ControlDefinition, ControlOutcome } from "@/lib/types";
 import { OutcomeSelector } from "./OutcomeSelector";
@@ -11,6 +11,9 @@ const OUTCOME_LABELS: Record<string, string> = {
   partially_in_place: "Partially in place",
   not_applicable: "Not applicable",
 };
+
+/** Wait after typing stops before autosave (reduces lag and API calls) */
+const AUTOSAVE_DELAY_MS = 1200;
 
 function outcomeBadgeClass(outcome: ControlOutcome): string {
   switch (outcome) {
@@ -26,6 +29,12 @@ function outcomeBadgeClass(outcome: ControlOutcome): string {
       return "bg-muted text-text-muted";
   }
 }
+
+type TextPatch = {
+  notInPlaceReason?: string;
+  assessorNotes?: string;
+  correctiveAction?: string;
+};
 
 export function ControlCard({
   assessmentId,
@@ -55,6 +64,15 @@ export function ControlCard({
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [generateError, setGenerateError] = useState<string | null>(null);
+  const [suggesting, setSuggesting] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  const [draftReason, setDraftReason] = useState(notInPlaceReason);
+  const [draftNotes, setDraftNotes] = useState(assessorNotes);
+  const [draftCorrective, setDraftCorrective] = useState(correctiveAction);
+
+  const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingPatch = useRef<TextPatch | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.location.hash === `#${control.id}`) {
@@ -62,25 +80,76 @@ export function ControlCard({
     }
   }, [control.id]);
 
-  const [suggesting, setSuggesting] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
+  useEffect(() => {
+    setDraftReason(notInPlaceReason);
+    setDraftNotes(assessorNotes);
+    setDraftCorrective(correctiveAction);
+  }, [control.id, notInPlaceReason, assessorNotes, correctiveAction]);
+
+  useEffect(() => {
+    return () => {
+      if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+    };
+  }, []);
+
   const showGapFields =
     outcome === "not_in_place" || outcome === "partially_in_place";
 
+  const persist = useCallback(
+    async (patch: TextPatch & { outcome?: ControlOutcome }) => {
+      setSaving(true);
+      setSaveError(null);
+      try {
+        await onSave(patch);
+        pendingPatch.current = null;
+      } catch (e) {
+        setSaveError(e instanceof Error ? e.message : "Failed to save");
+      } finally {
+        setSaving(false);
+      }
+    },
+    [onSave]
+  );
+
+  const scheduleAutosave = useCallback(
+    (patch: TextPatch) => {
+      pendingPatch.current = { ...pendingPatch.current, ...patch };
+      if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+      autosaveTimer.current = setTimeout(() => {
+        const toSave = pendingPatch.current;
+        if (toSave) void persist(toSave);
+      }, AUTOSAVE_DELAY_MS);
+    },
+    [persist]
+  );
+
+  const flushAutosave = useCallback(async () => {
+    if (autosaveTimer.current) {
+      clearTimeout(autosaveTimer.current);
+      autosaveTimer.current = null;
+    }
+    const toSave = pendingPatch.current;
+    if (toSave) await persist(toSave);
+  }, [persist]);
+
   async function handleSuggest() {
+    await flushAutosave();
     setSuggesting(true);
     try {
       const result = await onSuggest();
       const linksBlock = result.links.length
         ? `\n\nReferences:\n${result.links.map((l) => `• ${l}`).join("\n")}`
         : "";
-      await onSave({ correctiveAction: result.text + linksBlock });
+      const text = result.text + linksBlock;
+      setDraftCorrective(text);
+      await persist({ correctiveAction: text });
     } finally {
       setSuggesting(false);
     }
   }
 
   async function handleGenerate() {
+    await flushAutosave();
     setGenerating(true);
     setGenerateError(null);
     try {
@@ -92,8 +161,8 @@ export function ControlCard({
           body: JSON.stringify({
             controlId: control.id,
             outcome,
-            notInPlaceReason,
-            assessorNotes,
+            notInPlaceReason: draftReason,
+            assessorNotes: draftNotes,
           }),
         }
       );
@@ -101,7 +170,9 @@ export function ControlCard({
       if (!res.ok) {
         throw new Error(data.error ?? "Failed to generate corrective actions");
       }
-      await onSave({ correctiveAction: data.text as string });
+      const text = data.text as string;
+      setDraftCorrective(text);
+      await persist({ correctiveAction: text });
     } catch (e) {
       setGenerateError(e instanceof Error ? e.message : "Generation failed");
     } finally {
@@ -109,16 +180,16 @@ export function ControlCard({
     }
   }
 
-  async function save(patch: Parameters<typeof onSave>[0]) {
-    setSaving(true);
-    setSaveError(null);
-    try {
-      await onSave(patch);
-    } catch (e) {
-      setSaveError(e instanceof Error ? e.message : "Failed to save");
-    } finally {
-      setSaving(false);
+  async function handleComplete() {
+    if (showGapFields) {
+      pendingPatch.current = {
+        notInPlaceReason: draftReason,
+        assessorNotes: draftNotes,
+        correctiveAction: draftCorrective,
+      };
+      await flushAutosave();
     }
+    setExpanded(false);
   }
 
   const outcomeLabel = outcome ? OUTCOME_LABELS[outcome] : "Not reviewed";
@@ -203,7 +274,7 @@ export function ControlCard({
           <label className="label">Outcome</label>
           <OutcomeSelector
             value={outcome}
-            onChange={(v) => save({ outcome: v })}
+            onChange={(v) => void persist({ outcome: v })}
           />
         </div>
 
@@ -213,8 +284,12 @@ export function ControlCard({
               <label className="label">Why not in place</label>
               <select
                 className="input mb-2"
-                value={notInPlaceReason}
-                onChange={(e) => save({ notInPlaceReason: e.target.value })}
+                value={draftReason}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setDraftReason(v);
+                  void persist({ notInPlaceReason: v });
+                }}
               >
                 <option value="">Select a reason…</option>
                 {control.defaultNotInPlaceReasons.map((r) => (
@@ -226,9 +301,13 @@ export function ControlCard({
               <input
                 className="input"
                 placeholder="Or describe custom reason…"
-                value={notInPlaceReason}
-                onChange={(e) => save({ notInPlaceReason: e.target.value })}
-                onBlur={(e) => save({ notInPlaceReason: e.target.value })}
+                value={draftReason}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setDraftReason(v);
+                  scheduleAutosave({ notInPlaceReason: v });
+                }}
+                onBlur={() => void persist({ notInPlaceReason: draftReason })}
               />
             </div>
 
@@ -240,9 +319,13 @@ export function ControlCard({
               <textarea
                 className="input min-h-[88px]"
                 rows={3}
-                value={assessorNotes}
-                onChange={(e) => save({ assessorNotes: e.target.value })}
-                onBlur={(e) => save({ assessorNotes: e.target.value })}
+                value={draftNotes}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setDraftNotes(v);
+                  scheduleAutosave({ assessorNotes: v });
+                }}
+                onBlur={() => void persist({ assessorNotes: draftNotes })}
                 placeholder="Observations, evidence references, interview notes…"
               />
             </div>
@@ -253,7 +336,7 @@ export function ControlCard({
                 <button
                   type="button"
                   className="text-sm font-medium text-primary hover:underline disabled:opacity-50"
-                  disabled={suggesting || !notInPlaceReason}
+                  disabled={suggesting || !draftReason}
                   onClick={handleSuggest}
                 >
                   {suggesting ? "Suggesting…" : "Suggest"}
@@ -262,13 +345,13 @@ export function ControlCard({
               <textarea
                 className="input min-h-[100px]"
                 rows={4}
-                value={correctiveAction}
-                onChange={(e) =>
-                  save({ correctiveAction: e.target.value })
-                }
-                onBlur={(e) =>
-                  save({ correctiveAction: e.target.value })
-                }
+                value={draftCorrective}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setDraftCorrective(v);
+                  scheduleAutosave({ correctiveAction: v });
+                }}
+                onBlur={() => void persist({ correctiveAction: draftCorrective })}
                 placeholder="Report-ready corrective actions (use Generate from assessor notes)…"
               />
             </div>
@@ -296,10 +379,10 @@ export function ControlCard({
             <button
               type="button"
               className="btn-secondary"
-              disabled={generating || !assessorNotes.trim()}
+              disabled={generating || !draftNotes.trim()}
               onClick={handleGenerate}
               title={
-                !assessorNotes.trim()
+                !draftNotes.trim()
                   ? "Add assessor notes first"
                   : "Generate report-ready corrective actions with AI"
               }
@@ -307,11 +390,7 @@ export function ControlCard({
               {generating ? "Generating…" : "Generate"}
             </button>
           )}
-          <button
-            type="button"
-            className="btn-primary"
-            onClick={() => setExpanded(false)}
-          >
+          <button type="button" className="btn-primary" onClick={handleComplete}>
             Complete
           </button>
         </div>
