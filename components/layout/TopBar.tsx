@@ -1,18 +1,22 @@
-import Image from "next/image";
 import Link from "next/link";
+
+/** Bump when replacing public/brand/reportly-logo.png to bust CDN/browser cache */
+const LOGO_SRC = "/brand/reportly-logo.png?v=2";
 
 export function TopBar() {
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-topbar">
       <div className="flex h-14 items-center justify-between px-4 lg:px-6">
         <Link href="/" className="flex items-center gap-2">
-          <Image
-            src="/brand/reportly-logo.svg"
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={LOGO_SRC}
             alt="Reportly.io"
-            width={180}
-            height={40}
-            priority
-            className="h-9 w-auto"
+            width={200}
+            height={44}
+            decoding="async"
+            fetchPriority="high"
+            className="h-9 w-auto max-w-[220px] object-contain object-left"
           />
         </Link>
         <nav className="flex items-center gap-3">
