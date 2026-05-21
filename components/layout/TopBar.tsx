@@ -21,6 +21,12 @@ export function TopBar() {
           >
             New assessment
           </Link>
+          <Link
+            href="/settings#report-templates"
+            className="btn-secondary hidden md:inline-flex"
+          >
+            Templates
+          </Link>
           <Link href="/settings" className="btn-secondary">
             Settings
           </Link>

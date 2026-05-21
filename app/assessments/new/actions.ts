@@ -1,10 +1,10 @@
 "use server";
 
 import { createAssessment } from "@/lib/services/assessments";
-import { redirect } from "next/navigation";
 
 export type StartAssessmentState = {
   error?: string;
+  redirectTo?: string;
 };
 
 export async function startAssessmentAction(
@@ -29,9 +29,9 @@ export async function startAssessmentAction(
       assessorName,
       scopeNotes,
     });
-    redirect(
-      `/assessments/${assessment.id}?domain=application_security&filter=all`
-    );
+    return {
+      redirectTo: `/assessments/${assessment.id}?domain=application_security&filter=all`,
+    };
   } catch (e) {
     return {
       error:

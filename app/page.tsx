@@ -1,32 +1,13 @@
 import Link from "next/link";
 import { listAssessments } from "@/lib/services/assessments";
 import { isSupabaseConfigured, isVercel } from "@/lib/db/env";
+import { SetupRequired } from "@/components/setup/SetupRequired";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   if (isVercel() && !isSupabaseConfigured()) {
-    return (
-      <div className="mx-auto max-w-2xl px-4 py-10">
-        <div className="card border-amber-200 bg-amber-50">
-          <h1 className="text-xl font-bold text-text">Setup required</h1>
-          <p className="mt-2 text-sm text-text-muted">
-            Vercel cannot run local SQLite. Add these environment variables in
-            Vercel → Project → Settings → Environment Variables, then redeploy:
-          </p>
-          <ul className="mt-3 list-inside list-disc text-sm font-mono">
-            <li>NEXT_PUBLIC_SUPABASE_URL</li>
-            <li>NEXT_PUBLIC_SUPABASE_ANON_KEY</li>
-            <li>SUPABASE_SERVICE_ROLE_KEY</li>
-          </ul>
-          <p className="mt-3 text-sm text-text-muted">
-            Then run <code className="text-xs">supabase/schema.sql</code> in your
-            Supabase SQL editor and create a Storage bucket named{" "}
-            <code className="text-xs">reportly-templates</code>.
-          </p>
-        </div>
-      </div>
-    );
+    return <SetupRequired />;
   }
 
   const assessments = await listAssessments();

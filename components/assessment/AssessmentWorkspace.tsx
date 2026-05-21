@@ -161,7 +161,7 @@ export function AssessmentWorkspace({
           </p>
           <p className="mt-1 text-sm font-medium text-primary">{domainLabel}</p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Link
             href={`/assessments/${assessment.id}/export`}
             className="btn-secondary"
@@ -175,6 +175,12 @@ export function AssessmentWorkspace({
           >
             Download DOCX
           </a>
+          <Link
+            href="/settings#report-templates"
+            className="text-sm text-primary hover:underline"
+          >
+            Upload report template
+          </Link>
         </div>
       </div>
 

@@ -1,0 +1,52 @@
+# Deploy Reportly on Vercel + Supabase
+
+I cannot log into your Supabase or Vercel accounts from here. Use one of these **automated setup** options instead.
+
+## Option A — Setup from your PC (recommended)
+
+1. In Supabase → **Settings → API**, copy URL, anon key, and **service_role** key.
+2. In Supabase → **Settings → Database**, copy **Connection string → URI** (not the pooler session mode if it fails; try **Direct** or **Transaction** pooler).
+3. Create `reportly-io/.env.local`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+SUPABASE_SERVICE_ROLE_KEY=eyJ...
+DATABASE_URL=postgresql://...
+```
+
+4. Run:
+
+```bash
+cd reportly-io
+npm install
+npm run supabase:setup
+```
+
+5. Add the **same four variables** to Vercel → Environment Variables → **Redeploy**.
+
+## Option B — Setup on Vercel (no local terminal)
+
+1. Add to Vercel env vars:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `DATABASE_URL` (postgres URI from Supabase)
+   - `SETUP_SECRET` = any long random string (e.g. `my-setup-8f3k2j9x`)
+2. **Redeploy**
+3. Open in browser (once):
+
+```
+https://YOUR-APP.vercel.app/api/setup?secret=YOUR_SETUP_SECRET
+```
+
+4. You should see `"ok": true`. Then remove `SETUP_SECRET` from Vercel and redeploy again.
+
+## Vercel variables checklist
+
+| Variable | Required |
+|----------|----------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Recommended |
+| `DATABASE_URL` | Only for setup (can remove after) |
+| `SETUP_SECRET` | Only for Option B (remove after) |

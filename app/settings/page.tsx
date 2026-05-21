@@ -85,21 +85,59 @@ export default function SettingsPage() {
         Word templates and custom corrective-action snippets
       </p>
 
-      <section className="card mt-8">
+      <section id="report-templates" className="card mt-8 scroll-mt-20">
         <h2 className="text-lg font-semibold text-text">Report templates</h2>
         <p className="mt-1 text-sm text-text-muted">
-          Upload a .docx with docxtemplater placeholders. If none uploaded, the
-          built-in starter template is used.
+          <strong>Where to upload:</strong> use the form below on this page
+          (top menu → <strong>Settings</strong>). Upload one or more{" "}
+          <strong>.docx</strong> Word files. The first upload becomes the default
+          template used when you click <strong>Download DOCX</strong> on an
+          assessment.
         </p>
+        <div className="mt-3 rounded-lg border border-border bg-muted p-3 text-xs text-text-muted">
+          <p className="font-medium text-text">Suggested placeholders in Word</p>
+          <ul className="mt-2 list-inside list-disc space-y-1">
+            <li>
+              <code>{"{{clientName}}"}</code>, <code>{"{{appName}}"}</code>,{" "}
+              <code>{"{{assessmentDate}}"}</code>, <code>{"{{assessorName}}"}</code>
+            </li>
+            <li>
+              Loop: <code>{"{{#appControls}}"}</code> …{" "}
+              <code>{"{{title}}"}</code>, <code>{"{{outcome}}"}</code>,{" "}
+              <code>{"{{reason}}"}</code>, <code>{"{{correctiveAction}}"}</code> …{" "}
+              <code>{"{{/appControls}}"}</code>
+            </li>
+            <li>
+              Same pattern for <code>opsControls</code> and{" "}
+              <code>dataControls</code>
+            </li>
+          </ul>
+        </div>
         <form onSubmit={uploadTemplate} className="mt-4 space-y-3">
-          <input name="name" className="input" placeholder="Template name" />
-          <input
-            name="file"
-            type="file"
-            accept=".docx"
-            className="input"
-            required
-          />
+          <div>
+            <label className="label" htmlFor="template-name">
+              Template name
+            </label>
+            <input
+              id="template-name"
+              name="name"
+              className="input"
+              placeholder="e.g. M365 Audit Report 2026"
+            />
+          </div>
+          <div>
+            <label className="label" htmlFor="template-file">
+              Word document (.docx)
+            </label>
+            <input
+              id="template-file"
+              name="file"
+              type="file"
+              accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              className="input"
+              required
+            />
+          </div>
           <button type="submit" className="btn-primary" disabled={uploading}>
             {uploading ? "Uploading…" : "Upload template"}
           </button>
