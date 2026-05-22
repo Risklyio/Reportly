@@ -1,40 +1,9 @@
 import type { ControlDefinition, DomainId } from "@/lib/types";
+import { applicationControls } from "./application-controls";
 import { operationalControls } from "./operational-controls";
 
-const APP_BASE =
-  "https://learn.microsoft.com/en-us/microsoft-365-app-certification/docs/seg2_app";
 const DATA_BASE =
   "https://learn.microsoft.com/en-us/microsoft-365-app-certification/docs/seg2_data";
-
-function app(
-  n: number,
-  section: string,
-  title: string,
-  opts: Partial<ControlDefinition> = {}
-): ControlDefinition {
-  return {
-    id: `app-${n}`,
-    domain: "application_security",
-    number: n,
-    title,
-    section,
-    hardFail: opts.hardFail ?? false,
-    intent: opts.intent ?? title,
-    evidenceRequirements: opts.evidenceRequirements ?? [
-      "Provide documentation and evidence per Microsoft sample evidence guide.",
-    ],
-    docUrl: `${APP_BASE}#control-no-${n}`,
-    defaultNotInPlaceReasons: opts.defaultNotInPlaceReasons ?? [
-      "Evidence not yet collected",
-      "Requirement not fully implemented",
-      "Pending remediation from penetration test",
-    ],
-    correctiveActionHints: opts.correctiveActionHints ?? [
-      "Review Microsoft M365 App Certification guidance and remediate gaps.",
-      "Engage a reputable third-party for validation where required.",
-    ],
-  };
-}
 
 export function formatControlRef(c: ControlDefinition): string {
   return c.subId ? `${c.number}${c.subId}` : String(c.number);
@@ -79,83 +48,6 @@ function data(
     ],
   };
 }
-
-const PENTEST_SECTION = "Penetration Testing";
-const pentestTitles: string[] = [
-  "Annual independent penetration testing (web and infrastructure)",
-  "Critical/high vulnerabilities remediated within one month",
-  "Full external footprint included in pentest scope",
-  "Full internal networks included in pentest scope",
-  "Web app testing covers OWASP Top 10 / SANS CWE classes",
-  "Critical/high findings retested and marked fixed in report",
-  "No unsupported operating systems or JavaScript libraries",
-  "No default, enumerable, or guessable administrative accounts",
-  "No SQL injection risks present",
-  "No cross-site scripting vulnerabilities",
-  "No directory traversal (path) vulnerabilities",
-  "No HTTP smuggling, desync, or header-splitting vulnerabilities",
-  "No source code disclosure or local file inclusion",
-  "No unpatched critical/high CVSS vulnerabilities",
-  "No readily exploitable vulnerability affecting EUII/OUI at scale",
-  "Penetration test report demonstrates all stated requirements",
-];
-
-const applicationControls: ControlDefinition[] = [
-  ...pentestTitles.map((title, i) =>
-    app(i + 1, PENTEST_SECTION, title, {
-      hardFail: i >= 6,
-      docUrl: `${APP_BASE}#penetration-testing`,
-      defaultNotInPlaceReasons: [
-        "Finding identified in latest penetration test",
-        "Annual penetration test not performed",
-        "Scope did not include all in-scope endpoints",
-      ],
-      correctiveActionHints: [
-        "Remediate findings and obtain retest confirmation from the testing firm.",
-        "Schedule annual third-party penetration testing covering full footprint.",
-      ],
-    })
-  ),
-  app(17, "Graph API Checks", "Graph API permissions and least privilege", {
-    intent:
-      "Document all Microsoft Graph API permissions, types, endpoints, and business justification.",
-    defaultNotInPlaceReasons: [
-      "Permission inventory incomplete",
-      "Application permissions lack business justification",
-      "Credential storage not documented",
-    ],
-  }),
-  app(18, "Responsible AI", "AI technology integration documentation", {
-    intent: "Describe AI technology, Copilot agents, or CEA RAI assessment.",
-  }),
-  app(19, "Responsible AI", "AI functionality scope and user consent", {
-    intent: "Document AI features, autonomous actions, and consent process.",
-  }),
-  app(20, "Responsible AI", "AI data management and privacy implications", {
-    intent: "Document data flows and privacy regulation implications for AI.",
-  }),
-  app(21, "Responsible AI", "Notification of AI use to users", {
-    intent: "Transparency on where and how AI is used in the application.",
-  }),
-  app(22, "Responsible AI", "AI governance and accountability framework", {
-    intent: "Establish governance for AI integration and accountability.",
-  }),
-  app(23, "Responsible AI", "User control over AI integration", {
-    intent: "Users can control or disable AI functionality.",
-  }),
-  app(24, "Responsible AI -- SaaS", "Policies prohibiting inappropriate AI content", {
-    intent: "Policies aligned with marketplace policy 100.10.",
-  }),
-  app(25, "Responsible AI -- SaaS", "Testing and reporting inappropriate AI content", {
-    intent: "Quarterly testing of protections and user reporting mechanisms.",
-  }),
-  app(26, "Responsible AI -- SaaS", "Timely response to reported AI concerns", {
-    intent: "Updates to reporters within two working days.",
-  }),
-  app(27, "Responsible AI -- SaaS", "Transparency of AI functionality before acquisition", {
-    intent: "Clear AI descriptions at acquisition and in-app.",
-  }),
-];
 
 const dataControls: ControlDefinition[] = [
   data(1, "Data in Transit", "TLS 1.2+ and certificate inventory", true, {
