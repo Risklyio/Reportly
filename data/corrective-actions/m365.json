@@ -26,11 +26,27 @@
       ]
     },
     {
-      "controlId": "app-17",
-      "reasonMatch": ["Graph", "permission", "API"],
-      "actionText": "Publish a permission matrix mapping each Microsoft Graph permission to endpoints, methods, and business features. Remove excess Application permissions, document credential custody (Key Vault/certificate), and validate least privilege in Entra app registration screenshots.",
+      "controlId": "app-17a",
+      "reasonMatch": ["Graph", "permission", "inventory", "delegated", "application"],
+      "actionText": "Publish a permission matrix listing every Microsoft Graph permission, resource type, and endpoint. Mark each as Application or Delegated and align the Entra app registration to the inventory.",
       "links": [
         "https://learn.microsoft.com/en-us/graph/permissions-reference"
+      ]
+    },
+    {
+      "controlId": "app-17b",
+      "reasonMatch": ["Graph", "least privilege", "justification", "install"],
+      "actionText": "Document when each permission is requested or used (install vs feature enablement). Map permissions to product features with business justification and remove scopes that are not required.",
+      "links": [
+        "https://learn.microsoft.com/en-us/graph/permissions-reference"
+      ]
+    },
+    {
+      "controlId": "app-17c",
+      "reasonMatch": ["Graph", "credential", "secret", "certificate", "managed identity"],
+      "actionText": "For Application permissions, document authentication (client secret, certificate, or managed identity), where credentials are stored, and which team holds custody. Use Key Vault or certificate-based auth instead of long-lived secrets where possible.",
+      "links": [
+        "https://learn.microsoft.com/en-us/entra/identity-platform/app-objects-and-service-principals"
       ]
     },
     {

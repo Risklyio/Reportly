@@ -4,7 +4,7 @@ Lightweight local web app for **M365 Application Compliance Program** audit repo
 
 ## Features
 
-- 81 controls across three domains (application, operational with sub-controls 1A–30, data handling)
+- 83 controls across three domains (application incl. Graph API 17A–C and RAI 18–27, operational sub-controls, data handling)
 - Per-control outcomes, gap reasons, corrective actions (with **Suggest** automation)
 - Word template upload and DOCX export via docxtemplater
 - HostedScan-inspired UI with collapsible framework sidebar

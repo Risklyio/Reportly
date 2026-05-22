@@ -62,6 +62,7 @@ const pentestTitles: string[] = [
   "Penetration test report demonstrates all stated requirements",
 ];
 
+const GRAPH_API_SECTION = "Graph API Checks";
 const RAI_PAAS_SECTION = "Responsible AI (PaaS, IaaS & Hybrid)";
 const RAI_SAAS_SECTION = "Responsible AI (SaaS)";
 
@@ -286,17 +287,71 @@ const raiSaasControls: ControlDefinition[] = [
   }),
 ];
 
-export const applicationControls: ControlDefinition[] = [
-  ...pentestControls,
-  app(17, "Graph API Checks", "Graph API permissions and least privilege", {
-    intent:
-      "Document all Microsoft Graph API permissions, types, endpoints, and business justification.",
+const graphApiControls: ControlDefinition[] = [
+  app(17, GRAPH_API_SECTION, "Graph API permission inventory", {
+    subId: "A",
+    intent: `Provide documentation and evidence of all Microsoft Graph API permissions used by the application, including:
+
+A list of all Graph API permissions, resource types, and endpoints used by the app/add-in/agent, clearly indicating whether each permission is configured as an Application permission or a Delegated permission.`,
     defaultNotInPlaceReasons: [
-      "Permission inventory incomplete",
-      "Application permissions lack business justification",
-      "Credential storage not documented",
+      "Graph API permission list incomplete",
+      "Application vs Delegated not identified per permission",
+      "Resource types or endpoints not documented",
+    ],
+    correctiveActionHints: [
+      "Publish a permission matrix listing each Graph scope, type (Application/Delegated), resource, and endpoint.",
+      "Align Entra app registration permissions with the documented inventory.",
     ],
   }),
+
+  app(
+    17,
+    GRAPH_API_SECTION,
+    "Permission timing, functionality, and least privilege",
+    {
+      subId: "B",
+      intent: `Provide documentation and evidence of all Microsoft Graph API permissions used by the application, including:
+
+When the permissions are requested or used (e.g. during installation or when specific functionality is enabled).
+
+The application functionality that requires each permission, including a business justification demonstrating that the permissions follow the principle of least privilege.`,
+      defaultNotInPlaceReasons: [
+        "When permissions are requested or used not documented",
+        "Functionality mapping per permission missing",
+        "Least-privilege justification insufficient",
+      ],
+      correctiveActionHints: [
+        "Document install-time vs runtime permission use for each feature.",
+        "Remove unused permissions and document business justification for each retained scope.",
+      ],
+    }
+  ),
+
+  app(
+    17,
+    GRAPH_API_SECTION,
+    "Application permission credentials and custody",
+    {
+      subId: "C",
+      intent: `Provide documentation and evidence of all Microsoft Graph API permissions used by the application, including:
+
+Where Application permissions are used, provide details of the credential or identity used to authenticate the application (e.g. client secret, certificate, managed identity, or workload identity), including where the credential is stored and which system or identity holds custody of it.`,
+      defaultNotInPlaceReasons: [
+        "Application permission authentication method not documented",
+        "Credential storage location not described",
+        "Custody of secrets/certificates not evidenced",
+      ],
+      correctiveActionHints: [
+        "Document use of certificate, managed identity, or Key Vault–stored secrets for app-only Graph access.",
+        "Implement rotation and access controls for credentials with named custodians.",
+      ],
+    }
+  ),
+];
+
+export const applicationControls: ControlDefinition[] = [
+  ...pentestControls,
+  ...graphApiControls,
   ...raiPaasHybridControls,
   ...raiSaasControls,
 ];

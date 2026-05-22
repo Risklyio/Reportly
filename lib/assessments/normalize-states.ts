@@ -1,18 +1,19 @@
 import { ALL_CONTROLS } from "@/lib/controls/catalog";
 import type { AssessmentControlState } from "@/lib/types";
 
-/** Pre-2025 ops controls that were split into sub-controls (e.g. ops-1 → ops-1a/ops-1b). */
-const OPS_LEGACY_SPLIT: Record<string, string[]> = {
+/** Legacy control IDs split into sub-controls (assessment state migration). */
+const LEGACY_CONTROL_SPLIT: Record<string, string[]> = {
   "ops-1": ["ops-1a", "ops-1b"],
   "ops-2": ["ops-2a", "ops-2b"],
   "ops-3": ["ops-3a", "ops-3b"],
   "ops-9": ["ops-9a", "ops-9b"],
   "ops-12": ["ops-12a", "ops-12b"],
+  "app-17": ["app-17a", "app-17b", "app-17c"],
 };
 
-function migrateLegacyOpsStates(rows: AssessmentControlState[]): AssessmentControlState[] {
+function migrateLegacySplitStates(rows: AssessmentControlState[]): AssessmentControlState[] {
   const byId = new Map(rows.map((r) => [r.controlId, r]));
-  for (const [legacyId, targetIds] of Object.entries(OPS_LEGACY_SPLIT)) {
+  for (const [legacyId, targetIds] of Object.entries(LEGACY_CONTROL_SPLIT)) {
     const legacy = byId.get(legacyId);
     if (!legacy) continue;
     for (const targetId of targetIds) {
@@ -29,7 +30,7 @@ export function normalizeControlStates(
   assessmentId: string,
   rows: AssessmentControlState[]
 ): AssessmentControlState[] {
-  const migrated = migrateLegacyOpsStates(rows);
+  const migrated = migrateLegacySplitStates(rows);
   const byId = new Map(migrated.map((r) => [r.controlId, r]));
   const now = new Date().toISOString();
 
