@@ -18,20 +18,50 @@ const OUTCOME_LABELS: Record<string, string> = {
 const AUTOSAVE_DELAY_MS = 1200;
 
 function outcomeBadgeClass(outcome: ControlOutcome): string {
+  const base =
+    "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold leading-none";
   switch (outcome) {
     case "in_place":
-      return "bg-green-100 text-green-800";
+      return `${base} border-green-700/25 bg-green-100 text-green-800`;
     case "not_in_place":
-      return "bg-red-100 text-red-800";
+      return `${base} border-red-700/20 bg-red-100 text-red-800`;
     case "partially_in_place":
-      return "bg-amber-100 text-amber-900";
+      return `${base} border-amber-700/25 bg-amber-100 text-amber-900`;
     case "not_applicable":
-      return "bg-slate-200 text-slate-700";
+      return `${base} border-slate-400/40 bg-slate-200 text-slate-700`;
     case "pending":
-      return "bg-blue-100 text-blue-900";
+      return `${base} border-slate-500/45 bg-blue-50 text-blue-900`;
     default:
-      return "bg-muted text-text-muted";
+      return `${base} border-border bg-muted text-text-muted`;
   }
+}
+
+function InPlaceShieldIcon() {
+  return (
+    <svg
+      className="h-3.5 w-3.5 shrink-0 text-green-700"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      aria-hidden
+    >
+      <path d="M10 1.5 17 4.5v4.8c0 4.6-3 8.6-7 9.7C6 17.9 3 13.9 3 9.3V4.5l7-3zm-1.1 8.6 3.4-3.5-1.4-1.4-2 2-0.9-0.9-1.4 1.4 2.3 2.4z" />
+    </svg>
+  );
+}
+
+function OutcomeBadgeContent({
+  outcome,
+  label,
+}: {
+  outcome: ControlOutcome;
+  label: string;
+}) {
+  return (
+    <span className={outcomeBadgeClass(outcome)}>
+      {outcome === "in_place" && <InPlaceShieldIcon />}
+      {label}
+    </span>
+  );
 }
 
 type TextPatch = {
@@ -235,11 +265,7 @@ export function ControlCard({
             </p>
           </div>
           <div className="flex w-[9.75rem] shrink-0 items-center justify-end gap-2">
-            <span
-              className={`inline-flex shrink-0 whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold ${outcomeBadgeClass(outcome)}`}
-            >
-              {outcomeLabel}
-            </span>
+            <OutcomeBadgeContent outcome={outcome} label={outcomeLabel} />
             <span className="shrink-0 text-text-muted" aria-hidden>
               ▼
             </span>

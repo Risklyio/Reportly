@@ -23,11 +23,13 @@ const BRAND_APP: [number, number, number] = [242, 241, 237];
 const COL_CONTROL = 1;
 const COL_OUTCOME = 3;
 
-/** Fixed outcome badge typography (does not scale with row height) */
-const OUTCOME_FONT_SIZE = 6;
-const OUTCOME_LINE_H = 2.7;
-const OUTCOME_PAD = 1.6;
-const OUTCOME_MAX_TEXT_W = 18;
+/** Compact outcome badges (fixed size, independent of row height) */
+const OUTCOME_FONT_SIZE = 5.5;
+const BADGE_PAD_X = 1.4;
+const BADGE_PAD_Y = 0.55;
+const BADGE_ICON = 2.35;
+const BADGE_ICON_GAP = 0.45;
+const BADGE_MAX_H = 4.1;
 
 type OutcomeVisual = {
   fill: [number, number, number];
@@ -62,16 +64,16 @@ const OUTCOME_VISUALS: Record<string, OutcomeVisual> = {
     short: "N/A",
   },
   Pending: {
-    fill: [59, 130, 246],
-    ring: [37, 99, 235],
-    text: [255, 255, 255],
+    fill: [219, 234, 254],
+    ring: [71, 85, 105],
+    text: [30, 58, 95],
     short: "Pending",
   },
   "Not reviewed": {
     fill: [226, 232, 240],
     ring: [148, 163, 184],
     text: [71, 85, 105],
-    short: "Pending",
+    short: "Open",
   },
 };
 
@@ -202,23 +204,60 @@ function drawRoundedRect(
   }
 }
 
-function outcomeBadgeBox(
+/** Small shield with check for “In place” badges */
+function drawComplianceShield(
   doc: jsPDF,
-  label: string
-): { lines: string[]; boxW: number; boxH: number } {
+  cx: number,
+  cy: number,
+  size: number
+) {
+  const w = size * 0.82;
+  const h = size;
+  const left = cx - w / 2;
+  const top = cy - h / 2;
+
+  doc.setFillColor(255, 255, 255);
+  doc.setDrawColor(21, 128, 61);
+  doc.setLineWidth(0.2);
+
+  if (typeof doc.roundedRect === "function") {
+    doc.roundedRect(left, top, w, h * 0.58, 0.5, 0.5, "F");
+    doc.triangle(left, top + h * 0.5, left + w / 2, top + h, left + w, top + h * 0.5, "F");
+  } else {
+    doc.rect(left, top, w, h * 0.85, "F");
+  }
+
+  doc.setDrawColor(22, 101, 52);
+  doc.setLineWidth(0.28);
+  const x1 = left + w * 0.26;
+  const y1 = cy + h * 0.06;
+  const x2 = left + w * 0.4;
+  const y2 = cy + h * 0.2;
+  const x3 = left + w * 0.74;
+  const y3 = cy - h * 0.14;
+  doc.line(x1, y1, x2, y2);
+  doc.line(x2, y2, x3, y3);
+}
+
+function measureOutcomeBadge(
+  doc: jsPDF,
+  label: string,
+  withShield: boolean
+): { boxW: number; boxH: number; textW: number } {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(OUTCOME_FONT_SIZE);
-  const lines = doc.splitTextToSize(label, OUTCOME_MAX_TEXT_W);
-  let textW = 0;
-  for (const line of lines) {
-    textW = Math.max(textW, doc.getTextWidth(line));
-  }
-  const textH = lines.length * OUTCOME_LINE_H;
-  return {
-    lines,
-    boxW: textW + OUTCOME_PAD * 2,
-    boxH: textH + OUTCOME_PAD * 2,
-  };
+  const textW = doc.getTextWidth(label);
+  const textH =
+    typeof doc.getTextDimensions === "function"
+      ? doc.getTextDimensions(label).h
+      : OUTCOME_FONT_SIZE * 0.352;
+
+  const iconSlot = withShield ? BADGE_ICON + BADGE_ICON_GAP : 0;
+  const boxW = textW + iconSlot + BADGE_PAD_X * 2;
+  const innerH = Math.max(textH, withShield ? BADGE_ICON : textH);
+  const boxH = Math.min(innerH + BADGE_PAD_Y * 2, BADGE_MAX_H);
+
+  return { boxW, boxH, textW };
 }
 
 /** Fixed-size pill badge centered in the cell (ignores tall requirement rows). */
@@ -232,38 +271,40 @@ function drawOutcomeBadge(
 ) {
   const visual = OUTCOME_VISUALS[outcome] ?? OUTCOME_VISUALS["Not reviewed"];
   const label = visual.short;
-  const { lines, boxW, boxH } = outcomeBadgeBox(doc, label);
+  const withShield = outcome === "In place";
+  const { boxW, boxH, textW } = measureOutcomeBadge(doc, label, withShield);
 
   const cx = x + width / 2;
   const cy = y + height / 2;
   const rx = cx - boxW / 2;
   const ry = cy - boxH / 2;
 
-  doc.setLineWidth(0.5);
+  doc.setLineWidth(0.22);
   doc.setDrawColor(...visual.ring);
   drawRoundedRect(doc, rx, ry, boxW, boxH, BADGE_CORNER_RADIUS, "S");
 
   doc.setFillColor(...visual.fill);
   drawRoundedRect(
     doc,
-    rx + 0.4,
-    ry + 0.4,
-    boxW - 0.8,
-    boxH - 0.8,
-    BADGE_CORNER_RADIUS - 0.3,
+    rx + 0.25,
+    ry + 0.25,
+    boxW - 0.5,
+    boxH - 0.5,
+    BADGE_CORNER_RADIUS - 0.2,
     "F"
   );
+
+  const contentLeft = rx + BADGE_PAD_X;
+  if (withShield) {
+    drawComplianceShield(doc, contentLeft + BADGE_ICON / 2, cy, BADGE_ICON);
+  }
 
   doc.setTextColor(...visual.text);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(OUTCOME_FONT_SIZE);
-
-  const blockH = lines.length * OUTCOME_LINE_H;
-  let ty = cy - blockH / 2 + OUTCOME_LINE_H * 0.72;
-  for (const line of lines) {
-    doc.text(line, cx, ty, { align: "center", baseline: "middle" });
-    ty += OUTCOME_LINE_H;
-  }
+  const textX =
+    contentLeft + (withShield ? BADGE_ICON + BADGE_ICON_GAP : 0) + textW / 2;
+  doc.text(label, textX, cy, { align: "center", baseline: "middle" });
 }
 
 /** Small HARD FAIL tag under control title, left-aligned */
