@@ -2,23 +2,34 @@
 
 import type { ControlOutcome } from "@/lib/types";
 
-const OPTIONS: { value: ControlOutcome; label: string }[] = [
+const BASE_OPTIONS: { value: ControlOutcome; label: string }[] = [
   { value: "in_place", label: "In place" },
   { value: "not_in_place", label: "Not in place" },
   { value: "partially_in_place", label: "Partially in place" },
   { value: "not_applicable", label: "Not applicable" },
 ];
 
+const PENDING_OPTION: { value: ControlOutcome; label: string } = {
+  value: "pending",
+  label: "Pending",
+};
+
 export function OutcomeSelector({
   value,
   onChange,
+  showPendingOption = false,
 }: {
   value: ControlOutcome;
   onChange: (v: ControlOutcome) => void;
+  showPendingOption?: boolean;
 }) {
+  const options = showPendingOption
+    ? [...BASE_OPTIONS, PENDING_OPTION]
+    : BASE_OPTIONS;
+
   return (
     <div className="flex flex-wrap gap-2">
-      {OPTIONS.map((o) => (
+      {options.map((o) => (
         <button
           key={o.value ?? "empty"}
           type="button"

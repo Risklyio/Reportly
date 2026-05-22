@@ -61,6 +61,12 @@ const OUTCOME_VISUALS: Record<string, OutcomeVisual> = {
     text: [255, 255, 255],
     short: "N/A",
   },
+  Pending: {
+    fill: [59, 130, 246],
+    ring: [37, 99, 235],
+    text: [255, 255, 255],
+    short: "Pending",
+  },
   "Not reviewed": {
     fill: [226, 232, 240],
     ring: [148, 163, 184],
@@ -384,6 +390,7 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
       ["Not in place", String(data.summary.notInPlace)],
       ["Partially in place", String(data.summary.partiallyInPlace)],
       ["Not applicable", String(data.summary.notApplicable)],
+      ["Pending", String(data.summary.pending)],
       ["Not yet reviewed", String(data.summary.notReviewed)],
       ["Hard-fail controls (total)", String(data.summary.hardFailTotal)],
       ["Hard-fail with gaps", String(data.summary.hardFailGaps)],

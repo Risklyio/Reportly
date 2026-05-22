@@ -11,6 +11,7 @@ const OUTCOME_LABELS: Record<string, string> = {
   not_in_place: "Not in place",
   partially_in_place: "Partially in place",
   not_applicable: "Not applicable",
+  pending: "Pending",
 };
 
 /** Wait after typing stops before autosave (reduces lag and API calls) */
@@ -26,6 +27,8 @@ function outcomeBadgeClass(outcome: ControlOutcome): string {
       return "bg-amber-100 text-amber-900";
     case "not_applicable":
       return "bg-slate-200 text-slate-700";
+    case "pending":
+      return "bg-blue-100 text-blue-900";
     default:
       return "bg-muted text-text-muted";
   }
@@ -46,6 +49,8 @@ export function ControlCard({
   correctiveAction,
   onSave,
   onSuggest,
+  onOutcomeChange,
+  showPendingOption = false,
 }: {
   assessmentId: string;
   control: ControlDefinition;
@@ -60,6 +65,9 @@ export function ControlCard({
     correctiveAction?: string;
   }) => Promise<void>;
   onSuggest: () => Promise<{ text: string; links: string[] }>;
+  /** When set, outcome buttons call this instead of a single-control save (e.g. pentest bulk Pending). */
+  onOutcomeChange?: (outcome: ControlOutcome) => Promise<void>;
+  showPendingOption?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -95,6 +103,7 @@ export function ControlCard({
 
   const showGapFields =
     outcome === "not_in_place" || outcome === "partially_in_place";
+  const showPendingFields = outcome === "pending";
 
   const persist = useCallback(
     async (patch: TextPatch & { outcome?: ControlOutcome }) => {
@@ -190,7 +199,7 @@ export function ControlCard({
   }
 
   async function handleComplete() {
-    if (showGapFields) {
+    if (showGapFields || showPendingFields) {
       pendingPatch.current = {
         notInPlaceReason: draftReason,
         assessorNotes: draftNotes,
@@ -283,9 +292,54 @@ export function ControlCard({
           <label className="label">Outcome</label>
           <OutcomeSelector
             value={outcome}
-            onChange={(v) => void persist({ outcome: v })}
+            showPendingOption={showPendingOption}
+            onChange={(v) => {
+              if (onOutcomeChange) {
+                void (async () => {
+                  setSaving(true);
+                  setSaveError(null);
+                  try {
+                    await onOutcomeChange(v);
+                  } catch (e) {
+                    setSaveError(
+                      e instanceof Error ? e.message : "Failed to save outcome"
+                    );
+                  } finally {
+                    setSaving(false);
+                  }
+                })();
+              } else {
+                void persist({ outcome: v });
+              }
+            }}
           />
+          {showPendingOption && (
+            <p className="mt-2 text-xs text-text-muted">
+              Pending applies to all penetration testing controls (1–16) and
+              fills the report text on control 1.
+            </p>
+          )}
         </div>
+
+        {showPendingFields && (
+          <div>
+            <label className="label">Report text (corrective actions)</label>
+            <p className="mb-1 text-xs text-text-muted">
+              Included in PDF and Word export. Edit if needed before completing.
+            </p>
+            <textarea
+              className="input min-h-[100px]"
+              rows={4}
+              value={draftCorrective}
+              onChange={(e) => {
+                const v = e.target.value;
+                setDraftCorrective(v);
+                scheduleAutosave({ correctiveAction: v });
+              }}
+              onBlur={() => void persist({ correctiveAction: draftCorrective })}
+            />
+          </div>
+        )}
 
         {showGapFields && (
           <>

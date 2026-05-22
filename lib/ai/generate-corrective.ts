@@ -11,6 +11,7 @@ const OUTCOME_LABELS: Record<string, string> = {
   not_in_place: "Not in place",
   partially_in_place: "Partially in place",
   not_applicable: "Not applicable",
+  pending: "Pending",
 };
 
 export type AiProvider = "openai" | "google" | "groq";

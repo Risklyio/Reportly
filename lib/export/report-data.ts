@@ -11,6 +11,7 @@ export const OUTCOME_LABELS: Record<string, string> = {
   not_in_place: "Not in place",
   partially_in_place: "Partially in place",
   not_applicable: "Not applicable",
+  pending: "Pending",
 };
 
 export type ExportControlRow = {
@@ -45,6 +46,7 @@ export type AssessmentExportData = {
     notInPlace: number;
     partiallyInPlace: number;
     notApplicable: number;
+    pending: number;
     notReviewed: number;
     hardFailTotal: number;
     hardFailGaps: number;
@@ -81,6 +83,7 @@ function computeSummary(rows: ExportControlRow[]) {
     partiallyInPlace: rows.filter((r) => r.outcome === "Partially in place")
       .length,
     notApplicable: rows.filter((r) => r.outcome === "Not applicable").length,
+    pending: rows.filter((r) => r.outcome === "Pending").length,
     notReviewed: rows.length - reviewed,
     hardFailTotal: rows.filter((r) => r.hardFail === "Yes").length,
     hardFailGaps: rows.filter(

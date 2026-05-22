@@ -8,6 +8,7 @@ export type ControlOutcome =
   | "not_in_place"
   | "partially_in_place"
   | "not_applicable"
+  | "pending"
   | null;
 
 export interface ControlDefinition {

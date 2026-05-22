@@ -1,6 +1,12 @@
 import { eq, desc, and } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { ALL_CONTROLS } from "@/lib/controls/catalog";
+import {
+  getPentestControlIds,
+  PENTEST_LEAD_CONTROL_ID,
+  PENTEST_PENDING_CORRECTIVE_APP1,
+  PENTEST_PENDING_CORRECTIVE_OTHER,
+} from "@/lib/controls/pentest";
 import type {
   AssessmentMetadata,
   AssessmentListItem,
@@ -465,6 +471,31 @@ export async function updateAssessmentControl(
       })
       .run();
   }
+}
+
+/** Mark all penetration testing controls (1–16) as Pending; control 1 gets report text. */
+export async function applyPentestPendingToAssessment(
+  assessmentId: string
+): Promise<AssessmentControlState[]> {
+  await assertDatabaseReady();
+  await syncCatalogControls();
+  await ensureAssessmentControlRows(
+    assessmentId,
+    new Set((await getAssessmentControlStates(assessmentId)).map((s) => s.controlId))
+  );
+
+  const ids = getPentestControlIds();
+  for (const controlId of ids) {
+    await updateAssessmentControl(assessmentId, controlId, {
+      outcome: "pending",
+      correctiveAction:
+        controlId === PENTEST_LEAD_CONTROL_ID
+          ? PENTEST_PENDING_CORRECTIVE_APP1
+          : PENTEST_PENDING_CORRECTIVE_OTHER,
+    });
+  }
+
+  return getAssessmentControlStates(assessmentId);
 }
 
 export async function deleteAssessment(id: string): Promise<void> {

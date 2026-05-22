@@ -14,6 +14,7 @@ import type {
   ControlOutcome,
   DomainId,
 } from "@/lib/types";
+import { PENTEST_LEAD_CONTROL_ID } from "@/lib/controls/pentest";
 import { ControlCard } from "./ControlCard";
 import { MobileAssessmentNav } from "./MobileAssessmentNav";
 
@@ -93,6 +94,33 @@ export function AssessmentWorkspace({
     return sections;
   }, [domain, filter, states]);
 
+  const applyPentestPending = useCallback(async () => {
+    const res = await fetch(
+      `/api/assessments/${assessment.id}/pentest-pending`,
+      { method: "POST" }
+    );
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error ?? "Failed to apply penetration test pending");
+    }
+    const data = (await res.json()) as {
+      states: AssessmentControlState[];
+    };
+    setStates((prev) => {
+      const next = new Map(prev);
+      for (const row of data.states) {
+        next.set(row.controlId, row);
+      }
+      return next;
+    });
+    await fetch(`/api/assessments/${assessment.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "in_progress" }),
+    });
+    setAssessment((a) => ({ ...a, status: "in_progress" }));
+  }, [assessment.id]);
+
   const updateControl = useCallback(
     async (
       controlId: string,
@@ -135,6 +163,17 @@ export function AssessmentWorkspace({
       }
     },
     [assessment.id]
+  );
+
+  const handleOutcomeChange = useCallback(
+    async (controlId: string, outcome: ControlOutcome) => {
+      if (controlId === PENTEST_LEAD_CONTROL_ID && outcome === "pending") {
+        await applyPentestPending();
+        return;
+      }
+      await updateControl(controlId, { outcome });
+    },
+    [applyPentestPending, updateControl]
   );
 
   const suggest = useCallback(
@@ -227,6 +266,12 @@ export function AssessmentWorkspace({
                     onSave={(patch) => updateControl(control.id, patch)}
                     onSuggest={() =>
                       suggest(control.id, st.notInPlaceReason)
+                    }
+                    showPendingOption={control.id === PENTEST_LEAD_CONTROL_ID}
+                    onOutcomeChange={
+                      control.id === PENTEST_LEAD_CONTROL_ID
+                        ? (o) => handleOutcomeChange(control.id, o)
+                        : undefined
                     }
                   />
                 );
