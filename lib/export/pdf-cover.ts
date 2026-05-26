@@ -10,8 +10,10 @@ const WHITE: Rgb = [255, 255, 255];
 const BG: Rgb = [252, 252, 252];
 const BLACK: Rgb = [6, 6, 6];
 const MUTED: Rgb = [107, 114, 128];
+const HEADER_BG: Rgb = [247, 247, 247];
+const BORDER: Rgb = [235, 235, 235];
 
-const COVER_MARGIN = 24;
+const COVER_MARGIN = 28;
 const LOGO_H = 10;
 const LOGO_ASPECT = 200 / 44;
 
@@ -38,12 +40,6 @@ function formatCoverDate(dateStr: string): string {
   );
 }
 
-function tri(doc: jsPDF, c: Rgb, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number) {
-  if (typeof doc.triangle !== "function") return;
-  doc.setFillColor(...c);
-  doc.triangle(x1, y1, x2, y2, x3, y3, "F");
-}
-
 function roundRect(doc: jsPDF, x: number, y: number, w: number, h: number, r: number, style: "F" | "S" | "FD") {
   if (typeof doc.roundedRect === "function") {
     doc.roundedRect(x, y, w, h, r, r, style);
@@ -53,78 +49,7 @@ function roundRect(doc: jsPDF, x: number, y: number, w: number, h: number, r: nu
 }
 
 /* ------------------------------------------------------------------ */
-/*  Abstract cover art – premium geometric composition                 */
-/*                                                                     */
-/*  Layered triangular shards in a gradient from deep black (#060606)  */
-/*  through warm greys to light silver, clustered in bottom-left and   */
-/*  top-right with subtle scattered accents in the centre field.       */
-/* ------------------------------------------------------------------ */
-
-const SHARD_DARK: Rgb = [6, 6, 6];
-const SHARD_CHARCOAL: Rgb = [28, 28, 28];
-const SHARD_GRAPHITE: Rgb = [48, 48, 48];
-const SHARD_STEEL: Rgb = [72, 72, 72];
-const SHARD_SLATE: Rgb = [100, 100, 100];
-const SHARD_ASH: Rgb = [140, 140, 140];
-const SHARD_SILVER: Rgb = [185, 185, 185];
-const SHARD_MIST: Rgb = [215, 215, 215];
-const SHARD_CLOUD: Rgb = [232, 232, 232];
-
-function drawCoverArt(doc: jsPDF, w: number, h: number) {
-  doc.setFillColor(...WHITE);
-  doc.rect(0, 0, w, h, "F");
-
-  doc.setFillColor(...BG);
-  doc.rect(0, 0, w, h, "F");
-
-  /* --- bottom-left cluster (dense, dark) --- */
-  tri(doc, SHARD_DARK,      0,         h,          0,         h * 0.40,  w * 0.50,  h);
-  tri(doc, SHARD_CHARCOAL,  0,         h,          w * 0.18,  h,         w * 0.38,  h * 0.58);
-  tri(doc, SHARD_GRAPHITE,  0,         h * 0.74,   w * 0.26,  h,         w * 0.10,  h * 0.50);
-  tri(doc, SHARD_STEEL,     w * 0.06,  h,          w * 0.32,  h,         w * 0.18,  h * 0.68);
-  tri(doc, SHARD_GRAPHITE,  w * 0.14,  h * 0.84,   w * 0.42,  h,         w * 0.28,  h * 0.56);
-  tri(doc, SHARD_ASH,       w * 0.02,  h * 0.64,   w * 0.22,  h * 0.82,  w * 0.12,  h * 0.48);
-  tri(doc, SHARD_SILVER,    w * 0.20,  h,          w * 0.36,  h,         w * 0.24,  h * 0.76);
-  tri(doc, SHARD_SLATE,     w * 0.28,  h * 0.88,   w * 0.46,  h,         w * 0.34,  h * 0.64);
-  tri(doc, SHARD_CHARCOAL,  w * 0.34,  h * 0.72,   w * 0.48,  h * 0.88,  w * 0.40,  h * 0.52);
-  tri(doc, SHARD_DARK,      w * 0.10,  h * 0.44,   w * 0.22,  h * 0.58,  w * 0.16,  h * 0.36);
-  tri(doc, SHARD_MIST,      w * 0.24,  h * 0.50,   w * 0.38,  h * 0.64,  w * 0.30,  h * 0.40);
-  tri(doc, SHARD_CLOUD,     w * 0.36,  h * 0.82,   w * 0.50,  h * 0.96,  w * 0.44,  h * 0.70);
-
-  /* --- top-right cluster (crisp, lighter towards edges) --- */
-  tri(doc, SHARD_DARK,      w,         0,          w,         h * 0.38,  w * 0.52,  0);
-  tri(doc, SHARD_CHARCOAL,  w,         0,          w * 0.82,  0,         w * 0.62,  h * 0.30);
-  tri(doc, SHARD_GRAPHITE,  w * 0.76,  0,          w,         h * 0.16,  w * 0.90,  0);
-  tri(doc, SHARD_STEEL,     w * 0.70,  0,          w * 0.92,  h * 0.12,  w * 0.82,  h * 0.24);
-  tri(doc, SHARD_ASH,       w * 0.78,  h * 0.06,   w * 0.96,  h * 0.22,  w * 0.86,  h * 0.02);
-  tri(doc, SHARD_SILVER,    w * 0.66,  0,          w * 0.80,  h * 0.14,  w * 0.72,  h * 0.28);
-  tri(doc, SHARD_SLATE,     w * 0.56,  0,          w * 0.68,  h * 0.18,  w * 0.60,  h * 0.08);
-  tri(doc, SHARD_MIST,      w * 0.60,  h * 0.20,   w * 0.74,  h * 0.34,  w * 0.66,  h * 0.12);
-  tri(doc, SHARD_CHARCOAL,  w * 0.84,  h * 0.26,   w,         h * 0.36,  w * 0.92,  h * 0.16);
-  tri(doc, SHARD_CLOUD,     w * 0.72,  h * 0.04,   w * 0.88,  h * 0.18,  w * 0.80,  h * 0.30);
-
-  /* --- scattered accents (centre field) --- */
-  tri(doc, SHARD_CHARCOAL,  w * 0.48,  h * 0.10,   w * 0.52,  h * 0.16,  w * 0.50,  h * 0.06);
-  tri(doc, SHARD_GRAPHITE,  w * 0.44,  h * 0.76,   w * 0.48,  h * 0.82,  w * 0.46,  h * 0.72);
-  tri(doc, SHARD_STEEL,     w * 0.56,  h * 0.36,   w * 0.60,  h * 0.42,  w * 0.58,  h * 0.32);
-  tri(doc, SHARD_ASH,       w * 0.38,  h * 0.26,   w * 0.42,  h * 0.32,  w * 0.40,  h * 0.22);
-  tri(doc, SHARD_DARK,      w * 0.52,  h * 0.56,   w * 0.56,  h * 0.62,  w * 0.54,  h * 0.52);
-  tri(doc, SHARD_SILVER,    w * 0.62,  h * 0.68,   w * 0.66,  h * 0.74,  w * 0.64,  h * 0.64);
-  tri(doc, SHARD_MIST,      w * 0.46,  h * 0.44,   w * 0.50,  h * 0.50,  w * 0.48,  h * 0.40);
-}
-
-/* ------------------------------------------------------------------ */
-/*  Divider line                                                       */
-/* ------------------------------------------------------------------ */
-
-function drawAccentLine(doc: jsPDF, x: number, y: number, len: number) {
-  doc.setDrawColor(...BLACK);
-  doc.setLineWidth(0.6);
-  doc.line(x, y, x + len, y);
-}
-
-/* ------------------------------------------------------------------ */
-/*  Main cover page export                                             */
+/*  Clean, professional cover layout (no triangles)                    */
 /* ------------------------------------------------------------------ */
 
 export function drawLandscapeCoverPage(
@@ -135,94 +60,120 @@ export function drawLandscapeCoverPage(
   const w = doc.internal.pageSize.getWidth();
   const h = doc.internal.pageSize.getHeight();
 
-  drawCoverArt(doc, w, h);
+  /* Solid white background */
+  doc.setFillColor(...WHITE);
+  doc.rect(0, 0, w, h, "F");
 
-  /* --- Logo (top-left, inside a frosted card) --- */
+  /* Top header strip – #f7f7f7 */
+  const headerH = 20;
+  doc.setFillColor(...HEADER_BG);
+  doc.rect(0, 0, w, headerH, "F");
+  doc.setDrawColor(...BORDER);
+  doc.setLineWidth(0.3);
+  doc.line(0, headerH, w, headerH);
+
+  /* Logo in header */
   const logoW = LOGO_H * LOGO_ASPECT;
-  const cardX = COVER_MARGIN;
-  const cardY = COVER_MARGIN - 4;
-  const cardW = logoW + 12;
-  const cardH = LOGO_H + 8;
-
-  doc.setFillColor(255, 255, 255);
-  roundRect(doc, cardX, cardY, cardW, cardH, 4, "F");
-
+  const logoY = (headerH - LOGO_H) / 2;
   if (logoDataUri) {
     try {
-      doc.addImage(logoDataUri, "PNG", cardX + 6, cardY + 4, logoW, LOGO_H);
+      doc.addImage(logoDataUri, "PNG", COVER_MARGIN, logoY, logoW, LOGO_H);
     } catch {
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(15);
+      doc.setFontSize(14);
       doc.setTextColor(...BLACK);
-      doc.text("Reportly.io", cardX + 6, cardY + LOGO_H + 1);
+      doc.text("Reportly.io", COVER_MARGIN, headerH / 2 + 2);
     }
   } else {
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(15);
+    doc.setFontSize(14);
     doc.setTextColor(...BLACK);
-    doc.text("Reportly.io", cardX + 6, cardY + LOGO_H + 1);
+    doc.text("Reportly.io", COVER_MARGIN, headerH / 2 + 2);
   }
 
-  /* --- Date (top-right) --- */
+  /* Date in header (right-aligned) */
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
+  doc.setFontSize(8);
   doc.setTextColor(...MUTED);
-  doc.text(formatCoverDate(data.assessmentDate), w - COVER_MARGIN, COVER_MARGIN + 2, { align: "right" });
+  doc.text(formatCoverDate(data.assessmentDate), w - COVER_MARGIN, headerH / 2 + 1, { align: "right" });
 
-  /* --- Central content card (frosted panel) --- */
-  const panelX = w * 0.32;
-  const panelY = h * 0.30;
-  const panelW = w * 0.58;
-  const panelH = h * 0.46;
+  /* ---- Central content area ---- */
 
-  doc.setFillColor(255, 255, 255);
-  roundRect(doc, panelX, panelY, panelW, panelH, 6, "F");
+  const contentY = h * 0.32;
+  const textX = COVER_MARGIN;
 
-  const textX = panelX + 18;
-  let ty = panelY + 24;
+  /* Thin accent line above title */
+  doc.setDrawColor(...BLACK);
+  doc.setLineWidth(0.8);
+  doc.line(textX, contentY - 6, textX + 60, contentY - 6);
 
   /* Title */
   doc.setTextColor(...BLACK);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(30);
-  doc.text("M365 Application", textX, ty);
-  ty += 13;
-  doc.text("Compliance", textX, ty);
-  ty += 15;
+  doc.setFontSize(34);
+  doc.text("M365 Application", textX, contentY);
+
+  doc.setFontSize(34);
+  doc.text("Compliance", textX, contentY + 14);
 
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(22);
+  doc.setFontSize(24);
   doc.setTextColor(...MUTED);
-  doc.text("Assessment Report", textX, ty);
-  ty += 10;
+  doc.text("Assessment Report", textX, contentY + 30);
 
-  drawAccentLine(doc, textX, ty, 50);
-  ty += 10;
+  /* Meta info card */
+  let metaY = contentY + 46;
+  const cardX = textX;
+  const cardW = w * 0.45;
+  const cardH = 34;
 
-  /* Meta */
+  doc.setFillColor(...BG);
+  doc.setDrawColor(...BORDER);
+  doc.setLineWidth(0.25);
+  roundRect(doc, cardX, metaY - 5, cardW, cardH, 4, "FD");
+
+  const labelX = cardX + 8;
+  const valueX = cardX + 40;
+
   if (data.clientName) {
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...BLACK);
-    doc.setFontSize(13);
-    doc.text(data.clientName, textX, ty);
-    ty += 7;
+    doc.setFontSize(10);
+    doc.text("Client", labelX, metaY + 2);
+    doc.setFont("helvetica", "normal");
+    doc.text(data.clientName, valueX, metaY + 2);
+    metaY += 7;
   }
   if (data.appName) {
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...BLACK);
+    doc.setFontSize(10);
+    doc.text("Application", labelX, metaY + 2);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(...MUTED);
-    doc.setFontSize(11);
-    doc.text(data.appName, textX, ty);
-    ty += 6;
+    doc.text(data.appName, valueX, metaY + 2);
+    metaY += 7;
   }
   if (data.assessorName) {
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...BLACK);
     doc.setFontSize(10);
-    doc.text(`Assessor: ${data.assessorName}`, textX, ty);
+    doc.text("Assessor", labelX, metaY + 2);
+    doc.setFont("helvetica", "normal");
+    doc.text(data.assessorName, valueX, metaY + 2);
   }
 
-  /* --- Footer badge --- */
-  const footerY = h - COVER_MARGIN;
+  /* ---- Bottom footer ---- */
+  const footerH = 14;
+  const footerY = h - footerH;
+  doc.setFillColor(...HEADER_BG);
+  doc.rect(0, footerY, w, footerH, "F");
+  doc.setDrawColor(...BORDER);
+  doc.setLineWidth(0.3);
+  doc.line(0, footerY, w, footerY);
+
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7);
   doc.setTextColor(...MUTED);
-  doc.text(data.frameworkName, COVER_MARGIN, footerY);
+  doc.text(data.frameworkName, COVER_MARGIN, footerY + footerH / 2 + 1, { baseline: "middle" });
+  doc.text("Confidential", w - COVER_MARGIN, footerY + footerH / 2 + 1, { align: "right", baseline: "middle" });
 }

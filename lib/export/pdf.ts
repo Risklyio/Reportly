@@ -29,6 +29,7 @@ type Rgb = [number, number, number];
 const C_BLACK: Rgb = [6, 6, 6];
 const C_WHITE: Rgb = [255, 255, 255];
 const C_BG: Rgb = [252, 252, 252];
+const C_HEADER_BG: Rgb = [247, 247, 247];
 const C_BORDER: Rgb = [235, 235, 235];
 const C_MUTED: Rgb = [107, 114, 128];
 const C_SECTION_BG: Rgb = [245, 245, 245];
@@ -178,21 +179,24 @@ function loadLogoDataUri(): string | null {
 function drawPageHeader(doc: jsPDF, logoDataUri: string | null) {
   const w = pageWidth(doc);
 
-  doc.setFillColor(...C_BLACK);
-  roundRect(doc, 0, 0, w, HEADER_H, 0, "F");
+  doc.setFillColor(...C_HEADER_BG);
+  doc.rect(0, 0, w, HEADER_H, "F");
+  doc.setDrawColor(...C_BORDER);
+  doc.setLineWidth(0.3);
+  doc.line(0, HEADER_H, w, HEADER_H);
 
   const logoY = (HEADER_H - LOGO_DISPLAY_H) / 2;
   if (logoDataUri) {
     try {
       doc.addImage(logoDataUri, "PNG", MARGIN, logoY, LOGO_DISPLAY_W, LOGO_DISPLAY_H);
     } catch {
-      doc.setTextColor(...C_WHITE);
+      doc.setTextColor(...C_BLACK);
       doc.setFontSize(13);
       doc.setFont("helvetica", "bold");
       doc.text("Reportly.io", MARGIN, 14);
     }
   } else {
-    doc.setTextColor(...C_WHITE);
+    doc.setTextColor(...C_BLACK);
     doc.setFontSize(13);
     doc.setFont("helvetica", "bold");
     doc.text("Reportly.io", MARGIN, 14);
@@ -200,7 +204,7 @@ function drawPageHeader(doc: jsPDF, logoDataUri: string | null) {
 
   doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
-  doc.setTextColor(...C_WHITE);
+  doc.setTextColor(...C_MUTED);
   doc.text("M365 Application Compliance Assessment", w - MARGIN, 14, { align: "right" });
 
   doc.setTextColor(...C_BLACK);
@@ -504,8 +508,8 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
     ],
     styles: { fontSize: 7.5, textColor: C_BLACK, cellPadding: 2.5 },
     headStyles: {
-      fillColor: C_BLACK,
-      textColor: C_WHITE,
+      fillColor: C_HEADER_BG,
+      textColor: C_BLACK,
       fontStyle: "bold",
     },
     alternateRowStyles: { fillColor: C_BG },
@@ -547,10 +551,19 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
       const tableBody = controlTableBody(rows);
       const contentW = w - MARGIN * 2;
 
+      const colRef = 10;
+      const colOutcome = 24;
+      const flexW = contentW - colRef - colOutcome;
+      const colControl = Math.round(flexW * 0.17);
+      const colReq = Math.round(flexW * 0.30);
+      const colGap = Math.round(flexW * 0.22);
+      const colAction = flexW - colControl - colReq - colGap;
+
       autoTable(doc, {
         startY: y,
         margin: { left: MARGIN, right: MARGIN },
-        head: [["#", "Control", "Requirement (full text)", "Outcome", "Gap / reason", "Corrective action"]],
+        tableWidth: contentW,
+        head: [["#", "Control", "Requirement", "Outcome", "Gap / Reason", "Corrective Action"]],
         body: tableBody,
         styles: {
           fontSize: 6.5,
@@ -562,18 +575,18 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
           lineWidth: 0.15,
         },
         headStyles: {
-          fillColor: C_BLACK,
-          textColor: C_WHITE,
+          fillColor: C_HEADER_BG,
+          textColor: C_BLACK,
           fontStyle: "bold",
           fontSize: 6.5,
         },
         columnStyles: {
-          0: { cellWidth: 10 },
-          1: { cellWidth: contentW * 0.16 },
-          2: { cellWidth: contentW * 0.27 },
-          3: { cellWidth: 26, halign: "center", valign: "middle" },
-          4: { cellWidth: contentW * 0.17 },
-          5: { cellWidth: contentW * 0.28 },
+          0: { cellWidth: colRef },
+          1: { cellWidth: colControl },
+          2: { cellWidth: colReq },
+          3: { cellWidth: colOutcome, halign: "center", valign: "middle" },
+          4: { cellWidth: colGap },
+          5: { cellWidth: colAction },
         },
         alternateRowStyles: { fillColor: C_BG },
         tableLineColor: C_BORDER,
