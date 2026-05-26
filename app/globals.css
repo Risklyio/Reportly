@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --topbar: #060606;
-  --sidebar: #060606;
+  --topbar: #f7f7f7;
+  --sidebar: #f7f7f7;
   --app: #fcfcfc;
   --primary: #060606;
   --primary-hover: #1a1a1a;
@@ -25,10 +25,10 @@ body {
     @apply inline-flex items-center justify-center rounded-lg border border-neutral-200 bg-surface px-4 py-2 text-sm font-medium text-text transition hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2 focus:ring-offset-app;
   }
   .btn-topbar {
-    @apply inline-flex items-center justify-center rounded-lg bg-white px-4 py-2 text-sm font-semibold text-primary transition hover:bg-neutral-100;
+    @apply inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary-hover;
   }
   .btn-topbar-ghost {
-    @apply inline-flex items-center justify-center rounded-lg border border-white/25 px-4 py-2 text-sm font-medium text-on-dark transition hover:bg-white/10;
+    @apply inline-flex items-center justify-center rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-text transition hover:bg-neutral-100;
   }
   .card {
     @apply rounded-xl border border-neutral-200 bg-surface p-5 shadow-card;

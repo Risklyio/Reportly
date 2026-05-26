@@ -5,7 +5,7 @@ const LOGO_SRC = "/brand/reportly-logo.png?v=2";
 
 export function TopBar() {
   return (
-    <header className="sticky top-0 z-40 border-b border-neutral-800 bg-topbar">
+    <header className="sticky top-0 z-40 border-b border-neutral-200 bg-topbar">
       <div className="flex h-14 items-center justify-between px-4 lg:px-6">
         <Link href="/" className="flex items-center gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -16,7 +16,7 @@ export function TopBar() {
             height={44}
             decoding="async"
             fetchPriority="high"
-            className="h-9 w-auto max-w-[220px] object-contain object-left brightness-0 invert"
+            className="h-9 w-auto max-w-[220px] object-contain object-left"
           />
         </Link>
         <nav className="flex items-center gap-3">

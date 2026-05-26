@@ -33,7 +33,7 @@ export function CollapsibleSidebar() {
     return `/assessments/${assessmentId}?domain=${domain}&filter=${filter}`;
   }
 
-  const asideClass = `shrink-0 border-neutral-800 bg-sidebar transition-all flex flex-col ${
+  const asideClass = `shrink-0 border-neutral-200 bg-sidebar transition-all flex flex-col ${
     collapsed ? "w-12" : "w-72"
   } border-r`;
 
@@ -45,9 +45,9 @@ export function CollapsibleSidebar() {
           onToggle={() => setCollapsed(!collapsed)}
         />
         {!collapsed && (
-          <div className="p-4 text-sm text-on-dark-muted">
-            <p className="mb-2 font-medium text-on-dark">Frameworks</p>
-            <p className="rounded-lg border border-white/10 bg-white/5 p-3 text-xs text-on-dark">
+          <div className="p-4 text-sm text-text-muted">
+            <p className="mb-2 font-medium text-text">Frameworks</p>
+            <p className="rounded-lg border border-neutral-200 bg-white p-3 text-xs text-text">
               {FRAMEWORK_NAME}
             </p>
             <p className="mt-3 text-xs">
@@ -67,21 +67,21 @@ export function CollapsibleSidebar() {
       />
       {!collapsed && (
         <div className="flex flex-col overflow-y-auto p-4">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-dark-muted">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-text-muted">
             Framework
           </p>
           <button
             type="button"
             onClick={() => setFrameworkOpen(!frameworkOpen)}
-            className="flex w-full items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-left text-sm font-medium text-on-dark hover:bg-white/10"
+            className="flex w-full items-center justify-between rounded-lg border border-neutral-200 bg-white px-3 py-2 text-left text-sm font-medium text-text hover:bg-neutral-100"
           >
             <span className="line-clamp-2">{FRAMEWORK_NAME}</span>
-            <span className="text-on-dark-muted">{frameworkOpen ? "−" : "+"}</span>
+            <span className="text-text-muted">{frameworkOpen ? "−" : "+"}</span>
           </button>
 
           {frameworkOpen && (
             <>
-              <p className="mb-2 mt-5 text-xs font-semibold uppercase tracking-wide text-on-dark-muted">
+              <p className="mb-2 mt-5 text-xs font-semibold uppercase tracking-wide text-text-muted">
                 Domains
               </p>
               <ul className="space-y-1">
@@ -94,8 +94,8 @@ export function CollapsibleSidebar() {
                         href={href}
                         className={`block rounded-lg px-3 py-2 text-sm transition ${
                           active
-                            ? "bg-white font-semibold text-primary"
-                            : "text-on-dark hover:bg-white/10"
+                            ? "bg-primary font-semibold text-primary-foreground"
+                            : "text-text hover:bg-neutral-100"
                         }`}
                       >
                         {d.label}
@@ -105,7 +105,7 @@ export function CollapsibleSidebar() {
                 })}
               </ul>
 
-              <p className="mb-2 mt-5 text-xs font-semibold uppercase tracking-wide text-on-dark-muted">
+              <p className="mb-2 mt-5 text-xs font-semibold uppercase tracking-wide text-text-muted">
                 Filter
               </p>
               <ul className="space-y-1">
@@ -118,8 +118,8 @@ export function CollapsibleSidebar() {
                         href={href}
                         className={`block rounded-lg px-3 py-2 text-sm transition ${
                           active
-                            ? "bg-white/90 font-semibold text-primary"
-                            : "text-on-dark hover:bg-white/10"
+                            ? "bg-primary font-semibold text-primary-foreground"
+                            : "text-text hover:bg-neutral-100"
                         }`}
                       >
                         {f.label}
@@ -147,7 +147,7 @@ function SidebarToggle({
     <button
       type="button"
       onClick={onToggle}
-      className="flex h-10 items-center justify-center border-b border-neutral-800 text-on-dark-muted transition hover:bg-white/10 hover:text-on-dark"
+      className="flex h-10 items-center justify-center border-b border-neutral-200 text-text-muted transition hover:bg-neutral-100 hover:text-text"
       aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
     >
       {collapsed ? "»" : "«"}

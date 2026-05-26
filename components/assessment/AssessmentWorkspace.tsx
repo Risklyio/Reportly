@@ -199,7 +199,7 @@ export function AssessmentWorkspace({
           <p className="text-sm text-text-muted">
             {assessment.appName} · {assessment.assessmentDate}
           </p>
-          <p className="mt-1 text-sm font-medium text-topbar">{domainLabel}</p>
+          <p className="mt-1 text-sm font-medium text-text">{domainLabel}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Link
@@ -224,7 +224,7 @@ export function AssessmentWorkspace({
           </a>
           <Link
             href="/settings#report-templates"
-            className="text-sm font-medium text-topbar underline-offset-2 hover:underline"
+            className="text-sm font-medium text-primary underline-offset-2 hover:underline"
           >
             Upload report template
           </Link>

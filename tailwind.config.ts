@@ -9,8 +9,8 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        topbar: "#060606",
-        sidebar: "#060606",
+        topbar: "#f7f7f7",
+        sidebar: "#f7f7f7",
         app: "#fcfcfc",
         primary: {
           DEFAULT: "#060606",
@@ -26,8 +26,8 @@ const config: Config = {
           muted: "#6b7280",
         },
         "on-dark": {
-          DEFAULT: "#fcfcfc",
-          muted: "#a1a1aa",
+          DEFAULT: "#060606",
+          muted: "#6b7280",
         },
       },
       fontFamily: {
