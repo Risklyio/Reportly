@@ -14,7 +14,7 @@ const HEADER_BG: Rgb = [247, 247, 247];
 const BORDER: Rgb = [235, 235, 235];
 
 const COVER_MARGIN = 28;
-const LOGO_H = 10;
+const LOGO_H = 12;
 const LOGO_ASPECT = 200 / 44;
 
 /* ------------------------------------------------------------------ */

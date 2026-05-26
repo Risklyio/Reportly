@@ -86,7 +86,7 @@ export function TopBar() {
             height={44}
             decoding="async"
             fetchPriority="high"
-            className="h-9 w-auto max-w-[220px] object-contain object-left"
+            className="h-11 w-auto max-w-[260px] object-contain object-left"
           />
         </Link>
 

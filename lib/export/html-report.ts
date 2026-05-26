@@ -161,7 +161,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica N
 
 /* Header */
 .report-header{background:var(--header-bg);border-bottom:1px solid var(--border);padding:14px 24px;margin:0 -24px 32px;display:flex;align-items:center;justify-content:space-between}
-.report-header .logo{height:32px;width:auto}
+.report-header .logo{height:38px;width:auto}
 .report-header h1{font-size:16px;font-weight:700;color:var(--black)}
 .report-header .header-right{display:flex;align-items:center;gap:16px}
 .report-header .date{font-size:12px;color:var(--muted)}
