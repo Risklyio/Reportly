@@ -201,11 +201,11 @@ function ReportDropdown({
 }) {
   const [open, setOpen] = useState(false);
   const [downloading, setDownloading] = useState<string | null>(null);
-  const ref = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLLIElement>(null);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) setOpen(false);
     }
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
@@ -243,7 +243,7 @@ function ReportDropdown({
 
   if (collapsed) {
     return (
-      <li className="relative">
+      <li ref={containerRef} className="relative">
         <button
           type="button"
           onClick={() => setOpen(!open)}
@@ -259,7 +259,6 @@ function ReportDropdown({
         </button>
         {open && (
           <div
-            ref={ref}
             className="absolute left-full top-0 z-50 ml-2 w-44 rounded-lg border border-neutral-200 bg-white py-1 shadow-lg"
           >
             {EXPORT_FORMATS.map((f) => (
@@ -285,7 +284,7 @@ function ReportDropdown({
   }
 
   return (
-    <li ref={ref} className="relative">
+    <li ref={containerRef} className="relative">
       <button
         type="button"
         onClick={() => setOpen(!open)}
