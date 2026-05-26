@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useState, useRef, useEffect, type ReactNode } from "react";
 import { DOMAINS } from "@/lib/controls/catalog";
 import type { DomainId } from "@/lib/types";
 
@@ -105,6 +105,26 @@ function IconChevronLeft() {
   );
 }
 
+function IconFileText() {
+  return (
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+      <polyline points="10 9 9 9 8 9" />
+    </svg>
+  );
+}
+
+function IconChevronDown() {
+  return (
+    <svg className="h-4 w-4 shrink-0 transition-transform" viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /*  Domain / Filter icon mapping                                       */
 /* ------------------------------------------------------------------ */
@@ -150,9 +170,7 @@ function SidebarItem({
         } ${collapsed ? "justify-center" : ""}`}
         title={collapsed ? label : undefined}
       >
-        <span className="flex items-center justify-center">
-          {icon}
-        </span>
+        <span className="flex items-center justify-center">{icon}</span>
         {!collapsed && <span>{label}</span>}
         {collapsed && (
           <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-neutral-800 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
@@ -160,6 +178,146 @@ function SidebarItem({
           </span>
         )}
       </Link>
+    </li>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Report dropdown                                                    */
+/* ------------------------------------------------------------------ */
+
+const EXPORT_FORMATS = [
+  { id: "pdf", label: "PDF Report", ext: "pdf" },
+  { id: "docx", label: "Word (DOCX)", ext: "docx" },
+  { id: "html", label: "HTML Report", ext: "html" },
+] as const;
+
+function ReportDropdown({
+  assessmentId,
+  collapsed,
+}: {
+  assessmentId: string;
+  collapsed: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [downloading, setDownloading] = useState<string | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  function exportUrl(format: string) {
+    if (format === "pdf") return `/api/assessments/${assessmentId}/export/pdf`;
+    if (format === "html") return `/api/assessments/${assessmentId}/export/html`;
+    return `/api/assessments/${assessmentId}/export`;
+  }
+
+  async function handleExport(format: string) {
+    setDownloading(format);
+    try {
+      const url = exportUrl(format);
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Export failed");
+      const blob = await res.blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      const disposition = res.headers.get("Content-Disposition");
+      const match = disposition?.match(/filename="(.+?)"/);
+      a.download = match?.[1] ?? `report.${format}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+    } catch {
+      /* silently fail */
+    } finally {
+      setDownloading(null);
+      setOpen(false);
+    }
+  }
+
+  if (collapsed) {
+    return (
+      <li className="relative">
+        <button
+          type="button"
+          onClick={() => setOpen(!open)}
+          className="group flex w-full items-center justify-center rounded-lg px-3 py-2 text-sm text-text transition hover:bg-neutral-200/50"
+          title="Generate Report"
+        >
+          <span className="flex items-center justify-center">
+            <IconFileText />
+          </span>
+          <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-neutral-800 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+            Generate Report
+          </span>
+        </button>
+        {open && (
+          <div
+            ref={ref}
+            className="absolute left-full top-0 z-50 ml-2 w-44 rounded-lg border border-neutral-200 bg-white py-1 shadow-lg"
+          >
+            {EXPORT_FORMATS.map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => handleExport(f.id)}
+                disabled={downloading !== null}
+                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-text transition hover:bg-neutral-100 disabled:opacity-50"
+              >
+                {downloading === f.id ? (
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-600" />
+                ) : (
+                  <IconFileText />
+                )}
+                {f.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </li>
+    );
+  }
+
+  return (
+    <li ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-text transition hover:bg-neutral-200/50"
+      >
+        <span className="flex items-center justify-center">
+          <IconFileText />
+        </span>
+        <span className="flex-1 text-left">Generate Report</span>
+        <span className={`transition-transform ${open ? "rotate-180" : ""}`}>
+          <IconChevronDown />
+        </span>
+      </button>
+      {open && (
+        <ul className="ml-8 mt-0.5 space-y-0.5">
+          {EXPORT_FORMATS.map((f) => (
+            <li key={f.id}>
+              <button
+                type="button"
+                onClick={() => handleExport(f.id)}
+                disabled={downloading !== null}
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-left text-sm text-text transition hover:bg-neutral-200/50 disabled:opacity-50"
+              >
+                {downloading === f.id && (
+                  <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-600" />
+                )}
+                {f.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </li>
   );
 }
@@ -219,6 +377,7 @@ export function CollapsibleSidebar() {
       <ToggleButton collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
 
       <nav className="flex-1 overflow-y-auto px-2 py-4">
+        {/* Domains */}
         {!collapsed && (
           <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-text-muted">
             Domains
@@ -243,6 +402,7 @@ export function CollapsibleSidebar() {
 
         <div className="my-3 border-b border-neutral-200" />
 
+        {/* Filters */}
         {!collapsed && (
           <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-text-muted">
             Filter
@@ -259,6 +419,18 @@ export function CollapsibleSidebar() {
               collapsed={collapsed}
             />
           ))}
+        </ul>
+
+        <div className="my-3 border-b border-neutral-200" />
+
+        {/* Report */}
+        {!collapsed && (
+          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-text-muted">
+            Report
+          </p>
+        )}
+        <ul className="space-y-0.5">
+          <ReportDropdown assessmentId={assessmentId} collapsed={collapsed} />
         </ul>
       </nav>
     </aside>

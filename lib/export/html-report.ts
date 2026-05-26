@@ -1,0 +1,268 @@
+import type { AssessmentExportData, ExportControlRow } from "./report-data";
+import { DOMAIN_EXPORT_KEYS } from "./report-data";
+
+type SectionStatus = "ok" | "partial" | "fail";
+
+function sectionStatus(rows: ExportControlRow[]): SectionStatus {
+  if (rows.some((r) => r.outcome === "Not in place")) return "fail";
+  if (rows.some((r) => r.outcome === "Partially in place")) return "partial";
+  return "ok";
+}
+
+function statusIcon(status: SectionStatus): string {
+  if (status === "fail")
+    return `<svg class="status-icon status-fail" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+  if (status === "partial")
+    return `<svg class="status-icon status-partial" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+  return "";
+}
+
+function outcomeBadge(outcome: string): string {
+  const map: Record<string, string> = {
+    "In place": "badge-green",
+    "Not in place": "badge-red",
+    "Partially in place": "badge-amber",
+    "Not applicable": "badge-slate",
+    Pending: "badge-blue",
+    "Not reviewed": "badge-grey",
+  };
+  const cls = map[outcome] ?? "badge-grey";
+  return `<span class="badge ${cls}">${esc(outcome)}</span>`;
+}
+
+function esc(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function nl2br(s: string): string {
+  return esc(s).replace(/\n/g, "<br>");
+}
+
+function groupBySection(rows: ExportControlRow[]): Map<string, ExportControlRow[]> {
+  const map = new Map<string, ExportControlRow[]>();
+  for (const r of rows) {
+    const list = map.get(r.section) ?? [];
+    list.push(r);
+    map.set(r.section, list);
+  }
+  return map;
+}
+
+function renderControlRow(r: ExportControlRow): string {
+  const hardTag = r.hardFail === "Yes" ? `<span class="hard-fail-tag">HARD FAIL</span>` : "";
+  return `<tr>
+  <td class="col-ref">${esc(r.ref)}</td>
+  <td>${esc(r.title)}${hardTag}</td>
+  <td class="col-req">${nl2br(r.requirement)}</td>
+  <td class="col-outcome">${outcomeBadge(r.outcome)}</td>
+  <td>${nl2br(r.reason) || "—"}</td>
+  <td>${nl2br(r.correctiveAction) || "—"}</td>
+</tr>`;
+}
+
+function renderSection(section: string, rows: ExportControlRow[]): string {
+  const status = sectionStatus(rows);
+  const icon = statusIcon(status);
+  return `<details class="section-block" open>
+  <summary class="section-title">${icon}${esc(section)}</summary>
+  <table class="controls-table">
+    <thead><tr>
+      <th class="col-ref">#</th>
+      <th>Control</th>
+      <th class="col-req">Requirement</th>
+      <th class="col-outcome">Outcome</th>
+      <th>Gap / Reason</th>
+      <th>Corrective Action</th>
+    </tr></thead>
+    <tbody>${rows.map(renderControlRow).join("\n")}</tbody>
+  </table>
+</details>`;
+}
+
+function renderDomain(domainLabel: string, domainId: string, controls: ExportControlRow[]): string {
+  if (controls.length === 0) return "";
+  const sections = groupBySection(controls);
+  const domainStatus = sectionStatus(controls);
+  const icon = statusIcon(domainStatus);
+
+  const iconMap: Record<string, string> = {
+    application_security: `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="#060606" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5.25-3.4 9.74-8 11-4.6-1.26-8-5.75-8-11V6l8-4z"/></svg>`,
+    operational_security: `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="#060606" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>`,
+    data_handling: `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="#060606" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg>`,
+  };
+  const domIcon = iconMap[domainId] ?? "";
+
+  let body = "";
+  for (const [sec, rows] of sections) {
+    body += renderSection(sec, rows);
+  }
+
+  return `<details class="domain-block" open>
+  <summary class="domain-title">${domIcon}${icon}${esc(domainLabel)}</summary>
+  ${body}
+</details>`;
+}
+
+export function renderAssessmentHtml(data: AssessmentExportData): string {
+  const s = data.summary;
+
+  let domains = "";
+  for (const d of DOMAIN_EXPORT_KEYS) {
+    const controls = data[d.controlsKey];
+    domains += renderDomain(d.label, d.id, controls);
+  }
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>${esc(data.clientName)} — ${esc(data.frameworkName)}</title>
+<style>
+:root {
+  --black: #060606;
+  --white: #ffffff;
+  --bg: #fcfcfc;
+  --header-bg: #f7f7f7;
+  --border: #ebebeb;
+  --muted: #6b7280;
+  --section-bg: #f5f5f5;
+  --green: #22c55e;
+  --green-ring: #15803d;
+  --red: #ef4444;
+  --red-ring: #b91c1c;
+  --amber: #f59e0b;
+  --amber-ring: #b45309;
+  --blue: #dbeafe;
+  --blue-ring: #475569;
+  --blue-text: #1e3a5f;
+  --slate: #94a3b8;
+  --grey-light: #e2e8f0;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--black);font-size:13px;line-height:1.5}
+.report{max-width:1200px;margin:0 auto;padding:0 24px 60px}
+
+/* Header */
+.report-header{background:var(--header-bg);border-bottom:1px solid var(--border);padding:16px 24px;margin:0 -24px 32px;display:flex;align-items:center;justify-content:space-between}
+.report-header h1{font-size:16px;font-weight:700;color:var(--black)}
+.report-header .date{font-size:12px;color:var(--muted)}
+
+/* Meta card */
+.meta-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:20px 24px;margin-bottom:28px}
+.meta-card .title{font-size:22px;font-weight:700;margin-bottom:16px;color:var(--black)}
+.meta-grid{display:grid;grid-template-columns:120px 1fr;gap:6px 16px;font-size:13px}
+.meta-grid dt{font-weight:600;color:var(--black)}
+.meta-grid dd{color:var(--muted)}
+
+/* Executive summary */
+.exec-summary{margin-bottom:32px}
+.exec-summary h2{font-size:16px;font-weight:700;margin-bottom:12px}
+.summary-table{width:100%;border-collapse:collapse;font-size:13px}
+.summary-table th,.summary-table td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.summary-table th{background:var(--header-bg);font-weight:600;color:var(--black)}
+.summary-table tr:nth-child(even) td{background:var(--bg)}
+
+/* Domain blocks */
+.domain-block{margin-bottom:24px;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.domain-title{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--section-bg);font-weight:700;font-size:14px;cursor:pointer;list-style:none;user-select:none;border-bottom:1px solid var(--border)}
+.domain-title::-webkit-details-marker{display:none}
+.domain-title::before{content:'▸';font-size:12px;transition:transform .15s}
+details[open]>.domain-title::before{transform:rotate(90deg)}
+.domain-icon{width:18px;height:18px;flex-shrink:0}
+
+/* Section blocks */
+.section-block{margin:0;border-top:1px solid var(--border)}
+.section-block:first-child{border-top:none}
+.section-title{display:flex;align-items:center;gap:8px;padding:10px 16px 10px 28px;font-weight:600;font-size:13px;cursor:pointer;list-style:none;background:var(--white);user-select:none}
+.section-title:hover{background:var(--header-bg)}
+.section-title::-webkit-details-marker{display:none}
+.section-title::before{content:'▸';font-size:11px;transition:transform .15s}
+details[open]>.section-title::before{transform:rotate(90deg)}
+
+/* Status icons */
+.status-icon{width:16px;height:16px;flex-shrink:0}
+.status-fail{stroke:#dc2626}
+.status-partial{stroke:#d97706}
+
+/* Controls table */
+.controls-table{width:100%;border-collapse:collapse;font-size:12px}
+.controls-table th,.controls-table td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+.controls-table thead th{background:var(--header-bg);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.3px;color:var(--black);position:sticky;top:0}
+.controls-table tbody tr:nth-child(even) td{background:var(--bg)}
+.controls-table tbody tr:hover td{background:var(--header-bg)}
+.col-ref{width:50px;white-space:nowrap}
+.col-req{max-width:300px}
+.col-outcome{width:120px;text-align:center}
+
+/* Badges */
+.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:600;white-space:nowrap;border:1px solid transparent}
+.badge-green{background:var(--green);color:var(--white);border-color:var(--green-ring)}
+.badge-red{background:var(--red);color:var(--white);border-color:var(--red-ring)}
+.badge-amber{background:var(--amber);color:var(--black);border-color:var(--amber-ring)}
+.badge-slate{background:var(--slate);color:var(--white)}
+.badge-blue{background:var(--blue);color:var(--blue-text);border-color:var(--blue-ring)}
+.badge-grey{background:var(--grey-light);color:var(--muted)}
+
+/* Hard fail */
+.hard-fail-tag{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:4px;font-size:9px;font-weight:700;background:#fee2e2;color:#b91c1c;border:1px solid #b91c1c;vertical-align:middle}
+
+/* Print */
+@media print{
+  body{font-size:10px}
+  .report{max-width:none;padding:0}
+  .report-header{margin:0 0 16px;position:static}
+  details{break-inside:avoid}
+  .domain-title,.section-title{break-after:avoid}
+  .controls-table{font-size:9px}
+  .controls-table thead th{position:static}
+}
+</style>
+</head>
+<body>
+<div class="report">
+  <header class="report-header">
+    <h1>${esc(data.frameworkName)}</h1>
+    <span class="date">${esc(data.generatedAt)}</span>
+  </header>
+
+  <div class="meta-card">
+    <div class="title">${esc(data.clientName)} — ${esc(data.appName)}</div>
+    <dl class="meta-grid">
+      <dt>Client</dt><dd>${esc(data.clientName)}</dd>
+      <dt>Application</dt><dd>${esc(data.appName)}</dd>
+      <dt>Assessment date</dt><dd>${esc(data.assessmentDate)}</dd>
+      <dt>Assessor</dt><dd>${esc(data.assessorName || "—")}</dd>
+      <dt>Generated</dt><dd>${esc(data.generatedAt)}</dd>
+      ${data.scopeNotes ? `<dt>Scope</dt><dd>${nl2br(data.scopeNotes)}</dd>` : ""}
+    </dl>
+  </div>
+
+  <div class="exec-summary">
+    <h2>Executive Summary</h2>
+    <table class="summary-table">
+      <thead><tr><th>Metric</th><th>Count</th></tr></thead>
+      <tbody>
+        <tr><td>Total controls</td><td>${s.total}</td></tr>
+        <tr><td>Controls reviewed</td><td>${s.reviewed}</td></tr>
+        <tr><td>In place</td><td>${s.inPlace}</td></tr>
+        <tr><td>Not in place</td><td>${s.notInPlace}</td></tr>
+        <tr><td>Partially in place</td><td>${s.partiallyInPlace}</td></tr>
+        <tr><td>Not applicable</td><td>${s.notApplicable}</td></tr>
+        <tr><td>Pending</td><td>${s.pending}</td></tr>
+        <tr><td>Not yet reviewed</td><td>${s.notReviewed}</td></tr>
+        <tr><td>Hard-fail controls</td><td>${s.hardFailTotal}</td></tr>
+        <tr><td>Hard-fail with gaps</td><td>${s.hardFailGaps}</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  ${domains}
+</div>
+</body>
+</html>`;
+}

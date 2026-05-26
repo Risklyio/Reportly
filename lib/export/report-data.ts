@@ -132,7 +132,7 @@ export function buildExportData(
 export function exportFilename(
   clientName: string,
   assessmentDate: string,
-  ext: "docx" | "pdf"
+  ext: "docx" | "pdf" | "html"
 ): string {
   const safe = clientName.replace(/[^\w\-]+/g, "-").replace(/-+/g, "-");
   return `Reportly-${safe}-${assessmentDate}.${ext}`;
