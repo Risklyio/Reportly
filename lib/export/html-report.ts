@@ -22,7 +22,7 @@ function statusIcon(status: SectionStatus): string {
     return `<svg class="status-icon status-fail" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
   if (status === "partial")
     return `<svg class="status-icon status-partial" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
-  return "";
+  return `<svg class="status-icon status-ok" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="#15803d" stroke="#15803d" stroke-width="1.5"/><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2.2"/></svg>`;
 }
 
 const IN_PLACE_ICON = `<svg class="in-place-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="#15803d" stroke="#15803d"/><path d="M9 12l2 2 4-4" stroke="#fff"/></svg>`;
@@ -200,6 +200,7 @@ details[open]>.section-title::before{transform:rotate(90deg)}
 
 /* Status icons */
 .status-icon{width:16px;height:16px;flex-shrink:0}
+.status-ok{stroke:#15803d}
 .status-fail{stroke:#dc2626}
 .status-partial{stroke:#d97706}
 
