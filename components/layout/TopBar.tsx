@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 /** Bump when replacing public/brand/reportly-logo.png to bust CDN/browser cache */
-const LOGO_SRC = "/brand/reportly-logo.png?v=2";
+const LOGO_SRC = "/brand/reportly-logo.png?v=3";
 
 export function TopBar() {
   return (
