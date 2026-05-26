@@ -1,25 +1,23 @@
 import type { jsPDF } from "jspdf";
 import type { AssessmentExportData } from "./report-data";
 
-const COVER_WHITE: [number, number, number] = [255, 255, 255];
-const COVER_BG: [number, number, number] = [252, 252, 252];
-const COVER_SUBTLE: [number, number, number] = [240, 240, 240];
-const COVER_TEXT: [number, number, number] = [6, 6, 6];
-const COVER_MUTED: [number, number, number] = [107, 114, 128];
+/* ------------------------------------------------------------------ */
+/*  Brand palette                                                      */
+/* ------------------------------------------------------------------ */
+type Rgb = [number, number, number];
 
-const NAVY: [number, number, number] = [6, 6, 6];
-const DEEP_TEAL: [number, number, number] = [38, 38, 38];
-const TEAL: [number, number, number] = [64, 64, 64];
-const AQUA: [number, number, number] = [115, 115, 115];
-const MINT: [number, number, number] = [180, 180, 180];
-const SOFT_MINT: [number, number, number] = [220, 220, 220];
+const WHITE: Rgb = [255, 255, 255];
+const BG: Rgb = [252, 252, 252];
+const BLACK: Rgb = [6, 6, 6];
+const MUTED: Rgb = [107, 114, 128];
 
-const COVER_MARGIN = 22;
-const LOGO_H = 9;
+const COVER_MARGIN = 24;
+const LOGO_H = 10;
 const LOGO_ASPECT = 200 / 44;
 
-type Rgb = [number, number, number];
-type TriangleSpec = { color: Rgb; x1: number; y1: number; x2: number; y2: number; x3: number; y3: number };
+/* ------------------------------------------------------------------ */
+/*  Helpers                                                            */
+/* ------------------------------------------------------------------ */
 
 function formatCoverDate(dateStr: string): string {
   const parsed = new Date(dateStr);
@@ -40,101 +38,94 @@ function formatCoverDate(dateStr: string): string {
   );
 }
 
-function drawTriangle(doc: jsPDF, t: TriangleSpec) {
+function tri(doc: jsPDF, c: Rgb, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number) {
   if (typeof doc.triangle !== "function") return;
-  doc.setFillColor(...t.color);
-  doc.triangle(t.x1, t.y1, t.x2, t.y2, t.x3, t.y3, "F");
+  doc.setFillColor(...c);
+  doc.triangle(x1, y1, x2, y2, x3, y3, "F");
 }
 
-function drawTriangles(doc: jsPDF, specs: TriangleSpec[]) {
-  for (const t of specs) drawTriangle(doc, t);
+function roundRect(doc: jsPDF, x: number, y: number, w: number, h: number, r: number, style: "F" | "S" | "FD") {
+  if (typeof doc.roundedRect === "function") {
+    doc.roundedRect(x, y, w, h, r, r, style);
+  } else {
+    doc.rect(x, y, w, h, style);
+  }
 }
 
-/** Soft large shapes — depth without transparency API */
-function drawBackgroundTexture(doc: jsPDF, w: number, h: number) {
-  const specs: TriangleSpec[] = [
-    {
-      color: COVER_SUBTLE,
-      x1: w * 0.15,
-      y1: h * 0.08,
-      x2: w * 0.55,
-      y2: h * 0.02,
-      x3: w * 0.48,
-      y3: h * 0.42,
-    },
-    {
-      color: COVER_BG,
-      x1: w * 0.35,
-      y1: h * 0.55,
-      x2: w * 0.72,
-      y2: h * 0.48,
-      x3: w * 0.58,
-      y3: h * 0.88,
-    },
-    {
-      color: COVER_SUBTLE,
-      x1: w * 0.52,
-      y1: h * 0.22,
-      x2: w * 0.78,
-      y2: h * 0.38,
-      x3: w * 0.62,
-      y3: h * 0.62,
-    },
-  ];
-  drawTriangles(doc, specs);
-}
+/* ------------------------------------------------------------------ */
+/*  Abstract cover art – premium geometric composition                 */
+/*                                                                     */
+/*  Layered triangular shards in a gradient from deep black (#060606)  */
+/*  through warm greys to light silver, clustered in bottom-left and   */
+/*  top-right with subtle scattered accents in the centre field.       */
+/* ------------------------------------------------------------------ */
 
-/** Dense cluster — bottom-left (reference image) */
-function drawBottomLeftCluster(doc: jsPDF, w: number, h: number) {
-  drawTriangles(doc, [
-    { color: NAVY, x1: 0, y1: h, x2: 0, y2: h * 0.48, x3: w * 0.46, y3: h },
-    { color: DEEP_TEAL, x1: 0, y1: h, x2: w * 0.14, y2: h, x3: w * 0.34, y3: h * 0.68 },
-    { color: TEAL, x1: 0, y1: h * 0.82, x2: w * 0.22, y2: h, x3: w * 0.08, y3: h * 0.58 },
-    { color: AQUA, x1: w * 0.04, y1: h, x2: w * 0.28, y2: h, x3: w * 0.16, y3: h * 0.76 },
-    { color: TEAL, x1: w * 0.12, y1: h * 0.9, x2: w * 0.38, y2: h, x3: w * 0.24, y3: h * 0.62 },
-    { color: MINT, x1: w * 0.02, y1: h * 0.72, x2: w * 0.2, y2: h * 0.88, x3: w * 0.1, y3: h * 0.54 },
-    { color: SOFT_MINT, x1: w * 0.18, y1: h, x2: w * 0.32, y2: h, x3: w * 0.22, y3: h * 0.8 },
-    { color: AQUA, x1: w * 0.26, y1: h * 0.94, x2: w * 0.42, y2: h, x3: w * 0.3, y3: h * 0.7 },
-    { color: DEEP_TEAL, x1: w * 0.3, y1: h * 0.78, x2: w * 0.44, y2: h * 0.92, x3: w * 0.36, y3: h * 0.58 },
-    { color: NAVY, x1: w * 0.08, y1: h * 0.48, x2: w * 0.2, y2: h * 0.62, x3: w * 0.14, y3: h * 0.4 },
-    { color: MINT, x1: w * 0.22, y1: h * 0.52, x2: w * 0.34, y2: h * 0.66, x3: w * 0.26, y3: h * 0.44 },
-  ]);
-}
+const SHARD_DARK: Rgb = [6, 6, 6];
+const SHARD_CHARCOAL: Rgb = [28, 28, 28];
+const SHARD_GRAPHITE: Rgb = [48, 48, 48];
+const SHARD_STEEL: Rgb = [72, 72, 72];
+const SHARD_SLATE: Rgb = [100, 100, 100];
+const SHARD_ASH: Rgb = [140, 140, 140];
+const SHARD_SILVER: Rgb = [185, 185, 185];
+const SHARD_MIST: Rgb = [215, 215, 215];
+const SHARD_CLOUD: Rgb = [232, 232, 232];
 
-/** Dense cluster — top-right */
-function drawTopRightCluster(doc: jsPDF, w: number, h: number) {
-  drawTriangles(doc, [
-    { color: NAVY, x1: w, y1: 0, x2: w, y2: h * 0.42, x3: w * 0.54, y3: 0 },
-    { color: DEEP_TEAL, x1: w, y1: 0, x2: w * 0.86, y2: 0, x3: w * 0.66, y3: h * 0.32 },
-    { color: TEAL, x1: w * 0.78, y1: 0, x2: w, y2: h * 0.18, x3: w * 0.92, y3: 0 },
-    { color: AQUA, x1: w * 0.72, y1: 0, x2: w * 0.94, y2: h * 0.1, x3: w * 0.84, y3: h * 0.24 },
-    { color: MINT, x1: w * 0.8, y1: h * 0.06, x2: w * 0.96, y2: h * 0.22, x3: w * 0.88, y3: h * 0.02 },
-    { color: SOFT_MINT, x1: w * 0.68, y1: 0, x2: w * 0.82, y2: h * 0.14, x3: w * 0.74, y3: h * 0.28 },
-    { color: TEAL, x1: w * 0.58, y1: 0, x2: w * 0.7, y2: h * 0.2, x3: w * 0.62, y3: h * 0.08 },
-    { color: AQUA, x1: w * 0.62, y1: h * 0.22, x2: w * 0.76, y2: h * 0.34, x3: w * 0.68, y3: h * 0.12 },
-    { color: DEEP_TEAL, x1: w * 0.86, y1: h * 0.28, x2: w, y2: h * 0.38, x3: w * 0.92, y3: h * 0.18 },
-  ]);
-}
-
-/** Small floating accents between clusters */
-function drawScatterAccents(doc: jsPDF, w: number, h: number) {
-  drawTriangles(doc, [
-    { color: DEEP_TEAL, x1: w * 0.48, y1: h * 0.12, x2: w * 0.52, y2: h * 0.18, x3: w * 0.5, y3: h * 0.08 },
-    { color: TEAL, x1: w * 0.44, y1: h * 0.78, x2: w * 0.48, y2: h * 0.84, x3: w * 0.46, y3: h * 0.74 },
-    { color: AQUA, x1: w * 0.56, y1: h * 0.38, x2: w * 0.6, y2: h * 0.44, x3: w * 0.58, y3: h * 0.34 },
-    { color: MINT, x1: w * 0.38, y1: h * 0.28, x2: w * 0.42, y2: h * 0.34, x3: w * 0.4, y3: h * 0.24 },
-    { color: NAVY, x1: w * 0.5, y1: h * 0.58, x2: w * 0.54, y2: h * 0.64, x3: w * 0.52, y3: h * 0.54 },
-  ]);
-}
-
-function drawAbstractCoverArt(doc: jsPDF, w: number, h: number) {
-  doc.setFillColor(...COVER_WHITE);
+function drawCoverArt(doc: jsPDF, w: number, h: number) {
+  doc.setFillColor(...WHITE);
   doc.rect(0, 0, w, h, "F");
-  drawBackgroundTexture(doc, w, h);
-  drawBottomLeftCluster(doc, w, h);
-  drawTopRightCluster(doc, w, h);
-  drawScatterAccents(doc, w, h);
+
+  doc.setFillColor(...BG);
+  doc.rect(0, 0, w, h, "F");
+
+  /* --- bottom-left cluster (dense, dark) --- */
+  tri(doc, SHARD_DARK,      0,         h,          0,         h * 0.40,  w * 0.50,  h);
+  tri(doc, SHARD_CHARCOAL,  0,         h,          w * 0.18,  h,         w * 0.38,  h * 0.58);
+  tri(doc, SHARD_GRAPHITE,  0,         h * 0.74,   w * 0.26,  h,         w * 0.10,  h * 0.50);
+  tri(doc, SHARD_STEEL,     w * 0.06,  h,          w * 0.32,  h,         w * 0.18,  h * 0.68);
+  tri(doc, SHARD_GRAPHITE,  w * 0.14,  h * 0.84,   w * 0.42,  h,         w * 0.28,  h * 0.56);
+  tri(doc, SHARD_ASH,       w * 0.02,  h * 0.64,   w * 0.22,  h * 0.82,  w * 0.12,  h * 0.48);
+  tri(doc, SHARD_SILVER,    w * 0.20,  h,          w * 0.36,  h,         w * 0.24,  h * 0.76);
+  tri(doc, SHARD_SLATE,     w * 0.28,  h * 0.88,   w * 0.46,  h,         w * 0.34,  h * 0.64);
+  tri(doc, SHARD_CHARCOAL,  w * 0.34,  h * 0.72,   w * 0.48,  h * 0.88,  w * 0.40,  h * 0.52);
+  tri(doc, SHARD_DARK,      w * 0.10,  h * 0.44,   w * 0.22,  h * 0.58,  w * 0.16,  h * 0.36);
+  tri(doc, SHARD_MIST,      w * 0.24,  h * 0.50,   w * 0.38,  h * 0.64,  w * 0.30,  h * 0.40);
+  tri(doc, SHARD_CLOUD,     w * 0.36,  h * 0.82,   w * 0.50,  h * 0.96,  w * 0.44,  h * 0.70);
+
+  /* --- top-right cluster (crisp, lighter towards edges) --- */
+  tri(doc, SHARD_DARK,      w,         0,          w,         h * 0.38,  w * 0.52,  0);
+  tri(doc, SHARD_CHARCOAL,  w,         0,          w * 0.82,  0,         w * 0.62,  h * 0.30);
+  tri(doc, SHARD_GRAPHITE,  w * 0.76,  0,          w,         h * 0.16,  w * 0.90,  0);
+  tri(doc, SHARD_STEEL,     w * 0.70,  0,          w * 0.92,  h * 0.12,  w * 0.82,  h * 0.24);
+  tri(doc, SHARD_ASH,       w * 0.78,  h * 0.06,   w * 0.96,  h * 0.22,  w * 0.86,  h * 0.02);
+  tri(doc, SHARD_SILVER,    w * 0.66,  0,          w * 0.80,  h * 0.14,  w * 0.72,  h * 0.28);
+  tri(doc, SHARD_SLATE,     w * 0.56,  0,          w * 0.68,  h * 0.18,  w * 0.60,  h * 0.08);
+  tri(doc, SHARD_MIST,      w * 0.60,  h * 0.20,   w * 0.74,  h * 0.34,  w * 0.66,  h * 0.12);
+  tri(doc, SHARD_CHARCOAL,  w * 0.84,  h * 0.26,   w,         h * 0.36,  w * 0.92,  h * 0.16);
+  tri(doc, SHARD_CLOUD,     w * 0.72,  h * 0.04,   w * 0.88,  h * 0.18,  w * 0.80,  h * 0.30);
+
+  /* --- scattered accents (centre field) --- */
+  tri(doc, SHARD_CHARCOAL,  w * 0.48,  h * 0.10,   w * 0.52,  h * 0.16,  w * 0.50,  h * 0.06);
+  tri(doc, SHARD_GRAPHITE,  w * 0.44,  h * 0.76,   w * 0.48,  h * 0.82,  w * 0.46,  h * 0.72);
+  tri(doc, SHARD_STEEL,     w * 0.56,  h * 0.36,   w * 0.60,  h * 0.42,  w * 0.58,  h * 0.32);
+  tri(doc, SHARD_ASH,       w * 0.38,  h * 0.26,   w * 0.42,  h * 0.32,  w * 0.40,  h * 0.22);
+  tri(doc, SHARD_DARK,      w * 0.52,  h * 0.56,   w * 0.56,  h * 0.62,  w * 0.54,  h * 0.52);
+  tri(doc, SHARD_SILVER,    w * 0.62,  h * 0.68,   w * 0.66,  h * 0.74,  w * 0.64,  h * 0.64);
+  tri(doc, SHARD_MIST,      w * 0.46,  h * 0.44,   w * 0.50,  h * 0.50,  w * 0.48,  h * 0.40);
 }
+
+/* ------------------------------------------------------------------ */
+/*  Divider line                                                       */
+/* ------------------------------------------------------------------ */
+
+function drawAccentLine(doc: jsPDF, x: number, y: number, len: number) {
+  doc.setDrawColor(...BLACK);
+  doc.setLineWidth(0.6);
+  doc.line(x, y, x + len, y);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Main cover page export                                             */
+/* ------------------------------------------------------------------ */
 
 export function drawLandscapeCoverPage(
   doc: jsPDF,
@@ -144,81 +135,94 @@ export function drawLandscapeCoverPage(
   const w = doc.internal.pageSize.getWidth();
   const h = doc.internal.pageSize.getHeight();
 
-  drawAbstractCoverArt(doc, w, h);
+  drawCoverArt(doc, w, h);
 
-  doc.setTextColor(...COVER_MUTED);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  doc.text(formatCoverDate(data.assessmentDate), COVER_MARGIN, COVER_MARGIN + 4);
-
-  const titleX = w * 0.36;
-  const titleY = h * 0.38;
-
-  doc.setTextColor(...COVER_TEXT);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(34);
-  doc.text("M365 Application", titleX, titleY);
-
-  doc.setFontSize(34);
-  doc.text("Compliance", titleX, titleY + 14);
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(28);
-  doc.setTextColor(...COVER_MUTED);
-  doc.text("Assessment Report", titleX, titleY + 28);
-
-  let metaY = titleY + 40;
-  if (data.clientName) {
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...COVER_TEXT);
-    doc.setFontSize(13);
-    doc.text(data.clientName, titleX, metaY);
-    metaY += 7;
-  }
-  if (data.appName) {
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(...COVER_MUTED);
-    doc.setFontSize(11);
-    doc.text(data.appName, titleX, metaY);
-    metaY += 6;
-  }
-  if (data.assessorName) {
-    doc.setFontSize(10);
-    doc.text(`Assessor: ${data.assessorName}`, titleX, metaY);
-  }
-
-  const footerY = h - COVER_MARGIN;
-  doc.setFillColor(...COVER_BG);
-  doc.roundedRect?.(
-    COVER_MARGIN - 2,
-    footerY - 18,
-    LOGO_H * LOGO_ASPECT + 8,
-    16,
-    2,
-    2,
-    "F"
-  ) ?? doc.rect(COVER_MARGIN - 2, footerY - 18, LOGO_H * LOGO_ASPECT + 8, 16, "F");
-
+  /* --- Logo (top-left, inside a frosted card) --- */
   const logoW = LOGO_H * LOGO_ASPECT;
-  const logoY = footerY - 15;
+  const cardX = COVER_MARGIN;
+  const cardY = COVER_MARGIN - 4;
+  const cardW = logoW + 12;
+  const cardH = LOGO_H + 8;
+
+  doc.setFillColor(255, 255, 255);
+  roundRect(doc, cardX, cardY, cardW, cardH, 4, "F");
+
   if (logoDataUri) {
     try {
-      doc.addImage(logoDataUri, "PNG", COVER_MARGIN, logoY, logoW, LOGO_H);
+      doc.addImage(logoDataUri, "PNG", cardX + 6, cardY + 4, logoW, LOGO_H);
     } catch {
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(14);
-      doc.setTextColor(...COVER_TEXT);
-      doc.text("Reportly.io", COVER_MARGIN, footerY - 4);
+      doc.setFontSize(15);
+      doc.setTextColor(...BLACK);
+      doc.text("Reportly.io", cardX + 6, cardY + LOGO_H + 1);
     }
   } else {
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
-    doc.setTextColor(...COVER_TEXT);
-    doc.text("Reportly.io", COVER_MARGIN, footerY - 4);
+    doc.setFontSize(15);
+    doc.setTextColor(...BLACK);
+    doc.text("Reportly.io", cardX + 6, cardY + LOGO_H + 1);
   }
 
+  /* --- Date (top-right) --- */
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
-  doc.setTextColor(...COVER_MUTED);
-  doc.text(data.frameworkName, COVER_MARGIN + logoW + 6, footerY - 3);
+  doc.setFontSize(9);
+  doc.setTextColor(...MUTED);
+  doc.text(formatCoverDate(data.assessmentDate), w - COVER_MARGIN, COVER_MARGIN + 2, { align: "right" });
+
+  /* --- Central content card (frosted panel) --- */
+  const panelX = w * 0.32;
+  const panelY = h * 0.30;
+  const panelW = w * 0.58;
+  const panelH = h * 0.46;
+
+  doc.setFillColor(255, 255, 255);
+  roundRect(doc, panelX, panelY, panelW, panelH, 6, "F");
+
+  const textX = panelX + 18;
+  let ty = panelY + 24;
+
+  /* Title */
+  doc.setTextColor(...BLACK);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(30);
+  doc.text("M365 Application", textX, ty);
+  ty += 13;
+  doc.text("Compliance", textX, ty);
+  ty += 15;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(22);
+  doc.setTextColor(...MUTED);
+  doc.text("Assessment Report", textX, ty);
+  ty += 10;
+
+  drawAccentLine(doc, textX, ty, 50);
+  ty += 10;
+
+  /* Meta */
+  if (data.clientName) {
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...BLACK);
+    doc.setFontSize(13);
+    doc.text(data.clientName, textX, ty);
+    ty += 7;
+  }
+  if (data.appName) {
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...MUTED);
+    doc.setFontSize(11);
+    doc.text(data.appName, textX, ty);
+    ty += 6;
+  }
+  if (data.assessorName) {
+    doc.setFontSize(10);
+    doc.text(`Assessor: ${data.assessorName}`, textX, ty);
+  }
+
+  /* --- Footer badge --- */
+  const footerY = h - COVER_MARGIN;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  doc.setTextColor(...MUTED);
+  doc.text(data.frameworkName, COVER_MARGIN, footerY);
 }
