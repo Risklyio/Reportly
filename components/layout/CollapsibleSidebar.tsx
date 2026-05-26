@@ -33,7 +33,7 @@ export function CollapsibleSidebar() {
     return `/assessments/${assessmentId}?domain=${domain}&filter=${filter}`;
   }
 
-  const asideClass = `shrink-0 border-white/10 bg-sidebar transition-all flex flex-col ${
+  const asideClass = `shrink-0 border-neutral-800 bg-sidebar transition-all flex flex-col ${
     collapsed ? "w-12" : "w-72"
   } border-r`;
 
@@ -94,7 +94,7 @@ export function CollapsibleSidebar() {
                         href={href}
                         className={`block rounded-lg px-3 py-2 text-sm transition ${
                           active
-                            ? "bg-primary font-semibold text-primary-foreground"
+                            ? "bg-white font-semibold text-primary"
                             : "text-on-dark hover:bg-white/10"
                         }`}
                       >
@@ -118,7 +118,7 @@ export function CollapsibleSidebar() {
                         href={href}
                         className={`block rounded-lg px-3 py-2 text-sm transition ${
                           active
-                            ? "bg-primary/90 font-semibold text-primary-foreground"
+                            ? "bg-white/90 font-semibold text-primary"
                             : "text-on-dark hover:bg-white/10"
                         }`}
                       >
@@ -147,7 +147,7 @@ function SidebarToggle({
     <button
       type="button"
       onClick={onToggle}
-      className="flex h-10 items-center justify-center border-b border-white/10 text-on-dark-muted transition hover:bg-white/10 hover:text-on-dark"
+      className="flex h-10 items-center justify-center border-b border-neutral-800 text-on-dark-muted transition hover:bg-white/10 hover:text-on-dark"
       aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
     >
       {collapsed ? "»" : "«"}

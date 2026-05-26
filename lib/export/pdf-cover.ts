@@ -2,17 +2,17 @@ import type { jsPDF } from "jspdf";
 import type { AssessmentExportData } from "./report-data";
 
 const COVER_WHITE: [number, number, number] = [255, 255, 255];
-const COVER_BG: [number, number, number] = [242, 241, 237];
-const COVER_SUBTLE: [number, number, number] = [228, 232, 232];
-const COVER_TEXT: [number, number, number] = [1, 30, 31];
-const COVER_MUTED: [number, number, number] = [74, 92, 93];
+const COVER_BG: [number, number, number] = [252, 252, 252];
+const COVER_SUBTLE: [number, number, number] = [240, 240, 240];
+const COVER_TEXT: [number, number, number] = [6, 6, 6];
+const COVER_MUTED: [number, number, number] = [107, 114, 128];
 
-const NAVY: [number, number, number] = [26, 50, 51];
-const DEEP_TEAL: [number, number, number] = [12, 95, 108];
-const TEAL: [number, number, number] = [20, 150, 165];
-const AQUA: [number, number, number] = [56, 190, 185];
-const MINT: [number, number, number] = [146, 252, 219];
-const SOFT_MINT: [number, number, number] = [190, 245, 232];
+const NAVY: [number, number, number] = [6, 6, 6];
+const DEEP_TEAL: [number, number, number] = [38, 38, 38];
+const TEAL: [number, number, number] = [64, 64, 64];
+const AQUA: [number, number, number] = [115, 115, 115];
+const MINT: [number, number, number] = [180, 180, 180];
+const SOFT_MINT: [number, number, number] = [220, 220, 220];
 
 const COVER_MARGIN = 22;
 const LOGO_H = 9;

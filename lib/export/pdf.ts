@@ -15,10 +15,10 @@ const LOGO_DISPLAY_H = 11;
 const LOGO_DISPLAY_W = LOGO_DISPLAY_H * LOGO_ASPECT;
 const FOOTER_Y_OFFSET = 10;
 
-const BRAND_HEADER: [number, number, number] = [26, 50, 51];
-const BRAND_MINT: [number, number, number] = [146, 252, 219];
-const BRAND_DARK: [number, number, number] = [1, 30, 31];
-const BRAND_APP: [number, number, number] = [242, 241, 237];
+const BRAND_HEADER: [number, number, number] = [6, 6, 6];
+const BRAND_MINT: [number, number, number] = [247, 247, 247];
+const BRAND_DARK: [number, number, number] = [6, 6, 6];
+const BRAND_APP: [number, number, number] = [252, 252, 252];
 
 const COL_CONTROL = 1;
 const COL_OUTCOME = 3;

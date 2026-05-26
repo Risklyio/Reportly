@@ -30,7 +30,7 @@ export default function NewAssessmentPage() {
         M365 Application Compliance Program
       </p>
 
-      <div className="card mt-4 border-topbar/20 bg-primary/15 p-4 text-sm">
+      <div className="card mt-4 border-neutral-200 bg-muted p-4 text-sm">
         <p className="font-medium text-text">Report template (optional)</p>
         <p className="mt-1 text-text-muted">
           Upload your Word report template before or after starting the review.

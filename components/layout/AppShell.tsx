@@ -9,7 +9,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex flex-1 overflow-hidden bg-app">
         <Suspense
           fallback={
-            <aside className="w-72 shrink-0 border-r border-white/10 bg-sidebar" />
+            <aside className="w-72 shrink-0 border-r border-neutral-800 bg-sidebar" />
           }
         >
           <CollapsibleSidebar />

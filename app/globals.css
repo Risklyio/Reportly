@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --topbar: #1a3233;
-  --sidebar: #011e1f;
-  --app: #f2f1ed;
-  --primary: #92fcdb;
-  --primary-hover: #7ae8c8;
-  --primary-foreground: #011e1f;
-  --text: #011e1f;
-  --border: #d4d2cb;
+  --topbar: #060606;
+  --sidebar: #060606;
+  --app: #fcfcfc;
+  --primary: #060606;
+  --primary-hover: #1a1a1a;
+  --primary-foreground: #fcfcfc;
+  --text: #060606;
+  --border: #f7f7f7;
 }
 
 body {
@@ -19,22 +19,22 @@ body {
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-app;
+    @apply inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2 focus:ring-offset-app;
   }
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-text transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-app;
+    @apply inline-flex items-center justify-center rounded-lg border border-neutral-200 bg-surface px-4 py-2 text-sm font-medium text-text transition hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2 focus:ring-offset-app;
   }
   .btn-topbar {
-    @apply inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary-hover;
+    @apply inline-flex items-center justify-center rounded-lg bg-white px-4 py-2 text-sm font-semibold text-primary transition hover:bg-neutral-100;
   }
   .btn-topbar-ghost {
-    @apply inline-flex items-center justify-center rounded-lg border border-on-dark-muted/40 px-4 py-2 text-sm font-medium text-on-dark transition hover:bg-white/10;
+    @apply inline-flex items-center justify-center rounded-lg border border-white/25 px-4 py-2 text-sm font-medium text-on-dark transition hover:bg-white/10;
   }
   .card {
-    @apply rounded-xl border border-border bg-surface p-5 shadow-card;
+    @apply rounded-xl border border-neutral-200 bg-surface p-5 shadow-card;
   }
   .input {
-    @apply w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text placeholder:text-text-muted focus:border-topbar focus:outline-none focus:ring-1 focus:ring-topbar;
+    @apply w-full rounded-lg border border-neutral-200 bg-surface px-3 py-2 text-sm text-text placeholder:text-text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20;
   }
   .label {
     @apply mb-1 block text-sm font-medium text-text;
@@ -43,6 +43,6 @@ body {
     @apply inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-800;
   }
   .badge-complete {
-    @apply inline-flex items-center rounded-full bg-primary/30 px-2 py-0.5 text-xs font-medium text-primary-foreground;
+    @apply inline-flex items-center rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-text;
   }
 }

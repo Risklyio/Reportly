@@ -9,33 +9,33 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        topbar: "#1a3233",
-        sidebar: "#011e1f",
-        app: "#f2f1ed",
+        topbar: "#060606",
+        sidebar: "#060606",
+        app: "#fcfcfc",
         primary: {
-          DEFAULT: "#92fcdb",
-          hover: "#7ae8c8",
-          foreground: "#011e1f",
+          DEFAULT: "#060606",
+          hover: "#1a1a1a",
+          foreground: "#fcfcfc",
         },
-        accent: "#92fcdb",
+        accent: "#060606",
         surface: "#ffffff",
-        muted: "#f2f1ed",
-        border: "#d4d2cb",
+        muted: "#f7f7f7",
+        border: "#f7f7f7",
         text: {
-          DEFAULT: "#011e1f",
-          muted: "#4a5c5d",
+          DEFAULT: "#060606",
+          muted: "#6b7280",
         },
         "on-dark": {
-          DEFAULT: "#f2f1ed",
-          muted: "#a8b8b9",
+          DEFAULT: "#fcfcfc",
+          muted: "#a1a1aa",
         },
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
       boxShadow: {
-        card: "0 1px 3px 0 rgb(1 30 31 / 0.06), 0 1px 2px -1px rgb(1 30 31 / 0.06)",
-        elevated: "0 4px 6px -1px rgb(1 30 31 / 0.08), 0 2px 4px -2px rgb(1 30 31 / 0.06)",
+        card: "0 1px 3px 0 rgb(6 6 6 / 0.04), 0 1px 2px -1px rgb(6 6 6 / 0.03)",
+        elevated: "0 4px 6px -1px rgb(6 6 6 / 0.06), 0 2px 4px -2px rgb(6 6 6 / 0.04)",
       },
     },
   },
