@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 
-const LOGO_SRC = "/brand/reportly-logo.png?v=3";
+const LOGO_SRC = "/brand/reportly-logo.png?v=4";
 const STROKE = "#060606";
 
 function IconMenu() {
