@@ -9,70 +9,98 @@ import type { DomainId } from "@/lib/types";
 const FRAMEWORK_NAME = "M365 Application Compliance Program";
 
 /* ------------------------------------------------------------------ */
-/*  SVG Icons (20×20 viewBox, currentColor)                            */
+/*  SVG Icons – 24×24 stroke-based for crisp rendering at all sizes    */
+/*  All icons use #060606 to match the site's deep black               */
 /* ------------------------------------------------------------------ */
+
+const IC = "h-[22px] w-[22px] shrink-0";
+const STROKE_COLOR = "#060606";
 
 function IconShield() {
   return (
-    <svg className="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-      <path d="M10 1l7 3.5v5c0 4.4-2.9 8.3-7 9.5C5.9 17.8 3 13.9 3 9.5v-5L10 1z" />
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2l8 4v6c0 5.25-3.4 9.74-8 11-4.6-1.26-8-5.75-8-11V6l8-4z" />
     </svg>
   );
 }
-function IconServer() {
+
+function IconCheckCircle() {
   return (
-    <svg className="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-      <path d="M3 4a2 2 0 012-2h10a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2V4zm0 6a2 2 0 012-2h10a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2zm2 6a2 2 0 00-2 2v0a2 2 0 002 2h10a2 2 0 002-2v0a2 2 0 00-2-2H5z" />
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M9 12l2 2 4-4" />
     </svg>
   );
 }
+
 function IconDatabase() {
   return (
-    <svg className="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-      <path d="M10 2C5.6 2 2 3.3 2 5v10c0 1.7 3.6 3 8 3s8-1.3 8-3V5c0-1.7-3.6-3-8-3zM4 7.3c1.5.9 3.6 1.5 6 1.5s4.5-.6 6-1.5V10c0 .6-2.5 1.8-6 1.8S4 10.6 4 10V7.3zm0 5c1.5.9 3.6 1.5 6 1.5s4.5-.6 6-1.5V15c0 .6-2.5 1.8-6 1.8S4 15.6 4 15v-2.7z" />
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <ellipse cx="12" cy="5" rx="9" ry="3" />
+      <path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5" />
+      <path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3" />
     </svg>
   );
 }
+
 function IconList() {
   return (
-    <svg className="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-      <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="8" y1="6" x2="21" y2="6" />
+      <line x1="8" y1="12" x2="21" y2="12" />
+      <line x1="8" y1="18" x2="21" y2="18" />
+      <line x1="3" y1="6" x2="3.01" y2="6" />
+      <line x1="3" y1="12" x2="3.01" y2="12" />
+      <line x1="3" y1="18" x2="3.01" y2="18" />
     </svg>
   );
 }
+
 function IconEyeOff() {
   return (
-    <svg className="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-      <path d="M3.7 2.3a1 1 0 00-1.4 1.4l14 14a1 1 0 001.4-1.4l-2.2-2.2A9.7 9.7 0 0018 10s-3.1-6-8-6a7 7 0 00-3.3.8L3.7 2.3zM10 6a4 4 0 013.9 4.9l-4.8-4.8A4 4 0 0110 6z" />
-      <path d="M2 10s1.5-3 4.1-4.6L4.7 4A10 10 0 002 10zm5.1.9A3 3 0 0010 13l-2.9-2.1z" />
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94" />
+      <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19" />
+      <path d="M14.12 14.12a3 3 0 11-4.24-4.24" />
+      <line x1="1" y1="1" x2="23" y2="23" />
     </svg>
   );
 }
-function IconAlert() {
+
+function IconAlertTriangle() {
   return (
-    <svg className="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-      <path fillRule="evenodd" d="M8.3 3.1a2 2 0 013.4 0l5.8 9.7A2 2 0 0115.8 16H4.2a2 2 0 01-1.7-3.2l5.8-9.7zM10 7a.75.75 0 01.75.75v3a.75.75 0 01-1.5 0v-3A.75.75 0 0110 7zm1 6.5a1 1 0 11-2 0 1 1 0 012 0z" clipRule="evenodd" />
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+      <line x1="12" y1="9" x2="12" y2="13" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
     </svg>
   );
 }
-function IconFire() {
+
+function IconXOctagon() {
   return (
-    <svg className="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-      <path fillRule="evenodd" d="M13.5 3A1.5 1.5 0 0012 4.5v1.9a6.02 6.02 0 00-4.8 2.4A5.03 5.03 0 006 12.5a5.5 5.5 0 005.5 5.5 5.5 5.5 0 005.5-5.5c0-2.3-.8-4.6-2.4-6.3l-.5-.5A1.5 1.5 0 0013.5 3zM10 13a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" clipRule="evenodd" />
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2" />
+      <line x1="15" y1="9" x2="9" y2="15" />
+      <line x1="9" y1="9" x2="15" y2="15" />
     </svg>
   );
 }
+
 function IconMenu() {
   return (
-    <svg className="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-      <path fillRule="evenodd" d="M3 5h14a1 1 0 010 2H3a1 1 0 010-2zm0 4h14a1 1 0 010 2H3a1 1 0 010-2zm0 4h14a1 1 0 010 2H3a1 1 0 010-2z" clipRule="evenodd" />
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <line x1="3" y1="18" x2="21" y2="18" />
     </svg>
   );
 }
+
 function IconChevronLeft() {
   return (
-    <svg className="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-      <path fillRule="evenodd" d="M12.7 5.3a1 1 0 010 1.4L9.4 10l3.3 3.3a1 1 0 01-1.4 1.4l-4-4a1 1 0 010-1.4l4-4a1 1 0 011.4 0z" clipRule="evenodd" />
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="15 18 9 12 15 6" />
     </svg>
   );
 }
@@ -83,15 +111,15 @@ function IconChevronLeft() {
 
 const DOMAIN_ICONS: Record<string, () => ReactNode> = {
   application_security: IconShield,
-  operational_security: IconServer,
+  operational_security: IconCheckCircle,
   data_handling: IconDatabase,
 };
 
 const FILTER_CONFIG = [
   { id: "all", label: "All controls", Icon: IconList },
   { id: "open", label: "Not reviewed", Icon: IconEyeOff },
-  { id: "not_in_place", label: "Gaps", Icon: IconAlert },
-  { id: "hard_fail", label: "Hard fail", Icon: IconFire },
+  { id: "not_in_place", label: "Gaps", Icon: IconAlertTriangle },
+  { id: "hard_fail", label: "Hard fail", Icon: IconXOctagon },
 ] as const;
 
 /* ------------------------------------------------------------------ */
@@ -122,7 +150,7 @@ function SidebarItem({
         } ${collapsed ? "justify-center" : ""}`}
         title={collapsed ? label : undefined}
       >
-        <span className={active ? "text-text" : "text-text-muted"}>
+        <span className="flex items-center justify-center">
           {icon}
         </span>
         {!collapsed && <span>{label}</span>}
