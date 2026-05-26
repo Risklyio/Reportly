@@ -1,5 +1,13 @@
+import fs from "fs";
+import path from "path";
 import type { AssessmentExportData, ExportControlRow } from "./report-data";
 import { DOMAIN_EXPORT_KEYS } from "./report-data";
+
+function loadLogoBase64(): string | null {
+  const logoPath = path.join(process.cwd(), "public", "brand", "reportly-logo.png");
+  if (!fs.existsSync(logoPath)) return null;
+  return `data:image/png;base64,${fs.readFileSync(logoPath).toString("base64")}`;
+}
 
 type SectionStatus = "ok" | "partial" | "fail";
 
@@ -17,6 +25,8 @@ function statusIcon(status: SectionStatus): string {
   return "";
 }
 
+const IN_PLACE_ICON = `<svg class="in-place-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="#15803d" stroke="#15803d"/><path d="M9 12l2 2 4-4" stroke="#fff"/></svg>`;
+
 function outcomeBadge(outcome: string): string {
   const map: Record<string, string> = {
     "In place": "badge-green",
@@ -27,7 +37,8 @@ function outcomeBadge(outcome: string): string {
     "Not reviewed": "badge-grey",
   };
   const cls = map[outcome] ?? "badge-grey";
-  return `<span class="badge ${cls}">${esc(outcome)}</span>`;
+  const icon = outcome === "In place" ? IN_PLACE_ICON : "";
+  return `<span class="badge ${cls}">${icon}${esc(outcome)}</span>`;
 }
 
 function esc(s: string): string {
@@ -109,6 +120,7 @@ function renderDomain(domainLabel: string, domainId: string, controls: ExportCon
 
 export function renderAssessmentHtml(data: AssessmentExportData): string {
   const s = data.summary;
+  const logoUri = loadLogoBase64();
 
   let domains = "";
   for (const d of DOMAIN_EXPORT_KEYS) {
@@ -148,8 +160,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica N
 .report{max-width:1200px;margin:0 auto;padding:0 24px 60px}
 
 /* Header */
-.report-header{background:var(--header-bg);border-bottom:1px solid var(--border);padding:16px 24px;margin:0 -24px 32px;display:flex;align-items:center;justify-content:space-between}
+.report-header{background:var(--header-bg);border-bottom:1px solid var(--border);padding:14px 24px;margin:0 -24px 32px;display:flex;align-items:center;justify-content:space-between}
+.report-header .logo{height:32px;width:auto}
 .report-header h1{font-size:16px;font-weight:700;color:var(--black)}
+.report-header .header-right{display:flex;align-items:center;gap:16px}
 .report-header .date{font-size:12px;color:var(--muted)}
 
 /* Meta card */
@@ -200,7 +214,8 @@ details[open]>.section-title::before{transform:rotate(90deg)}
 .col-outcome{width:120px;text-align:center}
 
 /* Badges */
-.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:600;white-space:nowrap;border:1px solid transparent}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:600;white-space:nowrap;border:1px solid transparent}
+.in-place-icon{width:14px;height:14px;flex-shrink:0}
 .badge-green{background:var(--green);color:var(--white);border-color:var(--green-ring)}
 .badge-red{background:var(--red);color:var(--white);border-color:var(--red-ring)}
 .badge-amber{background:var(--amber);color:var(--black);border-color:var(--amber-ring)}
@@ -226,8 +241,13 @@ details[open]>.section-title::before{transform:rotate(90deg)}
 <body>
 <div class="report">
   <header class="report-header">
-    <h1>${esc(data.frameworkName)}</h1>
-    <span class="date">${esc(data.generatedAt)}</span>
+    <div style="display:flex;align-items:center;gap:12px">
+      ${logoUri ? `<img class="logo" src="${logoUri}" alt="Reportly.io"/>` : `<span style="font-weight:700;font-size:16px">Reportly.io</span>`}
+    </div>
+    <div class="header-right">
+      <h1>${esc(data.frameworkName)}</h1>
+      <span class="date">${esc(data.generatedAt)}</span>
+    </div>
   </header>
 
   <div class="meta-card">
