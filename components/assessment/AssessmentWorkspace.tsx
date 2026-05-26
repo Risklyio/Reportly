@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import Link from "next/link";
+
 import { useSearchParams } from "next/navigation";
 import {
   ALL_CONTROLS,
@@ -201,34 +201,7 @@ export function AssessmentWorkspace({
           </p>
           <p className="mt-1 text-sm font-medium text-text">{domainLabel}</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Link
-            href={`/assessments/${assessment.id}/export`}
-            className="btn-secondary"
-          >
-            Export
-          </Link>
-          <a
-            href={`/api/assessments/${assessment.id}/export/pdf`}
-            className="btn-primary"
-            download
-          >
-            PDF
-          </a>
-          <a
-            href={`/api/assessments/${assessment.id}/export`}
-            className="btn-secondary"
-            download
-          >
-            DOCX
-          </a>
-          <Link
-            href="/settings#report-templates"
-            className="text-sm font-medium text-primary underline-offset-2 hover:underline"
-          >
-            Upload report template
-          </Link>
-        </div>
+        <div className="flex flex-wrap items-center gap-2" />
       </div>
 
       <div className="card mb-6">

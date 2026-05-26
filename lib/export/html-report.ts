@@ -67,7 +67,7 @@ function renderControlRow(r: ExportControlRow): string {
 function renderSection(section: string, rows: ExportControlRow[]): string {
   const status = sectionStatus(rows);
   const icon = statusIcon(status);
-  return `<details class="section-block" open>
+  return `<details class="section-block">
   <summary class="section-title">${icon}${esc(section)}</summary>
   <table class="controls-table">
     <thead><tr>
@@ -101,7 +101,7 @@ function renderDomain(domainLabel: string, domainId: string, controls: ExportCon
     body += renderSection(sec, rows);
   }
 
-  return `<details class="domain-block" open>
+  return `<details class="domain-block">
   <summary class="domain-title">${domIcon}${icon}${esc(domainLabel)}</summary>
   ${body}
 </details>`;
