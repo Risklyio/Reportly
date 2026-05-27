@@ -1,24 +1,38 @@
-import { ALL_CONTROLS, DOMAINS } from "@/lib/controls/catalog";
+import {
+  ALL_CONTROLS,
+  FRAMEWORKS,
+  M365_FRAMEWORK_ID,
+} from "@/lib/controls/catalog";
 
-export const FRAMEWORK_ID = "m365-app-compliance";
+export const FRAMEWORK_ID = M365_FRAMEWORK_ID;
 
 export function frameworkRow() {
+  const primary = FRAMEWORKS.find((f) => f.id === FRAMEWORK_ID)!;
   return {
-    id: FRAMEWORK_ID,
-    name: "M365 Application Compliance Program",
-    description:
-      "Microsoft 365 App Certification sample evidence guide.",
+    id: primary.id,
+    name: primary.name,
+    description: primary.description,
   };
 }
 
-export function domainRows() {
-  return DOMAINS.map((d, i) => ({
-    id: d.id,
-    framework_id: FRAMEWORK_ID,
-    label: d.label,
-    short_label: d.shortLabel,
-    sort_order: i,
+export function frameworkRows() {
+  return FRAMEWORKS.map((f) => ({
+    id: f.id,
+    name: f.name,
+    description: f.description,
   }));
+}
+
+export function domainRows() {
+  return FRAMEWORKS.flatMap((framework) =>
+    framework.domains.map((d, i) => ({
+      id: d.id,
+      framework_id: framework.id,
+      label: d.label,
+      short_label: d.shortLabel,
+      sort_order: i,
+    }))
+  );
 }
 
 export function controlRows() {

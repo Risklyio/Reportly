@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import type { AssessmentExportData, ExportControlRow } from "./report-data";
-import { DOMAIN_EXPORT_KEYS } from "./report-data";
 
 function loadLogoBase64(): string | null {
   const logoPath = path.join(process.cwd(), "public", "brand", "reportly-logo.png");
@@ -123,9 +122,8 @@ export function renderAssessmentHtml(data: AssessmentExportData): string {
   const logoUri = loadLogoBase64();
 
   let domains = "";
-  for (const d of DOMAIN_EXPORT_KEYS) {
-    const controls = data[d.controlsKey];
-    domains += renderDomain(d.label, d.id, controls);
+  for (const d of data.domains) {
+    domains += renderDomain(d.label, d.id, d.controls);
   }
 
   return `<!DOCTYPE html>

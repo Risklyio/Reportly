@@ -3,7 +3,6 @@ import autoTable from "jspdf-autotable";
 import fs from "fs";
 import path from "path";
 import type { AssessmentExportData, ExportControlRow } from "./report-data";
-import { DOMAIN_EXPORT_KEYS } from "./report-data";
 import { drawLandscapeCoverPage } from "./pdf-cover";
 
 type PdfWithTable = jsPDF & { lastAutoTable?: { finalY: number } };
@@ -523,8 +522,8 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
   y = tableEndY(doc, y) + 10;
 
   /* ---- Domain sections ---- */
-  for (const domain of DOMAIN_EXPORT_KEYS) {
-    const controls = data[domain.controlsKey];
+  for (const domain of data.domains) {
+    const controls = domain.controls;
     if (controls.length === 0) continue;
 
     if (y > contentBottom(doc) - 40) {

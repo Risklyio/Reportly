@@ -1,7 +1,4 @@
-export type DomainId =
-  | "application_security"
-  | "operational_security"
-  | "data_handling";
+export type DomainId = string;
 
 export type ControlOutcome =
   | "in_place"

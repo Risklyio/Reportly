@@ -1,7 +1,7 @@
 import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
 import * as schema from "./schema";
 import { frameworks, domains, controls } from "./schema";
-import { controlRows, domainRows, frameworkRow } from "./seed-data";
+import { controlRows, domainRows, frameworkRows } from "./seed-data";
 import path from "path";
 import fs from "fs";
 
@@ -113,15 +113,15 @@ function ensureSqliteColumnMigrations(sqlite: import("better-sqlite3").Database)
 function ensureSqliteSeeded() {
   if (_seeded || !_db) return;
   const db = _db;
-  const existing = db.select().from(frameworks).get();
-  if (existing) {
-    _seeded = true;
-    return;
+  for (const fw of frameworkRows()) {
+    db.insert(frameworks)
+      .values({ id: fw.id, name: fw.name, description: fw.description })
+      .onConflictDoUpdate({
+        target: frameworks.id,
+        set: { name: fw.name, description: fw.description },
+      })
+      .run();
   }
-  const fw = frameworkRow();
-  db.insert(frameworks)
-    .values({ id: fw.id, name: fw.name, description: fw.description })
-    .run();
   for (const d of domainRows()) {
     db.insert(domains)
       .values({
@@ -130,6 +130,15 @@ function ensureSqliteSeeded() {
         label: d.label,
         shortLabel: d.short_label,
         sortOrder: d.sort_order,
+      })
+      .onConflictDoUpdate({
+        target: domains.id,
+        set: {
+          frameworkId: d.framework_id,
+          label: d.label,
+          shortLabel: d.short_label,
+          sortOrder: d.sort_order,
+        },
       })
       .run();
   }

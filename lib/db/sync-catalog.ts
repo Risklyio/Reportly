@@ -1,4 +1,4 @@
-import { ALL_CONTROLS } from "@/lib/controls/catalog";
+import type { ControlDefinition } from "@/lib/types";
 import { controlRows } from "@/lib/db/seed-data";
 import { assertDatabaseReady, isSupabaseConfigured } from "@/lib/db";
 import { ensureAssessorNotesColumn } from "@/lib/db/migrate-supabase";
@@ -63,9 +63,10 @@ export async function syncCatalogControls(): Promise<void> {
 
 export async function ensureAssessmentControlRows(
   assessmentId: string,
-  existingIds: Set<string>
+  existingIds: Set<string>,
+  frameworkControls: ControlDefinition[]
 ): Promise<void> {
-  const missing = ALL_CONTROLS.filter((c) => !existingIds.has(c.id));
+  const missing = frameworkControls.filter((c) => !existingIds.has(c.id));
   if (missing.length === 0) return;
 
   const ts = new Date().toISOString();

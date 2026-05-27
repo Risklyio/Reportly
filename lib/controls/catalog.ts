@@ -1,9 +1,13 @@
 import type { ControlDefinition, DomainId } from "@/lib/types";
 import { applicationControls } from "./application-controls";
 import { operationalControls } from "./operational-controls";
+import { ceplusControls } from "./ceplus-controls";
 
 const DATA_BASE =
   "https://learn.microsoft.com/en-us/microsoft-365-app-certification/docs/seg2_data";
+
+export const M365_FRAMEWORK_ID = "m365-app-compliance";
+export const CEPLUS_FRAMEWORK_ID = "ncsc-cyber-essentials-plus-v3-2";
 
 export function formatControlRef(c: ControlDefinition): string {
   return c.subId ? `${c.number}${c.subId}` : String(c.number);
@@ -77,17 +81,20 @@ const dataControls: ControlDefinition[] = [
   data(19, "HIPAA", "HIPAA business associate agreements", false),
 ];
 
-export const ALL_CONTROLS: ControlDefinition[] = [
-  ...applicationControls,
-  ...operationalControls,
-  ...dataControls,
-];
+export type FrameworkDefinition = {
+  id: string;
+  vendor: string;
+  name: string;
+  description: string;
+  domains: {
+    id: DomainId;
+    label: string;
+    shortLabel: string;
+  }[];
+  controls: ControlDefinition[];
+};
 
-export const DOMAINS: {
-  id: DomainId;
-  label: string;
-  shortLabel: string;
-}[] = [
+const m365Domains: FrameworkDefinition["domains"] = [
   {
     id: "application_security",
     label: "Application security",
@@ -105,8 +112,82 @@ export const DOMAINS: {
   },
 ];
 
-export function getControlsByDomain(domain: DomainId): ControlDefinition[] {
-  return ALL_CONTROLS.filter((c) => c.domain === domain).sort(compareControls);
+const ceplusDomains: FrameworkDefinition["domains"] = [
+  {
+    id: "ce_external_vulnerability_assessment",
+    label: "External vulnerability assessment",
+    shortLabel: "External VA",
+  },
+  {
+    id: "ce_authenticated_vulnerability_assessment",
+    label: "Authenticated vulnerability assessment",
+    shortLabel: "Auth VA",
+  },
+  {
+    id: "ce_malware_protection",
+    label: "Malware protection",
+    shortLabel: "Malware",
+  },
+  {
+    id: "ce_multi_factor_authentication",
+    label: "Multi-factor authentication",
+    shortLabel: "MFA",
+  },
+  {
+    id: "ce_account_separation",
+    label: "Account separation",
+    shortLabel: "Accounts",
+  },
+];
+
+export const FRAMEWORKS: FrameworkDefinition[] = [
+  {
+    id: M365_FRAMEWORK_ID,
+    vendor: "Microsoft",
+    name: "M365 Application Compliance Program",
+    description:
+      "Microsoft 365 App Certification control set covering application, operational, and data controls.",
+    domains: m365Domains,
+    controls: [...applicationControls, ...operationalControls, ...dataControls],
+  },
+  {
+    id: CEPLUS_FRAMEWORK_ID,
+    vendor: "NCSC",
+    name: "Cyber Essentials Plus v3.2",
+    description:
+      "NCSC Cyber Essentials Plus technical test specification v3.2 aligned controls.",
+    domains: ceplusDomains,
+    controls: [...ceplusControls],
+  },
+];
+
+export const ALL_CONTROLS: ControlDefinition[] = FRAMEWORKS.flatMap(
+  (f) => f.controls
+);
+
+/** Legacy alias used in older components; defaults to M365 domains. */
+export const DOMAINS = m365Domains;
+
+export function getFrameworkById(frameworkId: string): FrameworkDefinition {
+  return (
+    FRAMEWORKS.find((f) => f.id === frameworkId) ??
+    FRAMEWORKS.find((f) => f.id === M365_FRAMEWORK_ID)!
+  );
+}
+
+export function getDomainsForFramework(frameworkId: string) {
+  return getFrameworkById(frameworkId).domains;
+}
+
+export function getControlsForFramework(frameworkId: string) {
+  return getFrameworkById(frameworkId).controls.sort(compareControls);
+}
+
+export function getControlsByDomain(
+  domain: DomainId,
+  frameworkId = M365_FRAMEWORK_ID
+): ControlDefinition[] {
+  return getControlsForFramework(frameworkId).filter((c) => c.domain === domain);
 }
 
 export function getControlById(id: string): ControlDefinition | undefined {

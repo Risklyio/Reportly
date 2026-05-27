@@ -1,6 +1,6 @@
 import { eq, desc, and } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
-import { ALL_CONTROLS } from "@/lib/controls/catalog";
+import { getControlsForFramework } from "@/lib/controls/catalog";
 import {
   getPentestControlIds,
   PENTEST_LEAD_CONTROL_ID,
@@ -97,9 +97,9 @@ async function countReviewedControlsByAssessment(): Promise<Map<string, number>>
 export async function listAssessmentsWithProgress(): Promise<AssessmentListItem[]> {
   const assessments = await listAssessments();
   const reviewedByAssessment = await countReviewedControlsByAssessment();
-  const totalControls = ALL_CONTROLS.length;
 
   return assessments.map((a) => {
+    const totalControls = getControlsForFramework(a.frameworkId).length;
     const reviewedCount = reviewedByAssessment.get(a.id) ?? 0;
     const progressPercent = Math.round((reviewedCount / totalControls) * 100);
     const isFullyReviewed = reviewedCount >= totalControls;
@@ -190,16 +190,20 @@ export async function createAssessment(input: {
   assessmentDate: string;
   assessorName?: string;
   scopeNotes?: string;
+  frameworkId?: string;
 }): Promise<AssessmentMetadata> {
   await assertDatabaseReady();
   const id = uuidv4();
   const ts = now();
 
+  const frameworkId = input.frameworkId ?? FRAMEWORK_ID;
+  const frameworkControls = getControlsForFramework(frameworkId);
+
   if (isSupabaseConfigured()) {
     const sb = getSupabaseAdmin();
     const { error: aErr } = await sb.from("assessments").insert({
       id,
-      framework_id: FRAMEWORK_ID,
+      framework_id: frameworkId,
       client_name: input.clientName,
       app_name: input.appName,
       assessment_date: input.assessmentDate,
@@ -211,7 +215,7 @@ export async function createAssessment(input: {
     });
     if (aErr) throw new Error(aErr.message);
 
-    const controlRows = ALL_CONTROLS.map((c) => ({
+    const controlRows = frameworkControls.map((c) => ({
       assessment_id: id,
       control_id: c.id,
       outcome: null,
@@ -235,7 +239,7 @@ export async function createAssessment(input: {
   db.insert(assessments)
     .values({
       id,
-      frameworkId: FRAMEWORK_ID,
+      frameworkId,
       clientName: input.clientName,
       appName: input.appName,
       assessmentDate: input.assessmentDate,
@@ -247,7 +251,7 @@ export async function createAssessment(input: {
     })
     .run();
   const ts2 = now();
-  for (const c of ALL_CONTROLS) {
+  for (const c of frameworkControls) {
     db.insert(assessmentControls)
       .values({
         assessmentId: id,
@@ -309,6 +313,10 @@ export async function getAssessmentControlStates(
 ): Promise<AssessmentControlState[]> {
   await assertDatabaseReady();
   await syncCatalogControls();
+  const assessment = await getAssessment(assessmentId);
+  const frameworkControls = getControlsForFramework(
+    assessment?.frameworkId ?? FRAMEWORK_ID
+  );
 
   if (isSupabaseConfigured()) {
     const sb = getSupabaseAdmin();
@@ -329,7 +337,8 @@ export async function getAssessmentControlStates(
     }));
     await ensureAssessmentControlRows(
       assessmentId,
-      new Set(mapped.map((r) => r.controlId))
+      new Set(mapped.map((r) => r.controlId)),
+      frameworkControls
     );
     const { data: refreshed, error: refetchErr } = await sb
       .from("assessment_controls")
@@ -358,7 +367,8 @@ export async function getAssessmentControlStates(
     .all();
   await ensureAssessmentControlRows(
     assessmentId,
-    new Set(rows.map((r) => r.controlId))
+    new Set(rows.map((r) => r.controlId)),
+    frameworkControls
   );
   rows = db
     .select()
@@ -479,9 +489,14 @@ export async function applyPentestPendingToAssessment(
 ): Promise<AssessmentControlState[]> {
   await assertDatabaseReady();
   await syncCatalogControls();
+  const assessment = await getAssessment(assessmentId);
+  const frameworkControls = getControlsForFramework(
+    assessment?.frameworkId ?? FRAMEWORK_ID
+  );
   await ensureAssessmentControlRows(
     assessmentId,
-    new Set((await getAssessmentControlStates(assessmentId)).map((s) => s.controlId))
+    new Set((await getAssessmentControlStates(assessmentId)).map((s) => s.controlId)),
+    frameworkControls
   );
 
   const ids = getPentestControlIds();
