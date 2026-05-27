@@ -46,36 +46,24 @@ export const ceplusControls: ControlDefinition[] = [
     "ce_external_vulnerability_assessment",
     1,
     "External vulnerability assessment",
-    "Identify all internet-facing IPs and externally reachable services in scope",
+    "Remote vulnerability assessment",
     true,
     {
       subId: "A",
       intent:
-        "Identify all internet-facing IP addresses and services in scope (including IaaS where used) before remote vulnerability testing.",
+        "Scan all identified IP addresses, on the recommended set of TCP and UDP ports.",
     }
   ),
   ce(
     "ce_external_vulnerability_assessment",
     1,
     "External vulnerability assessment",
-    "Run approved external vulnerability scans across identified IPs and relevant TCP/UDP ports",
+    "External Services",
     true,
     {
       subId: "B",
       intent:
-        "Perform approved remote vulnerability scanning on the identified public footprint and review each discovered internet-accessible service.",
-    }
-  ),
-  ce(
-    "ce_external_vulnerability_assessment",
-    1,
-    "External vulnerability assessment",
-    "Record pass only when all tested internet-accessible services pass",
-    true,
-    {
-      subId: "C",
-      intent:
-        "A single failed service results in a failed external vulnerability assessment test case.",
+        "For each Internet-accessible service you discover use the flow diagram and notes below to determine whether to record a Pass or Fail for the service.",
     }
   ),
 
@@ -83,24 +71,12 @@ export const ceplusControls: ControlDefinition[] = [
     "ce_authenticated_vulnerability_assessment",
     2,
     "Authenticated vulnerability assessment",
-    "Perform authenticated scans on sampled end-user devices, servers, and IaaS instances",
+    "Check patching, by authenticated vulnerability scan of devices",
     true,
     {
       subId: "A",
       intent:
-        "Use approved authenticated scanning against representative sampled devices (EUDs, servers, and IaaS instances).",
-    }
-  ),
-  ce(
-    "ce_authenticated_vulnerability_assessment",
-    2,
-    "Authenticated vulnerability assessment",
-    "Fail findings with vendor critical/high, CVSS v3 >= 7, or unclassified severe vulnerabilities older than 14 days",
-    true,
-    {
-      subId: "B",
-      intent:
-        "If qualifying vulnerabilities have a vendor-provided fix older than 14 days, this test case fails.",
+        "For each device to be tested, scan with the approved vulnerability scanning tool. Using the output of the scan, identify vulnerabilities that meet any of the three following criteria: described by the vendor as critical or high risk; has a CVSS v3 base score of 7 or above; there are no details of the level of vulnerabilities the update fixes provided by the vendor.",
       defaultNotInPlaceReasons: [
         "Critical/high vulnerabilities older than 14 days detected",
         "CVSS 7+ vulnerabilities not remediated within required window",
@@ -112,36 +88,24 @@ export const ceplusControls: ControlDefinition[] = [
       ],
     }
   ),
-  ce(
-    "ce_authenticated_vulnerability_assessment",
-    2,
-    "Authenticated vulnerability assessment",
-    "Use representative sampling methodology and retain sample-size evidence",
-    false,
-    {
-      subId: "C",
-      intent:
-        "Assessment evidence must justify representative sample calculation and retain records for certification assurance.",
-    }
-  ),
 
   ce(
     "ce_malware_protection",
     3,
     "Malware protection",
-    "Anti-malware installed, running, and updated on sampled devices using AV",
+    "Check that the anti-malware software is installed and running",
     true,
     {
       subId: "A",
       intent:
-        "For sampled devices using anti-malware software, verify product is installed, operational, and updated per vendor guidance.",
+        "For each device in the sample set, check that the anti-malware software is installed and running.",
     }
   ),
   ce(
     "ce_malware_protection",
     3,
     "Malware protection",
-    "Email-delivered malware test files are blocked from access/execution",
+    "Check effectiveness of defences against malware delivered by email",
     true,
     {
       subId: "B",
@@ -153,7 +117,7 @@ export const ceplusControls: ControlDefinition[] = [
     "ce_malware_protection",
     3,
     "Malware protection",
-    "Browser-delivered malware test files are blocked from download/access/execution",
+    "Check effectiveness of defences against malware delivered by browser",
     true,
     {
       subId: "C",
@@ -165,10 +129,22 @@ export const ceplusControls: ControlDefinition[] = [
     "ce_malware_protection",
     3,
     "Malware protection",
-    "Certificate-based application allow listing enforced where used",
+    "Manual Checks for devices that use anti-malware software",
     true,
     {
       subId: "D",
+      intent:
+        "For devices that use anti-malware software, complete the required manual checks to validate protections are configured and operating as expected.",
+    }
+  ),
+  ce(
+    "ce_malware_protection",
+    3,
+    "Malware protection",
+    "For devices that use certificate-based application allow listing",
+    true,
+    {
+      subId: "E",
       intent:
         "For devices using certificate-based allow listing, only trusted-signed executables run and policy applies across executable types.",
     }
@@ -178,12 +154,12 @@ export const ceplusControls: ControlDefinition[] = [
     "ce_multi_factor_authentication",
     4,
     "Multi-factor authentication",
-    "MFA enforced for user and administrator access to all in-scope cloud services",
+    "Check multi-factor authentication configuration",
     true,
     {
       subId: "A",
       intent:
-        "Users and admins must be prompted for MFA before access to each in-scope authentication service.",
+        "To test cloud services declared in scope have been configured for multi factor authentication (MFA).",
       defaultNotInPlaceReasons: [
         "One or more in-scope cloud services allow access without MFA",
         "MFA not enforced for either user or administrative access",
@@ -194,29 +170,17 @@ export const ceplusControls: ControlDefinition[] = [
       ],
     }
   ),
-  ce(
-    "ce_multi_factor_authentication",
-    4,
-    "Multi-factor authentication",
-    "Test authentication flows on untrusted or incognito sessions for each authentication service",
-    true,
-    {
-      subId: "B",
-      intent:
-        "Assessment should observe authentication behavior for each cloud authentication service in use.",
-    }
-  ),
 
   ce(
     "ce_account_separation",
     5,
     "Account separation",
-    "Standard user accounts cannot run administrative processes without separate admin credentials",
+    "Check account separation",
     true,
     {
       subId: "A",
       intent:
-        "When a user attempts administrative actions, the system must require additional admin login and not run with standard user rights.",
+        "To test user accounts don't have administrator privileges assigned.",
       defaultNotInPlaceReasons: [
         "Standard users can run administrative processes directly",
         "No prompt for separate administrator credentials",
@@ -225,18 +189,6 @@ export const ceplusControls: ControlDefinition[] = [
         "Remove local admin rights from standard users.",
         "Enforce privileged actions via separate admin accounts.",
       ],
-    }
-  ),
-  ce(
-    "ce_account_separation",
-    5,
-    "Account separation",
-    "Repeat account-separation test across all sampled devices and applicable cloud environments",
-    true,
-    {
-      subId: "B",
-      intent:
-        "All sampled devices and relevant cloud environments where admin processes can run must pass account-separation testing.",
     }
   ),
 ];
