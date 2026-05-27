@@ -25,6 +25,7 @@ export async function POST(request: Request) {
         body.assessmentDate ?? new Date().toISOString().slice(0, 10),
       assessorName: body.assessorName,
       scopeNotes: body.scopeNotes,
+      frameworkId: body.frameworkId,
     });
     return NextResponse.json(created, { status: 201 });
   } catch (e) {

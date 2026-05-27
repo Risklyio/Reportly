@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useState, useRef, useEffect, type ReactNode } from "react";
-import { DOMAINS } from "@/lib/controls/catalog";
+import {
+  DOMAINS,
+  FRAMEWORKS,
+  getDomainsForFramework,
+} from "@/lib/controls/catalog";
 import type { DomainId } from "@/lib/types";
 
 const FRAMEWORK_NAME = "M365 Application Compliance Program";
@@ -133,6 +137,11 @@ const DOMAIN_ICONS: Record<string, () => ReactNode> = {
   application_security: IconShield,
   operational_security: IconCheckCircle,
   data_handling: IconDatabase,
+  ce_external_vulnerability_assessment: IconShield,
+  ce_authenticated_vulnerability_assessment: IconCheckCircle,
+  ce_malware_protection: IconAlertTriangle,
+  ce_multi_factor_authentication: IconCheckCircle,
+  ce_account_separation: IconDatabase,
 };
 
 const FILTER_CONFIG = [
@@ -327,16 +336,45 @@ function ReportDropdown({
 
 export function CollapsibleSidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const [frameworkName, setFrameworkName] = useState(FRAMEWORK_NAME);
+  const [frameworkDomains, setFrameworkDomains] = useState(DOMAINS);
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeDomain =
-    (searchParams.get("domain") as DomainId | null) ?? "application_security";
+    (searchParams.get("domain") as DomainId | null) ??
+    frameworkDomains[0]?.id ??
+    "application_security";
   const activeFilter = searchParams.get("filter") ?? "all";
 
   const assessmentMatch = pathname.match(/^\/assessments\/([^/]+)/);
   const assessmentId = assessmentMatch?.[1];
   const isAssessment =
     assessmentId && assessmentId !== "new" && !pathname.endsWith("/export");
+
+  useEffect(() => {
+    async function loadAssessmentFramework() {
+      if (!assessmentId || !isAssessment) return;
+      try {
+        const res = await fetch(`/api/assessments/${assessmentId}`, {
+          cache: "no-store",
+        });
+        if (!res.ok) return;
+        const data = (await res.json()) as {
+          assessment?: { frameworkId?: string };
+        };
+        const fwId = data.assessment?.frameworkId;
+        if (!fwId) return;
+        const fw = FRAMEWORKS.find((f) => f.id === fwId);
+        if (fw) {
+          setFrameworkName(fw.name);
+          setFrameworkDomains(getDomainsForFramework(fw.id));
+        }
+      } catch {
+        // keep defaults
+      }
+    }
+    void loadAssessmentFramework();
+  }, [assessmentId, isAssessment]);
 
   function assessmentHref(domain: DomainId, filter: string) {
     return `/assessments/${assessmentId}?domain=${domain}&filter=${filter}`;
@@ -357,7 +395,7 @@ export function CollapsibleSidebar() {
               Framework
             </p>
             <p className="rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-xs text-text">
-              {FRAMEWORK_NAME}
+              {frameworkName}
             </p>
             <p className="mt-4 px-3 text-xs text-text-muted">
               Start or open an assessment to navigate domains and filters.
@@ -384,7 +422,7 @@ export function CollapsibleSidebar() {
         )}
         {collapsed && <div className="mb-1 border-b border-neutral-200 pb-1" />}
         <ul className="space-y-0.5">
-          {DOMAINS.map((d) => {
+          {frameworkDomains.map((d) => {
             const Icon = DOMAIN_ICONS[d.id] ?? IconShield;
             return (
               <SidebarItem

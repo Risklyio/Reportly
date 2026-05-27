@@ -4,8 +4,8 @@ import { useCallback, useMemo, useState } from "react";
 
 import { useSearchParams } from "next/navigation";
 import {
-  ALL_CONTROLS,
-  DOMAINS,
+  getControlsForFramework,
+  getDomainsForFramework,
   getControlsByDomain,
 } from "@/lib/controls/catalog";
 import type {
@@ -22,10 +22,11 @@ type Filter = "all" | "open" | "not_in_place" | "hard_fail";
 
 function buildStateMap(
   assessmentId: string,
+  frameworkControls: ReturnType<typeof getControlsForFramework>,
   initialStates: AssessmentControlState[]
 ) {
   const map = new Map<string, AssessmentControlState>();
-  for (const c of ALL_CONTROLS) {
+  for (const c of frameworkControls) {
     const existing = initialStates.find((s) => s.controlId === c.id);
     map.set(
       c.id,
@@ -51,29 +52,32 @@ export function AssessmentWorkspace({
   assessment: AssessmentMetadata;
   controlStates: AssessmentControlState[];
 }) {
+  const frameworkDomains = getDomainsForFramework(initialAssessment.frameworkId);
+  const frameworkControls = getControlsForFramework(initialAssessment.frameworkId);
   const searchParams = useSearchParams();
   const domain =
-    (searchParams.get("domain") as DomainId) || "application_security";
+    (searchParams.get("domain") as DomainId) || frameworkDomains[0]?.id;
   const filter = (searchParams.get("filter") as Filter) || "all";
 
   const [assessment, setAssessment] = useState(initialAssessment);
   const [states, setStates] = useState(() =>
-    buildStateMap(initialAssessment.id, initialStates)
+    buildStateMap(initialAssessment.id, frameworkControls, initialStates)
   );
 
   const domainLabel =
-    DOMAINS.find((d) => d.id === domain)?.label ?? "Controls";
+    frameworkDomains.find((d) => d.id === domain)?.label ?? "Controls";
 
   const stateList = useMemo(() => Array.from(states.values()), [states]);
 
   const progress = useMemo(() => {
-    const total = ALL_CONTROLS.length;
+    const total = frameworkControls.length;
+    if (!total) return 0;
     const done = stateList.filter((s) => s.outcome != null).length;
     return Math.round((done / total) * 100);
-  }, [stateList]);
+  }, [frameworkControls.length, stateList]);
 
   const domainControls = useMemo(() => {
-    let list = getControlsByDomain(domain);
+    let list = getControlsByDomain(domain, assessment.frameworkId);
     if (filter === "open") {
       list = list.filter((c) => !states.get(c.id)?.outcome);
     } else if (filter === "not_in_place") {
@@ -92,7 +96,7 @@ export function AssessmentWorkspace({
       sections.set(c.section, arr);
     }
     return sections;
-  }, [domain, filter, states]);
+  }, [assessment.frameworkId, domain, filter, states]);
 
   const applyPentestPending = useCallback(async () => {
     const res = await fetch(
@@ -214,11 +218,14 @@ export function AssessmentWorkspace({
         </div>
         <p className="mt-1 text-xs text-text-muted">
           {progress}% complete ({stateList.filter((s) => s.outcome).length}/
-          {ALL_CONTROLS.length} controls)
+          {frameworkControls.length} controls)
         </p>
       </div>
 
-      <MobileAssessmentNav assessmentId={assessment.id} />
+      <MobileAssessmentNav
+        assessmentId={assessment.id}
+        frameworkId={assessment.frameworkId}
+      />
 
       <div className="space-y-8">
         {Array.from(domainControls.entries()).map(([section, controls]) => (

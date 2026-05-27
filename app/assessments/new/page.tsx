@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { FRAMEWORKS, M365_FRAMEWORK_ID } from "@/lib/controls/catalog";
 import {
   startAssessmentAction,
   type StartAssessmentState,
@@ -16,6 +17,17 @@ export default function NewAssessmentPage() {
     startAssessmentAction,
     initialState
   );
+  const [vendor, setVendor] = useState("Microsoft");
+  const [frameworkId, setFrameworkId] = useState(M365_FRAMEWORK_ID);
+
+  const vendors = useMemo(
+    () => Array.from(new Set(FRAMEWORKS.map((f) => f.vendor))),
+    []
+  );
+  const frameworksForVendor = useMemo(
+    () => FRAMEWORKS.filter((f) => f.vendor === vendor),
+    [vendor]
+  );
 
   useEffect(() => {
     if (state.redirectTo) {
@@ -27,7 +39,7 @@ export default function NewAssessmentPage() {
     <div className="mx-auto max-w-xl px-4 py-10 lg:px-8">
       <h1 className="text-2xl font-bold text-text">New assessment</h1>
       <p className="mt-1 text-sm text-text-muted">
-        M365 Application Compliance Program
+        Select a vendor and framework, then start your control review.
       </p>
 
       <div className="card mt-4 border-neutral-200 bg-muted p-4 text-sm">
@@ -59,6 +71,53 @@ export default function NewAssessmentPage() {
           <p className="text-sm text-text-muted">Creating assessment…</p>
         )}
 
+        <div>
+          <label className="label" htmlFor="vendor">
+            Vendor
+          </label>
+          <select
+            id="vendor"
+            className="input"
+            value={vendor}
+            onChange={(e) => {
+              const nextVendor = e.target.value;
+              setVendor(nextVendor);
+              const first = FRAMEWORKS.find((f) => f.vendor === nextVendor);
+              if (first) setFrameworkId(first.id);
+            }}
+            disabled={pending}
+          >
+            {vendors.map((v) => (
+              <option key={v} value={v}>
+                {v}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="label" htmlFor="frameworkId">
+            Framework
+          </label>
+          <select
+            id="frameworkId"
+            name="frameworkId"
+            className="input"
+            value={frameworkId}
+            onChange={(e) => setFrameworkId(e.target.value)}
+            disabled={pending}
+          >
+            {frameworksForVendor.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.name}
+              </option>
+            ))}
+          </select>
+          <p className="mt-1 text-xs text-text-muted">
+            {
+              FRAMEWORKS.find((f) => f.id === frameworkId)?.description
+            }
+          </p>
+        </div>
         <div>
           <label className="label" htmlFor="clientName">
             Client name
@@ -127,7 +186,7 @@ export default function NewAssessmentPage() {
 
       <p className="mt-4 text-center text-sm text-text-muted">
         After starting, use the <strong>left sidebar</strong> to switch domains
-        (Application, Operational, Data) and set an outcome on each control.
+        and set an outcome on each control.
       </p>
     </div>
   );

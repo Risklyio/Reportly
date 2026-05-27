@@ -39,8 +39,8 @@ export default async function DashboardPage() {
         <div className="card text-center text-text-muted">
           <p>No assessments yet.</p>
           <p className="mt-2 text-sm">
-            Create one to review {ALL_CONTROLS.length} M365 certification
-            controls across three domains.
+            Create one to review {ALL_CONTROLS.length} controls across supported
+            framework domains.
           </p>
         </div>
       ) : (

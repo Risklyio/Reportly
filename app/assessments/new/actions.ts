@@ -1,6 +1,7 @@
 "use server";
 
 import { createAssessment } from "@/lib/services/assessments";
+import { getDomainsForFramework, M365_FRAMEWORK_ID } from "@/lib/controls/catalog";
 
 export type StartAssessmentState = {
   error?: string;
@@ -16,10 +17,13 @@ export async function startAssessmentAction(
   const assessmentDate = String(formData.get("assessmentDate") ?? "").trim();
   const assessorName = String(formData.get("assessorName") ?? "").trim();
   const scopeNotes = String(formData.get("scopeNotes") ?? "").trim();
+  const frameworkId = String(formData.get("frameworkId") ?? "").trim();
 
   if (!clientName || !appName || !assessmentDate) {
     return { error: "Client name, application name, and date are required." };
   }
+
+  const selectedFramework = frameworkId || M365_FRAMEWORK_ID;
 
   try {
     const assessment = await createAssessment({
@@ -28,9 +32,12 @@ export async function startAssessmentAction(
       assessmentDate,
       assessorName,
       scopeNotes,
+      frameworkId: selectedFramework,
     });
+    const firstDomain =
+      getDomainsForFramework(selectedFramework)[0]?.id ?? "application_security";
     return {
-      redirectTo: `/assessments/${assessment.id}?domain=application_security&filter=all`,
+      redirectTo: `/assessments/${assessment.id}?domain=${encodeURIComponent(firstDomain)}&filter=all`,
     };
   } catch (e) {
     return {

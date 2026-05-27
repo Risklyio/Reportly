@@ -20,6 +20,7 @@ export async function GET(
     const states = await getAssessmentControlStates(id);
     const data = buildExportData(
       {
+        frameworkId: assessment.frameworkId,
         clientName: assessment.clientName,
         appName: assessment.appName,
         assessmentDate: assessment.assessmentDate,

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { DOMAINS } from "@/lib/controls/catalog";
+import { getDomainsForFramework } from "@/lib/controls/catalog";
 import type { DomainId } from "@/lib/types";
 
 const FILTERS = [
@@ -12,10 +12,17 @@ const FILTERS = [
   { id: "hard_fail", label: "Hard fail" },
 ] as const;
 
-export function MobileAssessmentNav({ assessmentId }: { assessmentId: string }) {
+export function MobileAssessmentNav({
+  assessmentId,
+  frameworkId,
+}: {
+  assessmentId: string;
+  frameworkId: string;
+}) {
   const searchParams = useSearchParams();
+  const domains = getDomainsForFramework(frameworkId);
   const domain =
-    (searchParams.get("domain") as DomainId) || "application_security";
+    (searchParams.get("domain") as DomainId) || domains[0]?.id || "";
   const filter = searchParams.get("filter") ?? "all";
 
   function href(d: string, f: string) {
@@ -25,7 +32,7 @@ export function MobileAssessmentNav({ assessmentId }: { assessmentId: string }) 
   return (
     <div className="mb-4 space-y-3 lg:hidden">
       <div className="flex gap-2 overflow-x-auto pb-1">
-        {DOMAINS.map((d) => (
+        {domains.map((d) => (
           <Link
             key={d.id}
             href={href(d.id, filter)}
