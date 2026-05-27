@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
+import { CEPLUS_FRAMEWORK_ID } from "@/lib/controls/catalog";
 import type { AssessmentExportData, ExportControlRow } from "./report-data";
-
 function loadLogoBase64(): string | null {
   const logoPath = path.join(process.cwd(), "public", "brand", "reportly-logo.png");
   if (!fs.existsSync(logoPath)) return null;
@@ -70,9 +70,93 @@ function renderControlRow(r: ExportControlRow): string {
   <td class="col-req">${nl2br(r.requirement)}</td>
   <td class="col-outcome">${outcomeBadge(r.outcome)}</td>
   <td>${nl2br(r.reason) || "—"}</td>
-  <td>${nl2br(r.correctiveAction) || "—"}</td>
   <td>${nl2br(r.assessorNotes) || "—"}</td>
+  <td>${nl2br(r.correctiveAction) || "—"}</td>
 </tr>`;
+}
+
+const TABLE_HEAD = `<thead><tr>
+      <th class="col-ref">#</th>
+      <th>Control</th>
+      <th class="col-req">Requirement</th>
+      <th class="col-outcome">Outcome</th>
+      <th>Gap / Reason</th>
+      <th>Assessor Notes</th>
+      <th>Corrective Action</th>
+    </tr></thead>`;
+
+function renderSubControlFields(r: ExportControlRow): string {
+  const hardTag = r.hardFail === "Yes" ? `<span class="hard-fail-tag">HARD FAIL</span>` : "";
+  return `<div class="sub-control-fields">
+  <div class="field-row"><span class="field-label">Requirement</span><div class="field-value">${nl2br(r.requirement) || "—"}</div></div>
+  <div class="field-row"><span class="field-label">Outcome</span><div class="field-value">${outcomeBadge(r.outcome)}</div></div>
+  <div class="field-row"><span class="field-label">Gap / Reason</span><div class="field-value">${nl2br(r.reason) || "—"}</div></div>
+  <div class="field-row"><span class="field-label">Assessor Notes</span><div class="field-value">${nl2br(r.assessorNotes) || "—"}</div></div>
+  <div class="field-row"><span class="field-label">Corrective Action</span><div class="field-value">${nl2br(r.correctiveAction) || "—"}</div></div>
+  ${r.hardFail === "Yes" ? `<div class="field-row"><span class="field-label">Severity</span><div class="field-value">${hardTag}</div></div>` : ""}
+</div>`;
+}
+
+function renderCeplusSubControl(r: ExportControlRow): string {
+  const status = sectionStatus([r]);
+  const icon = statusIcon(status);
+  return `<details class="sub-control-block">
+  <summary class="sub-control-title">${icon}<span class="sub-control-ref">${esc(r.ref)}</span>${esc(r.title)}</summary>
+  ${renderSubControlFields(r)}
+</details>`;
+}
+
+type MainControlGroup = {
+  number: number;
+  section: string;
+  subs: ExportControlRow[];
+};
+
+function groupByMainControl(rows: ExportControlRow[]): MainControlGroup[] {
+  const map = new Map<number, MainControlGroup>();
+  for (const r of rows) {
+    const existing = map.get(r.number);
+    if (existing) {
+      existing.subs.push(r);
+    } else {
+      map.set(r.number, { number: r.number, section: r.section, subs: [r] });
+    }
+  }
+  return [...map.values()].sort((a, b) => a.number - b.number);
+}
+
+function renderCeplusMainControl(group: MainControlGroup): string {
+  const status = sectionStatus(group.subs);
+  const icon = statusIcon(status);
+  const subs = group.subs.map(renderCeplusSubControl).join("\n");
+  return `<details class="control-block">
+  <summary class="control-title">${icon}<span class="control-ref">${group.number}</span>${esc(group.section)}</summary>
+  <div class="control-body">${subs}</div>
+</details>`;
+}
+
+function renderCeplusDomain(domainLabel: string, domainId: string, controls: ExportControlRow[]): string {
+  if (controls.length === 0) return "";
+  const domainStatus = sectionStatus(controls);
+  const icon = statusIcon(domainStatus);
+
+  const iconMap: Record<string, string> = {
+    ce_external_vulnerability_assessment: `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="#060606" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>`,
+    ce_authenticated_vulnerability_assessment: `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="#060606" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>`,
+    ce_malware_protection: `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="#060606" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5.25-3.4 9.74-8 11-4.6-1.26-8-5.75-8-11V6l8-4z"/></svg>`,
+    ce_multi_factor_authentication: `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="#060606" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11c1.66 0 3-1.34 3-3S13.66 5 12 5 9 6.34 9 8s1.34 3 3 3z"/><path d="M6 21v-1a6 6 0 0112 0v1"/></svg>`,
+    ce_account_separation: `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="#060606" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4"/><circle cx="17" cy="11" r="3"/><path d="M21 21v-1a3 3 0 00-3-3h-1"/></svg>`,
+  };
+  const domIcon = iconMap[domainId] ?? "";
+
+  const mainControls = groupByMainControl(controls)
+    .map(renderCeplusMainControl)
+    .join("\n");
+
+  return `<details class="domain-block">
+  <summary class="domain-title">${domIcon}${icon}${esc(domainLabel)}</summary>
+  ${mainControls}
+</details>`;
 }
 
 function renderSection(section: string, rows: ExportControlRow[]): string {
@@ -81,15 +165,7 @@ function renderSection(section: string, rows: ExportControlRow[]): string {
   return `<details class="section-block">
   <summary class="section-title">${icon}${esc(section)}</summary>
   <table class="controls-table">
-    <thead><tr>
-      <th class="col-ref">#</th>
-      <th>Control</th>
-      <th class="col-req">Requirement</th>
-      <th class="col-outcome">Outcome</th>
-      <th>Gap / Reason</th>
-      <th>Corrective Action</th>
-      <th>Assessor Notes</th>
-    </tr></thead>
+    ${TABLE_HEAD}
     <tbody>${rows.map(renderControlRow).join("\n")}</tbody>
   </table>
 </details>`;
@@ -124,8 +200,11 @@ export function renderAssessmentHtml(data: AssessmentExportData): string {
   const logoUri = loadLogoBase64();
 
   let domains = "";
+  const isCeplus = data.frameworkId === CEPLUS_FRAMEWORK_ID;
   for (const d of data.domains) {
-    domains += renderDomain(d.label, d.id, d.controls);
+    domains += isCeplus
+      ? renderCeplusDomain(d.label, d.id, d.controls)
+      : renderDomain(d.label, d.id, d.controls);
   }
 
   return `<!DOCTYPE html>
@@ -197,6 +276,30 @@ details[open]>.domain-title::before{transform:rotate(90deg)}
 .section-title::-webkit-details-marker{display:none}
 .section-title::before{content:'▸';font-size:11px;transition:transform .15s}
 details[open]>.section-title::before{transform:rotate(90deg)}
+
+/* CE+ main control blocks */
+.control-block{border-top:1px solid var(--border)}
+.control-block:first-child{border-top:none}
+.control-title{display:flex;align-items:center;gap:8px;padding:10px 16px 10px 36px;font-weight:600;font-size:13px;cursor:pointer;list-style:none;background:var(--white);user-select:none}
+.control-title:hover{background:var(--header-bg)}
+.control-title::-webkit-details-marker{display:none}
+.control-title::before{content:'▸';font-size:11px;transition:transform .15s;flex-shrink:0}
+details[open]>.control-title::before{transform:rotate(90deg)}
+.control-ref{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:6px;background:var(--header-bg);border:1px solid var(--border);font-size:11px;font-weight:700;padding:0 6px}
+.control-body{padding:0 0 4px}
+
+/* CE+ sub-control blocks */
+.sub-control-block{margin:0 16px 6px 52px;border:1px solid var(--border);border-radius:6px;overflow:hidden;background:var(--white)}
+.sub-control-title{display:flex;align-items:center;gap:8px;padding:8px 12px;font-weight:500;font-size:12px;cursor:pointer;list-style:none;background:var(--bg);user-select:none}
+.sub-control-title:hover{background:var(--header-bg)}
+.sub-control-title::-webkit-details-marker{display:none}
+.sub-control-title::before{content:'▸';font-size:10px;transition:transform .15s;flex-shrink:0}
+details[open]>.sub-control-title::before{transform:rotate(90deg)}
+.sub-control-ref{font-weight:700;color:var(--muted);font-size:11px;min-width:28px}
+.sub-control-fields{padding:10px 14px 12px;border-top:1px solid var(--border);display:grid;gap:8px}
+.field-row{display:grid;grid-template-columns:130px 1fr;gap:8px 12px;font-size:12px}
+.field-label{font-weight:600;color:var(--muted)}
+.field-value{color:var(--black);line-height:1.45}
 
 /* Status icons */
 .status-icon{width:16px;height:16px;flex-shrink:0}

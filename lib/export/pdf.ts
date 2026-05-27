@@ -414,8 +414,8 @@ function controlTableBody(rows: ExportControlRow[]): string[][] {
     normalizeCellText(r.requirement),
     r.outcome,
     normalizeCellText(r.reason),
-    normalizeCellText(r.correctiveAction),
     normalizeCellText(r.assessorNotes),
+    normalizeCellText(r.correctiveAction),
   ]);
 }
 
@@ -570,8 +570,8 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
           "Requirement",
           "Outcome",
           "Gap / Reason",
-          "Corrective Action",
           "Assessor Notes",
+          "Corrective Action",
         ]],
         body: tableBody,
         styles: {

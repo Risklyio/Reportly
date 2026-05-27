@@ -19,6 +19,7 @@ export const OUTCOME_LABELS: Record<string, string> = {
 export type ExportControlRow = {
   ref: string;
   number: number;
+  subId?: string;
   title: string;
   requirement: string;
   section: string;
@@ -71,6 +72,7 @@ function formatControlRow(
   return {
     ref: formatControlRef(control),
     number: control.number,
+    subId: control.subId,
     title: control.title,
     requirement: control.intent ?? "",
     section: control.section ?? "",
