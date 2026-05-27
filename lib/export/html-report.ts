@@ -71,6 +71,7 @@ function renderControlRow(r: ExportControlRow): string {
   <td class="col-outcome">${outcomeBadge(r.outcome)}</td>
   <td>${nl2br(r.reason) || "—"}</td>
   <td>${nl2br(r.correctiveAction) || "—"}</td>
+  <td>${nl2br(r.assessorNotes) || "—"}</td>
 </tr>`;
 }
 
@@ -87,6 +88,7 @@ function renderSection(section: string, rows: ExportControlRow[]): string {
       <th class="col-outcome">Outcome</th>
       <th>Gap / Reason</th>
       <th>Corrective Action</th>
+      <th>Assessor Notes</th>
     </tr></thead>
     <tbody>${rows.map(renderControlRow).join("\n")}</tbody>
   </table>

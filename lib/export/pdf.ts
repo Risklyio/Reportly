@@ -415,6 +415,7 @@ function controlTableBody(rows: ExportControlRow[]): string[][] {
     r.outcome,
     normalizeCellText(r.reason),
     normalizeCellText(r.correctiveAction),
+    normalizeCellText(r.assessorNotes),
   ]);
 }
 
@@ -553,16 +554,25 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
       const colRef = 10;
       const colOutcome = 24;
       const flexW = contentW - colRef - colOutcome;
-      const colControl = Math.round(flexW * 0.17);
-      const colReq = Math.round(flexW * 0.30);
-      const colGap = Math.round(flexW * 0.22);
-      const colAction = flexW - colControl - colReq - colGap;
+      const colControl = Math.round(flexW * 0.15);
+      const colReq = Math.round(flexW * 0.24);
+      const colGap = Math.round(flexW * 0.17);
+      const colAction = Math.round(flexW * 0.22);
+      const colNotes = flexW - colControl - colReq - colGap - colAction;
 
       autoTable(doc, {
         startY: y,
         margin: { left: MARGIN, right: MARGIN },
         tableWidth: contentW,
-        head: [["#", "Control", "Requirement", "Outcome", "Gap / Reason", "Corrective Action"]],
+        head: [[
+          "#",
+          "Control",
+          "Requirement",
+          "Outcome",
+          "Gap / Reason",
+          "Corrective Action",
+          "Assessor Notes",
+        ]],
         body: tableBody,
         styles: {
           fontSize: 6.5,
@@ -586,6 +596,7 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
           3: { cellWidth: colOutcome, halign: "center", valign: "middle" },
           4: { cellWidth: colGap },
           5: { cellWidth: colAction },
+          6: { cellWidth: colNotes },
         },
         alternateRowStyles: { fillColor: C_BG },
         tableLineColor: C_BORDER,

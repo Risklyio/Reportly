@@ -28,6 +28,8 @@ const PROVIDER_LABELS: Record<AiProvider, string> = {
   groq: "Groq",
 };
 
+const DEFAULT_GROQ_CLEANUP_MODEL = "llama-3.3-70b-versatile";
+
 export function googleApiKey(): string | undefined {
   return (
     process.env.GOOGLE_GENERATIVE_AI_API_KEY?.trim() ||
@@ -213,4 +215,47 @@ Write corrective actions the organization should take to close this gap.`;
     throw new Error("AI returned an empty response. Try again or edit notes.");
   }
   return trimmed;
+}
+
+const NOTES_CLEANUP_SYSTEM = `You are an audit writing assistant.
+Rewrite assessor notes so they are clearer and grammatically correct while preserving the original meaning.
+Keep wording close to the original text and do not add new facts, claims, tools, dates, or outcomes.
+Keep the same tone and approximate length.
+Return only the rewritten notes text with no markdown or commentary.`;
+
+export async function cleanupAssessorNotesWithGroq(rawNotes: string): Promise<string> {
+  const notes = rawNotes.trim();
+  if (!notes) {
+    throw new Error("Add assessor notes before using clean up.");
+  }
+
+  const groq = createGroq({
+    apiKey: requireKey(
+      "GROQ_API_KEY",
+      process.env.GROQ_API_KEY,
+      "https://console.groq.com/keys"
+    ),
+  });
+  const modelId =
+    process.env.GROQ_CLEANUP_MODEL?.trim() ||
+    process.env.GROQ_MODEL?.trim() ||
+    DEFAULT_GROQ_CLEANUP_MODEL;
+
+  let text: string;
+  try {
+    const result = await generateText({
+      model: groq(modelId),
+      system: NOTES_CLEANUP_SYSTEM,
+      prompt: `Rewrite the following assessor notes with minimal deviation:\n\n${notes}`,
+    });
+    text = result.text;
+  } catch (e) {
+    throw friendlyAiError(e, "groq");
+  }
+
+  const cleaned = text.trim();
+  if (!cleaned) {
+    throw new Error("AI returned an empty response. Try again.");
+  }
+  return cleaned;
 }

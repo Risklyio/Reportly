@@ -52,7 +52,7 @@ export interface AssessmentControlState {
   controlId: string;
   outcome: ControlOutcome;
   notInPlaceReason: string;
-  /** Internal working notes; not included in PDF/DOCX exports */
+  /** Internal working notes; can be included in report exports when enabled */
   assessorNotes: string;
   correctiveAction: string;
   evidenceNotes: string;

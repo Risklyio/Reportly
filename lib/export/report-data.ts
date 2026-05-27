@@ -25,6 +25,7 @@ export type ExportControlRow = {
   outcome: string;
   reason: string;
   correctiveAction: string;
+  assessorNotes: string;
   evidenceNotes: string;
   hardFail: string;
 };
@@ -76,6 +77,7 @@ function formatControlRow(
     outcome: s?.outcome ? OUTCOME_LABELS[s.outcome] ?? s.outcome : "Not reviewed",
     reason: s?.notInPlaceReason ?? "",
     correctiveAction: s?.correctiveAction ?? "",
+    assessorNotes: s?.assessorNotes ?? "",
     evidenceNotes: s?.evidenceNotes ?? "",
     hardFail: control.hardFail ? "Yes" : "No",
   };

@@ -104,6 +104,7 @@ export function ControlCard({
   const [generating, setGenerating] = useState(false);
   const [generateError, setGenerateError] = useState<string | null>(null);
   const [suggesting, setSuggesting] = useState(false);
+  const [cleaningNotes, setCleaningNotes] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const [draftReason, setDraftReason] = useState(notInPlaceReason);
@@ -225,6 +226,37 @@ export function ControlCard({
       setGenerateError(e instanceof Error ? e.message : "Generation failed");
     } finally {
       setGenerating(false);
+    }
+  }
+
+  async function handleCleanUpNotes() {
+    await flushAutosave();
+    if (!draftNotes.trim()) return;
+    setCleaningNotes(true);
+    setSaveError(null);
+    try {
+      const res = await fetch(`/api/assessments/${assessmentId}/cleanup-notes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          controlId: control.id,
+          assessorNotes: draftNotes,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error ?? "Failed to clean up notes");
+      }
+      const text = String(data.text ?? "").trim();
+      if (!text) {
+        throw new Error("Cleaned notes were empty.");
+      }
+      setDraftNotes(text);
+      await persist({ assessorNotes: text });
+    } catch (e) {
+      setSaveError(e instanceof Error ? e.message : "Failed to clean up notes");
+    } finally {
+      setCleaningNotes(false);
     }
   }
 
@@ -401,9 +433,24 @@ export function ControlCard({
             </div>
 
             <div>
-              <label className="label">Assessor notes</label>
+              <div className="mb-1 flex items-center justify-between">
+                <label className="label mb-0">Assessor notes</label>
+                <button
+                  type="button"
+                  className="text-sm font-medium text-primary hover:underline disabled:opacity-50"
+                  disabled={cleaningNotes || !draftNotes.trim()}
+                  onClick={handleCleanUpNotes}
+                  title={
+                    !draftNotes.trim()
+                      ? "Add assessor notes first"
+                      : "Clean up grammar with minimal wording changes"
+                  }
+                >
+                  {cleaningNotes ? "Cleaning up..." : "Clean up"}
+                </button>
+              </div>
               <p className="mb-1 text-xs text-text-muted">
-                Internal working notes only — not included in the PDF or Word export.
+                Internal working notes. Included in report exports to show assessor context.
               </p>
               <textarea
                 className="input min-h-[88px]"
