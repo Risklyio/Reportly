@@ -31,6 +31,7 @@ export interface AssessmentMetadata {
   clientName: string;
   appName: string;
   assessmentDate: string;
+  dueDate: string;
   assessorName: string;
   scopeNotes: string;
   frameworkId: string;

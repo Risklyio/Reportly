@@ -11,6 +11,7 @@ type BackupPayload = {
     clientName: string;
     appName: string;
     assessmentDate: string;
+    dueDate: string;
     assessorName: string;
     scopeNotes: string;
     frameworkId: string;
@@ -37,6 +38,7 @@ export async function GET(
         clientName: assessment.clientName,
         appName: assessment.appName,
         assessmentDate: assessment.assessmentDate,
+        dueDate: assessment.dueDate ?? "",
         assessorName: assessment.assessorName,
         scopeNotes: assessment.scopeNotes,
         frameworkId: assessment.frameworkId,

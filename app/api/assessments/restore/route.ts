@@ -12,6 +12,7 @@ type RestorePayload = {
     clientName: string;
     appName: string;
     assessmentDate: string;
+    dueDate?: string;
     assessorName?: string;
     scopeNotes?: string;
     frameworkId?: string;
@@ -68,6 +69,7 @@ export async function POST(request: Request) {
       clientName: restoredClientName,
       appName: payload.assessment.appName ?? "",
       assessmentDate: payload.assessment.assessmentDate,
+      dueDate: payload.assessment.dueDate ?? "",
       assessorName: payload.assessment.assessorName ?? "",
       scopeNotes: payload.assessment.scopeNotes ?? "",
       frameworkId: payload.assessment.frameworkId,

@@ -24,6 +24,7 @@ import {
 } from "@/lib/db/sync-catalog";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { FRAMEWORK_ID } from "@/lib/db/seed-data";
+import { ensureDueDateColumn } from "@/lib/db/migrate-supabase";
 
 function now() {
   return new Date().toISOString();
@@ -39,6 +40,8 @@ function mapAssessmentRow(row: {
   appName?: string;
   assessment_date?: string;
   assessmentDate?: string;
+  due_date?: string;
+  dueDate?: string;
   assessor_name?: string;
   assessorName?: string;
   scope_notes?: string;
@@ -54,6 +57,7 @@ function mapAssessmentRow(row: {
     clientName: row.client_name ?? row.clientName ?? "",
     appName: row.app_name ?? row.appName ?? "",
     assessmentDate: row.assessment_date ?? row.assessmentDate ?? "",
+    dueDate: row.due_date ?? row.dueDate ?? "",
     assessorName: row.assessor_name ?? row.assessorName ?? "",
     scopeNotes: row.scope_notes ?? row.scopeNotes ?? "",
     frameworkId: row.framework_id ?? row.frameworkId ?? FRAMEWORK_ID,
@@ -119,6 +123,7 @@ export async function listAssessmentsWithProgress(): Promise<AssessmentListItem[
 
 export async function listAssessments(): Promise<AssessmentMetadata[]> {
   await assertDatabaseReady();
+  await ensureDueDateColumn();
   if (isSupabaseConfigured()) {
     const sb = getSupabaseAdmin();
     const { data, error } = await sb
@@ -142,6 +147,7 @@ export async function listAssessments(): Promise<AssessmentMetadata[]> {
       clientName: r.clientName,
       appName: r.appName,
       assessmentDate: r.assessmentDate,
+      dueDate: r.dueDate,
       assessorName: r.assessorName,
       scopeNotes: r.scopeNotes,
       status: r.status,
@@ -155,6 +161,7 @@ export async function getAssessment(
   id: string
 ): Promise<AssessmentMetadata | null> {
   await assertDatabaseReady();
+  await ensureDueDateColumn();
   if (isSupabaseConfigured()) {
     const sb = getSupabaseAdmin();
     const { data, error } = await sb
@@ -179,6 +186,7 @@ export async function getAssessment(
         clientName: row.clientName,
         appName: row.appName,
         assessmentDate: row.assessmentDate,
+        dueDate: row.dueDate,
         assessorName: row.assessorName,
         scopeNotes: row.scopeNotes,
         status: row.status,
@@ -192,11 +200,13 @@ export async function createAssessment(input: {
   clientName: string;
   appName: string;
   assessmentDate: string;
+  dueDate?: string;
   assessorName?: string;
   scopeNotes?: string;
   frameworkId?: string;
 }): Promise<AssessmentMetadata> {
   await assertDatabaseReady();
+  await ensureDueDateColumn();
   const id = uuidv4();
   const ts = now();
 
@@ -211,6 +221,7 @@ export async function createAssessment(input: {
       client_name: input.clientName,
       app_name: input.appName,
       assessment_date: input.assessmentDate,
+      due_date: input.dueDate ?? "",
       assessor_name: input.assessorName ?? "",
       scope_notes: input.scopeNotes ?? "",
       status: "draft",
@@ -247,6 +258,7 @@ export async function createAssessment(input: {
       clientName: input.clientName,
       appName: input.appName,
       assessmentDate: input.assessmentDate,
+      dueDate: input.dueDate ?? "",
       assessorName: input.assessorName ?? "",
       scopeNotes: input.scopeNotes ?? "",
       status: "draft",
@@ -278,12 +290,14 @@ export async function updateAssessment(
     clientName: string;
     appName: string;
     assessmentDate: string;
+    dueDate: string;
     assessorName: string;
     scopeNotes: string;
     status: AssessmentMetadata["status"];
   }>
 ): Promise<AssessmentMetadata | null> {
   await assertDatabaseReady();
+  await ensureDueDateColumn();
   const existing = await getAssessment(id);
   if (!existing) return null;
 
@@ -294,6 +308,7 @@ export async function updateAssessment(
     if (patch.appName !== undefined) row.app_name = patch.appName;
     if (patch.assessmentDate !== undefined)
       row.assessment_date = patch.assessmentDate;
+    if (patch.dueDate !== undefined) row.due_date = patch.dueDate;
     if (patch.assessorName !== undefined) row.assessor_name = patch.assessorName;
     if (patch.scopeNotes !== undefined) row.scope_notes = patch.scopeNotes;
     if (patch.status !== undefined) row.status = patch.status;

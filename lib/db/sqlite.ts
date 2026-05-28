@@ -61,6 +61,7 @@ function ensureSqliteTables(sqlite: import("better-sqlite3").Database) {
       client_name TEXT NOT NULL,
       app_name TEXT NOT NULL,
       assessment_date TEXT NOT NULL,
+      due_date TEXT NOT NULL DEFAULT '',
       assessor_name TEXT NOT NULL DEFAULT '',
       scope_notes TEXT NOT NULL DEFAULT '',
       status TEXT NOT NULL DEFAULT 'draft',
@@ -99,6 +100,16 @@ function ensureSqliteTables(sqlite: import("better-sqlite3").Database) {
 }
 
 function ensureSqliteColumnMigrations(sqlite: import("better-sqlite3").Database) {
+  const assessmentCols = sqlite
+    .prepare("PRAGMA table_info(assessments)")
+    .all() as { name: string }[];
+  const assessmentNames = new Set(assessmentCols.map((c) => c.name));
+  if (!assessmentNames.has("due_date")) {
+    sqlite.exec(
+      `ALTER TABLE assessments ADD COLUMN due_date TEXT NOT NULL DEFAULT ''`
+    );
+  }
+
   const cols = sqlite
     .prepare("PRAGMA table_info(assessment_controls)")
     .all() as { name: string }[];

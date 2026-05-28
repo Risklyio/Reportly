@@ -18,11 +18,11 @@ export default async function DashboardPage() {
     <div className="mx-auto max-w-4xl px-4 py-10 lg:px-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight text-text">
-          Compliance assessments
+          Security assessment workspace
         </h1>
         <p className="mt-2 text-text-muted">
-          Automate M365 Application Compliance Program reports with structured
-          control outcomes and Word export.
+          Manage and report security assessments across supported frameworks with
+          structured control outcomes and exports.
         </p>
       </div>
 

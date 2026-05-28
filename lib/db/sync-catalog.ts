@@ -1,13 +1,14 @@
 import type { ControlDefinition } from "@/lib/types";
 import { controlRows } from "@/lib/db/seed-data";
 import { assertDatabaseReady, isSupabaseConfigured } from "@/lib/db";
-import { ensureAssessorNotesColumn } from "@/lib/db/migrate-supabase";
+import { ensureAssessorNotesColumn, ensureDueDateColumn } from "@/lib/db/migrate-supabase";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 /** Upsert framework control definitions so assessment_controls FKs stay valid. */
 export async function syncCatalogControls(): Promise<void> {
   await assertDatabaseReady();
   await ensureAssessorNotesColumn();
+  await ensureDueDateColumn();
 
   const rows = controlRows();
 

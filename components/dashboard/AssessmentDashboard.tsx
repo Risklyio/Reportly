@@ -2,10 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import type { AssessmentListItem } from "@/lib/types";
 
 function formatOptionLabel(a: AssessmentListItem): string {
-  return `${a.clientName} — ${a.appName} (${a.assessmentDate})`;
+  return `${a.clientName} — ${a.appName} (${a.assessmentDate}${a.dueDate ? `, due ${a.dueDate}` : ""})`;
 }
 
 function AssessmentSelect({
@@ -65,9 +66,61 @@ function AssessmentGroupList({
   title: string;
   items: AssessmentListItem[];
 }) {
-  const sorted = [...items].sort((a, b) =>
+  const sorted = useMemo(() => [...items].sort((a, b) =>
     a.clientName.localeCompare(b.clientName)
-  );
+  ), [items]);
+  const router = useRouter();
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState("");
+  const [draft, setDraft] = useState({
+    clientName: "",
+    appName: "",
+    assessmentDate: "",
+    dueDate: "",
+    assessorName: "",
+    scopeNotes: "",
+  });
+
+  async function saveEdit(id: string) {
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/assessments/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(draft),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error ?? "Failed to save");
+      setEditingId(null);
+      router.refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to save");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function deleteAssessment(id: string) {
+    if (deleteConfirm !== "DELETE") return;
+    setDeleting(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/assessments/${id}`, { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error ?? "Failed to delete");
+      setEditingId(null);
+      setDeleteConfirm("");
+      router.refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to delete");
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   if (sorted.length === 0) {
     return (
@@ -84,27 +137,82 @@ function AssessmentGroupList({
       <ul className="mt-3 space-y-2">
         {sorted.map((a) => (
           <li key={a.id}>
-            <Link
-              href={`/assessments/${a.id}`}
-              className="flex items-center justify-between rounded-lg border border-border px-3 py-2 text-sm transition hover:bg-muted"
-            >
-              <span>
-                <span className="font-medium text-text">{a.clientName}</span>
-                <span className="text-text-muted">
-                  {" "}
-                  · {a.appName} · {a.assessmentDate}
-                </span>
-              </span>
-              <span
-                className={
-                  a.isFullyReviewed ? "badge-complete" : "text-xs text-text-muted"
-                }
-              >
-                {a.isFullyReviewed
-                  ? "Complete"
-                  : `${a.progressPercent}%`}
-              </span>
-            </Link>
+            <div className="rounded-lg border border-border px-3 py-2 text-sm">
+              <div className="flex items-center justify-between gap-2">
+                <Link
+                  href={`/assessments/${a.id}`}
+                  className="min-w-0 flex-1 transition hover:text-primary"
+                >
+                  <span className="font-medium text-text">{a.clientName}</span>
+                  <span className="text-text-muted">
+                    {" "}
+                    · {a.appName} · {a.assessmentDate}
+                    {a.dueDate ? ` · Due ${a.dueDate}` : ""}
+                  </span>
+                </Link>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    className="text-xs text-primary hover:underline"
+                    onClick={() => {
+                      setEditingId(a.id);
+                      setDeleteConfirm("");
+                      setError(null);
+                      setDraft({
+                        clientName: a.clientName,
+                        appName: a.appName,
+                        assessmentDate: a.assessmentDate,
+                        dueDate: a.dueDate ?? "",
+                        assessorName: a.assessorName ?? "",
+                        scopeNotes: a.scopeNotes ?? "",
+                      });
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <span
+                    className={
+                      a.isFullyReviewed ? "badge-complete" : "text-xs text-text-muted"
+                    }
+                  >
+                    {a.isFullyReviewed ? "Complete" : `${a.progressPercent}%`}
+                  </span>
+                </div>
+              </div>
+              {editingId === a.id && (
+                <div className="mt-3 space-y-2 border-t border-border pt-3">
+                  <input className="input" value={draft.clientName} onChange={(e)=>setDraft((p)=>({...p,clientName:e.target.value}))} placeholder="Customer name" />
+                  <input className="input" value={draft.appName} onChange={(e)=>setDraft((p)=>({...p,appName:e.target.value}))} placeholder="Assessment name" />
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <input className="input" type="date" value={draft.assessmentDate} onChange={(e)=>setDraft((p)=>({...p,assessmentDate:e.target.value}))} />
+                    <input className="input" type="date" value={draft.dueDate} onChange={(e)=>setDraft((p)=>({...p,dueDate:e.target.value}))} />
+                  </div>
+                  <input className="input" value={draft.assessorName} onChange={(e)=>setDraft((p)=>({...p,assessorName:e.target.value}))} placeholder="Assessor" />
+                  <textarea className="input min-h-[72px]" value={draft.scopeNotes} onChange={(e)=>setDraft((p)=>({...p,scopeNotes:e.target.value}))} placeholder="Scope notes" />
+                  <div className="flex flex-wrap gap-2">
+                    <button type="button" className="btn-primary" disabled={saving} onClick={() => void saveEdit(a.id)}>
+                      {saving ? "Saving…" : "Save"}
+                    </button>
+                    <button type="button" className="btn-secondary" onClick={() => setEditingId(null)}>
+                      Cancel
+                    </button>
+                  </div>
+                  <div className="rounded-lg border border-red-200 bg-red-50 p-2">
+                    <p className="text-xs text-red-700">Type <code>DELETE</code> to enable delete.</p>
+                    <input className="input mt-2" value={deleteConfirm} onChange={(e)=>setDeleteConfirm(e.target.value)} placeholder="DELETE" />
+                    <button
+                      type="button"
+                      className="mt-2 rounded-lg bg-red-600 px-3 py-2 text-xs font-medium text-white disabled:opacity-50"
+                      disabled={deleteConfirm !== "DELETE" || deleting}
+                      onClick={() => void deleteAssessment(a.id)}
+                    >
+                      {deleting ? "Deleting…" : "Delete assessment"}
+                    </button>
+                  </div>
+                  {error && <p className="text-xs text-red-600">{error}</p>}
+                </div>
+              )}
+            </div>
           </li>
         ))}
       </ul>

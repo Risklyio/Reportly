@@ -15,6 +15,7 @@ export async function startAssessmentAction(
   const clientName = String(formData.get("clientName") ?? "").trim();
   const appName = String(formData.get("appName") ?? "").trim();
   const assessmentDate = String(formData.get("assessmentDate") ?? "").trim();
+  const dueDate = String(formData.get("dueDate") ?? "").trim();
   const assessorName = String(formData.get("assessorName") ?? "").trim();
   const scopeNotes = String(formData.get("scopeNotes") ?? "").trim();
   const frameworkId = String(formData.get("frameworkId") ?? "").trim();
@@ -30,6 +31,7 @@ export async function startAssessmentAction(
       clientName,
       appName,
       assessmentDate,
+      dueDate,
       assessorName,
       scopeNotes,
       frameworkId: selectedFramework,

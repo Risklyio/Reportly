@@ -23,6 +23,7 @@ export async function POST(request: Request) {
       appName: body.appName ?? "",
       assessmentDate:
         body.assessmentDate ?? new Date().toISOString().slice(0, 10),
+      dueDate: body.dueDate ?? "",
       assessorName: body.assessorName,
       scopeNotes: body.scopeNotes,
       frameworkId: body.frameworkId,

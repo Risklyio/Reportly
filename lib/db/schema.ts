@@ -40,6 +40,7 @@ export const assessments = sqliteTable("assessments", {
   clientName: text("client_name").notNull(),
   appName: text("app_name").notNull(),
   assessmentDate: text("assessment_date").notNull(),
+  dueDate: text("due_date").notNull().default(""),
   assessorName: text("assessor_name").notNull().default(""),
   scopeNotes: text("scope_notes").notNull().default(""),
   status: text("status").notNull().default("draft"),

@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   getControlsForFramework,
   getDomainsForFramework,
@@ -54,25 +54,12 @@ export function AssessmentWorkspace({
 }) {
   const frameworkDomains = getDomainsForFramework(initialAssessment.frameworkId);
   const frameworkControls = getControlsForFramework(initialAssessment.frameworkId);
-  const router = useRouter();
   const searchParams = useSearchParams();
   const domain =
     (searchParams.get("domain") as DomainId) || frameworkDomains[0]?.id;
   const filter = (searchParams.get("filter") as Filter) || "all";
 
   const [assessment, setAssessment] = useState(initialAssessment);
-  const [editingProfile, setEditingProfile] = useState(false);
-  const [savingProfile, setSavingProfile] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [profileError, setProfileError] = useState<string | null>(null);
-  const [deleteConfirmText, setDeleteConfirmText] = useState("");
-  const [profileDraft, setProfileDraft] = useState({
-    clientName: initialAssessment.clientName,
-    appName: initialAssessment.appName,
-    assessmentDate: initialAssessment.assessmentDate,
-    assessorName: initialAssessment.assessorName,
-    scopeNotes: initialAssessment.scopeNotes,
-  });
   const [states, setStates] = useState(() =>
     buildStateMap(initialAssessment.id, frameworkControls, initialStates)
   );
@@ -213,59 +200,6 @@ export function AssessmentWorkspace({
     [assessment.id]
   );
 
-  const saveProfile = useCallback(async () => {
-    setSavingProfile(true);
-    setProfileError(null);
-    try {
-      const res = await fetch(`/api/assessments/${assessment.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profileDraft),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(data.error ?? "Failed to save assessment profile");
-      }
-      setAssessment((prev) => ({
-        ...prev,
-        clientName: profileDraft.clientName,
-        appName: profileDraft.appName,
-        assessmentDate: profileDraft.assessmentDate,
-        assessorName: profileDraft.assessorName,
-        scopeNotes: profileDraft.scopeNotes,
-      }));
-      setEditingProfile(false);
-    } catch (e) {
-      setProfileError(
-        e instanceof Error ? e.message : "Failed to save assessment profile"
-      );
-    } finally {
-      setSavingProfile(false);
-    }
-  }, [assessment.id, profileDraft]);
-
-  const deleteAssessmentProfile = useCallback(async () => {
-    if (deleteConfirmText !== "DELETE") return;
-    setDeleting(true);
-    setProfileError(null);
-    try {
-      const res = await fetch(`/api/assessments/${assessment.id}`, {
-        method: "DELETE",
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(data.error ?? "Failed to delete assessment");
-      }
-      router.push("/");
-      router.refresh();
-    } catch (e) {
-      setProfileError(
-        e instanceof Error ? e.message : "Failed to delete assessment"
-      );
-    } finally {
-      setDeleting(false);
-    }
-  }, [assessment.id, deleteConfirmText, router]);
 
   return (
     <div className="px-4 py-6 lg:pl-6 lg:pr-8">
@@ -298,165 +232,6 @@ export function AssessmentWorkspace({
           }
           /{frameworkControls.filter((c) => c.domain !== "ce_sampling").length} controls)
         </p>
-      </div>
-
-      <div className="card mb-6">
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <p className="text-sm font-medium text-text">Assessment profile</p>
-          {!editingProfile ? (
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={() => {
-                setProfileDraft({
-                  clientName: assessment.clientName,
-                  appName: assessment.appName,
-                  assessmentDate: assessment.assessmentDate,
-                  assessorName: assessment.assessorName,
-                  scopeNotes: assessment.scopeNotes,
-                });
-                setDeleteConfirmText("");
-                setProfileError(null);
-                setEditingProfile(true);
-              }}
-            >
-              Edit profile
-            </button>
-          ) : (
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                className="btn-primary"
-                disabled={savingProfile}
-                onClick={() => void saveProfile()}
-              >
-                {savingProfile ? "Saving…" : "Save changes"}
-              </button>
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={() => {
-                  setEditingProfile(false);
-                  setDeleteConfirmText("");
-                  setProfileError(null);
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          )}
-        </div>
-
-        {!editingProfile ? (
-          <dl className="grid gap-2 text-sm text-text-muted">
-            <div>
-              <dt className="font-medium text-text">Customer name</dt>
-              <dd>{assessment.clientName || "—"}</dd>
-            </div>
-            <div>
-              <dt className="font-medium text-text">Assessment name</dt>
-              <dd>{assessment.appName || "—"}</dd>
-            </div>
-            <div>
-              <dt className="font-medium text-text">Assessment date</dt>
-              <dd>{assessment.assessmentDate || "—"}</dd>
-            </div>
-            <div>
-              <dt className="font-medium text-text">Assessor</dt>
-              <dd>{assessment.assessorName || "—"}</dd>
-            </div>
-          </dl>
-        ) : (
-          <div className="space-y-3">
-            <div>
-              <label className="label">Customer name</label>
-              <input
-                className="input"
-                value={profileDraft.clientName}
-                onChange={(e) =>
-                  setProfileDraft((p) => ({ ...p, clientName: e.target.value }))
-                }
-              />
-            </div>
-            <div>
-              <label className="label">Assessment name</label>
-              <input
-                className="input"
-                value={profileDraft.appName}
-                onChange={(e) =>
-                  setProfileDraft((p) => ({ ...p, appName: e.target.value }))
-                }
-              />
-            </div>
-            <div>
-              <label className="label">Assessment date</label>
-              <input
-                className="input"
-                type="date"
-                value={profileDraft.assessmentDate}
-                onChange={(e) =>
-                  setProfileDraft((p) => ({
-                    ...p,
-                    assessmentDate: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div>
-              <label className="label">Assessor</label>
-              <input
-                className="input"
-                value={profileDraft.assessorName}
-                onChange={(e) =>
-                  setProfileDraft((p) => ({
-                    ...p,
-                    assessorName: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div>
-              <label className="label">Scope notes</label>
-              <textarea
-                className="input min-h-[90px]"
-                rows={3}
-                value={profileDraft.scopeNotes}
-                onChange={(e) =>
-                  setProfileDraft((p) => ({
-                    ...p,
-                    scopeNotes: e.target.value,
-                  }))
-                }
-              />
-            </div>
-
-            <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3">
-              <p className="text-sm font-semibold text-red-800">Delete assessment</p>
-              <p className="mt-1 text-xs text-red-700">
-                Type <code>DELETE</code> below to enable deletion.
-              </p>
-              <input
-                className="input mt-2"
-                placeholder="Type DELETE to confirm"
-                value={deleteConfirmText}
-                onChange={(e) => setDeleteConfirmText(e.target.value)}
-              />
-              <button
-                type="button"
-                className="mt-2 rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
-                disabled={deleteConfirmText !== "DELETE" || deleting}
-                onClick={() => void deleteAssessmentProfile()}
-              >
-                {deleting ? "Deleting…" : "Delete assessment"}
-              </button>
-            </div>
-          </div>
-        )}
-        {profileError && (
-          <p className="mt-3 text-xs text-red-600" role="alert">
-            {profileError}
-          </p>
-        )}
       </div>
 
       <MobileAssessmentNav

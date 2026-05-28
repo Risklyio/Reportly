@@ -157,6 +157,18 @@ export default function NewAssessmentPage() {
           />
         </div>
         <div>
+          <label className="label" htmlFor="dueDate">
+            Due date
+          </label>
+          <input
+            id="dueDate"
+            name="dueDate"
+            type="date"
+            className="input"
+            disabled={pending}
+          />
+        </div>
+        <div>
           <label className="label" htmlFor="assessorName">
             Assessor name
           </label>
