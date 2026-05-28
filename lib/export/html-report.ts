@@ -85,24 +85,15 @@ const TABLE_HEAD = `<thead><tr>
       <th>Corrective Action</th>
     </tr></thead>`;
 
-function renderSubControlFields(r: ExportControlRow): string {
-  const hardTag = r.hardFail === "Yes" ? `<span class="hard-fail-tag">HARD FAIL</span>` : "";
-  return `<div class="sub-control-fields">
-  <div class="field-row"><span class="field-label">Requirement</span><div class="field-value">${nl2br(r.requirement) || "—"}</div></div>
-  <div class="field-row"><span class="field-label">Outcome</span><div class="field-value">${outcomeBadge(r.outcome)}</div></div>
-  <div class="field-row"><span class="field-label">Gap / Reason</span><div class="field-value">${nl2br(r.reason) || "—"}</div></div>
-  <div class="field-row"><span class="field-label">Assessor Notes</span><div class="field-value">${nl2br(r.assessorNotes) || "—"}</div></div>
-  <div class="field-row"><span class="field-label">Corrective Action</span><div class="field-value">${nl2br(r.correctiveAction) || "—"}</div></div>
-  ${r.hardFail === "Yes" ? `<div class="field-row"><span class="field-label">Severity</span><div class="field-value">${hardTag}</div></div>` : ""}
-</div>`;
-}
-
 function renderCeplusSubControl(r: ExportControlRow): string {
   const status = sectionStatus([r]);
   const icon = statusIcon(status);
   return `<details class="sub-control-block">
   <summary class="sub-control-title">${icon}<span class="sub-control-ref">${esc(r.ref)}</span>${esc(r.title)}</summary>
-  ${renderSubControlFields(r)}
+  <table class="controls-table">
+    ${TABLE_HEAD}
+    <tbody>${renderControlRow(r)}</tbody>
+  </table>
 </details>`;
 }
 
@@ -296,10 +287,6 @@ details[open]>.control-title::before{transform:rotate(90deg)}
 .sub-control-title::before{content:'▸';font-size:10px;transition:transform .15s;flex-shrink:0}
 details[open]>.sub-control-title::before{transform:rotate(90deg)}
 .sub-control-ref{font-weight:700;color:var(--muted);font-size:11px;min-width:28px}
-.sub-control-fields{padding:10px 14px 12px;border-top:1px solid var(--border);display:grid;gap:8px}
-.field-row{display:grid;grid-template-columns:130px 1fr;gap:8px 12px;font-size:12px}
-.field-label{font-weight:600;color:var(--muted)}
-.field-value{color:var(--black);line-height:1.45}
 
 /* Status icons */
 .status-icon{width:16px;height:16px;flex-shrink:0}
