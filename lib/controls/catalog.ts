@@ -138,6 +138,11 @@ const ceplusDomains: FrameworkDefinition["domains"] = [
     label: "Account separation",
     shortLabel: "Accounts",
   },
+  {
+    id: "ce_sampling",
+    label: "Sampling",
+    shortLabel: "Sampling",
+  },
 ];
 
 export const FRAMEWORKS: FrameworkDefinition[] = [

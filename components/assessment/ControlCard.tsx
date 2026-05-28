@@ -135,6 +135,7 @@ export function ControlCard({
   const showGapFields =
     outcome === "not_in_place" || outcome === "partially_in_place";
   const showPendingFields = outcome === "pending";
+  const isSamplingControl = control.domain === "ce_sampling";
 
   const persist = useCallback(
     async (patch: TextPatch & { outcome?: ControlOutcome }) => {
@@ -346,6 +347,28 @@ export function ControlCard({
       </p>
 
       <div id={`${control.id}-panel`} className="space-y-4">
+        {isSamplingControl ? (
+          <div>
+            <label className="label">Sampled devices</label>
+            <p className="mb-1 text-xs text-text-muted">
+              Example: 2 x Windows 11 25H2 end user devices, 5 x Android 16
+              mobile devices, 1 x Windows Server 2022.
+            </p>
+            <textarea
+              className="input min-h-[92px]"
+              rows={4}
+              value={draftNotes}
+              onChange={(e) => {
+                const v = e.target.value;
+                setDraftNotes(v);
+                scheduleAutosave({ assessorNotes: v });
+              }}
+              onBlur={() => void persist({ assessorNotes: draftNotes })}
+              placeholder="List the sampled devices used in this assessment..."
+            />
+          </div>
+        ) : (
+          <>
         <div>
           <label className="label">Outcome</label>
           <OutcomeSelector
@@ -493,6 +516,8 @@ export function ControlCard({
             </div>
           </>
         )}
+          </>
+        )}
       </div>
 
       {generateError && (
@@ -511,7 +536,7 @@ export function ControlCard({
           </p>
         )}
         <div className="ml-auto flex flex-wrap gap-2">
-          {showGapFields && (
+          {showGapFields && !isSamplingControl && (
             <button
               type="button"
               className="btn-secondary"

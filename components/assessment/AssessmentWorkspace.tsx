@@ -70,11 +70,16 @@ export function AssessmentWorkspace({
   const stateList = useMemo(() => Array.from(states.values()), [states]);
 
   const progress = useMemo(() => {
-    const total = frameworkControls.length;
+    const total = frameworkControls.filter((c) => c.domain !== "ce_sampling").length;
     if (!total) return 0;
-    const done = stateList.filter((s) => s.outcome != null).length;
+    const done = stateList.filter((s) => {
+      const control = frameworkControls.find((c) => c.id === s.controlId);
+      if (!control) return false;
+      if (control.domain === "ce_sampling") return true;
+      return s.outcome != null;
+    }).length;
     return Math.round((done / total) * 100);
-  }, [frameworkControls.length, stateList]);
+  }, [frameworkControls, stateList]);
 
   const domainControls = useMemo(() => {
     let list = getControlsByDomain(domain, assessment.frameworkId);
@@ -217,8 +222,14 @@ export function AssessmentWorkspace({
           />
         </div>
         <p className="mt-1 text-xs text-text-muted">
-          {progress}% complete ({stateList.filter((s) => s.outcome).length}/
-          {frameworkControls.length} controls)
+          {progress}% complete (
+          {
+            stateList.filter((s) => {
+              const control = frameworkControls.find((c) => c.id === s.controlId);
+              return control?.domain !== "ce_sampling" && !!s.outcome;
+            }).length
+          }
+          /{frameworkControls.filter((c) => c.domain !== "ce_sampling").length} controls)
         </p>
       </div>
 

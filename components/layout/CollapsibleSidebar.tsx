@@ -142,6 +142,7 @@ const DOMAIN_ICONS: Record<string, () => ReactNode> = {
   ce_malware_protection: IconAlertTriangle,
   ce_multi_factor_authentication: IconCheckCircle,
   ce_account_separation: IconDatabase,
+  ce_sampling: IconList,
 };
 
 const FILTER_CONFIG = [
@@ -283,7 +284,9 @@ function ReportDropdown({
                 ) : (
                   <IconFileText />
                 )}
-                {f.label}
+                {downloading === f.id && f.id === "html"
+                  ? "HTML Report (reviewing...)"
+                  : f.label}
               </button>
             ))}
           </div>
@@ -320,7 +323,9 @@ function ReportDropdown({
                 {downloading === f.id && (
                   <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-600" />
                 )}
-                {f.label}
+                {downloading === f.id && f.id === "html"
+                  ? "HTML Report (reviewing...)"
+                  : f.label}
               </button>
             </li>
           ))}

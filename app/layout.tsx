@@ -13,9 +13,9 @@ export const metadata: Metadata = {
   description:
     "Automate M365 Application Compliance Program audit and review reporting.",
   icons: {
-    icon: "/brand/reportly-favicon.png",
-    shortcut: "/brand/reportly-favicon.png",
-    apple: "/brand/reportly-favicon.png",
+    icon: [{ url: "/brand/reportly-favicon.png?v=2", type: "image/png" }],
+    shortcut: [{ url: "/brand/reportly-favicon.png?v=2", type: "image/png" }],
+    apple: [{ url: "/brand/reportly-favicon.png?v=2", type: "image/png" }],
   },
 };
 
@@ -26,6 +26,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" type="image/png" href="/brand/reportly-favicon.png?v=2" />
+        <link rel="shortcut icon" href="/brand/reportly-favicon.png?v=2" />
+      </head>
       <body className={`${inter.variable} font-sans`}>
         <AppShell>{children}</AppShell>
       </body>

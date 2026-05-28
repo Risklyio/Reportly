@@ -34,11 +34,13 @@ export async function GET(
       states
     );
 
-    const domainFindings = data.domains.map((d) => ({
+    const domainFindings = data.domains
+      .filter((d) => d.id !== "ce_sampling")
+      .map((d) => ({
       domain: d.label,
       notInPlace: d.controls.filter((c) => c.outcome === "Not in place").length,
       partiallyInPlace: d.controls.filter((c) => c.outcome === "Partially in place").length,
-    }));
+      }));
     const totalFlagged = domainFindings.reduce(
       (sum, d) => sum + d.notInPlace + d.partiallyInPlace,
       0

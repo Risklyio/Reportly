@@ -191,5 +191,19 @@ export const ceplusControls: ControlDefinition[] = [
       ],
     }
   ),
+  ce(
+    "ce_sampling",
+    6,
+    "Sampling",
+    "Selected sample of devices",
+    false,
+    {
+      subId: "A",
+      intent:
+        "List the sampled devices and quantities used for Cyber Essentials Plus testing.",
+      defaultNotInPlaceReasons: [],
+      correctiveActionHints: [],
+    }
+  ),
 ];
 

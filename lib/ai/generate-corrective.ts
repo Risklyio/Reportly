@@ -223,10 +223,12 @@ Keep wording close to the original text and do not add new facts, claims, tools,
 Keep the same tone and approximate length.
 Return only the rewritten notes text with no markdown or commentary.`;
 
-const EXEC_SUMMARY_SYSTEM = `You are writing an executive summary for non-technical stakeholders.
-Use plain business language with no jargon.
-Focus on risk posture and priorities, not implementation details.
-Do not invent facts.
+const EXEC_SUMMARY_SYSTEM = `You are writing a Cyber Essentials Plus executive summary for non-technical stakeholders.
+Perform a careful, deliberate, step-by-step review of the supplied findings before writing.
+Use plain business language with no technical jargon.
+Frame the narrative in the context of Cyber Essentials Plus assurance and risk reduction.
+Focus on overall posture, material gaps, and remediation priorities.
+Do not invent facts or reference Microsoft application compliance.
 Keep the summary concise (2 short paragraphs max).
 Return plain text only.`;
 
@@ -302,7 +304,7 @@ Total flagged controls (Not in place + Partially in place): ${input.totalFlagged
 Domain findings:
 ${domainLines || "- No flagged controls"}
 
-Write for non-technical stakeholders and highlight overall posture and priority areas.`;
+Write for non-technical stakeholders and highlight overall Cyber Essentials posture and priority areas.`;
 
   let text: string;
   try {

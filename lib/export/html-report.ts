@@ -68,6 +68,12 @@ function groupBySection(rows: ExportControlRow[]): Map<string, ExportControlRow[
   return map;
 }
 
+function getSamplingText(data: AssessmentExportData): string {
+  const samplingDomain = data.domains.find((d) => d.id === "ce_sampling");
+  const sampleRow = samplingDomain?.controls[0];
+  return (sampleRow?.assessorNotes || "").trim();
+}
+
 function renderControlRow(r: ExportControlRow): string {
   const hardTag = r.hardFail === "Yes" ? `<span class="hard-fail-tag">HARD FAIL</span>` : "";
   return `<tr>
@@ -193,14 +199,16 @@ function renderDomain(domainLabel: string, domainId: string, controls: ExportCon
 }
 
 function buildDomainFindings(data: AssessmentExportData) {
-  return data.domains.map((d) => ({
+  return data.domains
+    .filter((d) => d.id !== "ce_sampling")
+    .map((d) => ({
     label: d.label,
     notInPlace: d.controls.filter((c) => c.outcome === "Not in place").length,
     partiallyInPlace: d.controls.filter((c) => c.outcome === "Partially in place").length,
     flagged: d.controls.filter(
       (c) => c.outcome === "Not in place" || c.outcome === "Partially in place"
     ).length,
-  }));
+    }));
 }
 
 export function renderAssessmentHtml(
@@ -209,12 +217,14 @@ export function renderAssessmentHtml(
 ): string {
   const logoUri = loadLogoBase64();
   const faviconUri = loadFaviconBase64();
+  const samplingText = getSamplingText(data);
   const domainFindings = buildDomainFindings(data);
   const totalFlagged = domainFindings.reduce((sum, d) => sum + d.flagged, 0);
 
   let domains = "";
   const isCeplus = data.frameworkId === CEPLUS_FRAMEWORK_ID;
   for (const d of data.domains) {
+    if (d.id === "ce_sampling") continue;
     domains += isCeplus
       ? renderCeplusDomain(d.label, d.id, d.controls)
       : renderDomain(d.label, d.id, d.controls);
@@ -265,6 +275,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica N
 .meta-grid{display:grid;grid-template-columns:120px 1fr;gap:6px 16px;font-size:13px}
 .meta-grid dt{font-weight:600;color:var(--black)}
 .meta-grid dd{color:var(--muted)}
+
+/* Sampling section */
+.sampling-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-bottom:24px}
+.sampling-card h2{font-size:15px;font-weight:700;margin-bottom:8px}
+.sampling-card p{line-height:1.55}
 
 /* Assessment findings */
 .exec-summary{margin-bottom:32px}
@@ -376,6 +391,15 @@ details[open]>.sub-control-title::before{transform:rotate(90deg)}
       ${data.scopeNotes ? `<dt>Scope</dt><dd>${nl2br(data.scopeNotes)}</dd>` : ""}
     </dl>
   </div>
+
+  ${
+    isCeplus
+      ? `<section class="sampling-card">
+    <h2>Sampling</h2>
+    <p>${nl2br(samplingText || "No sampled device list has been provided.")}</p>
+  </section>`
+      : ""
+  }
 
   <div class="exec-summary">
     <h2>Assessment Findings</h2>
