@@ -200,6 +200,7 @@ const EXPORT_FORMATS = [
   { id: "pdf", label: "PDF Report", ext: "pdf" },
   { id: "docx", label: "Word (DOCX)", ext: "docx" },
   { id: "html", label: "HTML Report", ext: "html" },
+  { id: "backup", label: "Export backup (.reportly)", ext: "reportly" },
 ] as const;
 
 function ReportDropdown({
@@ -224,6 +225,8 @@ function ReportDropdown({
   function exportUrl(format: string) {
     if (format === "pdf") return `/api/assessments/${assessmentId}/export/pdf`;
     if (format === "html") return `/api/assessments/${assessmentId}/export/html`;
+    if (format === "backup")
+      return `/api/assessments/${assessmentId}/export/backup`;
     return `/api/assessments/${assessmentId}/export`;
   }
 
@@ -286,7 +289,9 @@ function ReportDropdown({
                 )}
                 {downloading === f.id && f.id === "html"
                   ? "HTML Report (reviewing...)"
-                  : f.label}
+                  : downloading === f.id && f.id === "backup"
+                    ? "Export backup (.reportly)..."
+                    : f.label}
               </button>
             ))}
           </div>
@@ -325,7 +330,9 @@ function ReportDropdown({
                 )}
                 {downloading === f.id && f.id === "html"
                   ? "HTML Report (reviewing...)"
-                  : f.label}
+                  : downloading === f.id && f.id === "backup"
+                    ? "Export backup (.reportly)..."
+                    : f.label}
               </button>
             </li>
           ))}

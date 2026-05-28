@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { ALL_CONTROLS } from "@/lib/controls/catalog";
 
 interface TemplateRow {
@@ -33,6 +34,11 @@ export default function SettingsPage() {
   const [ai, setAi] = useState<AiDiagnostics | null>(null);
   const [aiLoadError, setAiLoadError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [restoring, setRestoring] = useState(false);
+  const [restoreMessage, setRestoreMessage] = useState<string | null>(null);
+  const [restoredAssessmentId, setRestoredAssessmentId] = useState<string | null>(
+    null
+  );
   const [overrideForm, setOverrideForm] = useState({
     controlId: "data-1",
     reasonCode: "",
@@ -112,6 +118,33 @@ export default function SettingsPage() {
       links: "",
     });
     await load();
+  }
+
+  async function restoreBackup(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    setRestoring(true);
+    setRestoreMessage(null);
+    setRestoredAssessmentId(null);
+    try {
+      const res = await fetch("/api/assessments/restore", {
+        method: "POST",
+        body: fd,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error ?? "Restore failed");
+      }
+      setRestoreMessage(`Restored as ${data.clientName}`);
+      setRestoredAssessmentId(String(data.assessmentId ?? ""));
+      form.reset();
+      await load();
+    } catch (e) {
+      setRestoreMessage(e instanceof Error ? e.message : "Restore failed");
+    } finally {
+      setRestoring(false);
+    }
   }
 
   return (
@@ -206,6 +239,49 @@ export default function SettingsPage() {
               </li>
             ))}
           </ul>
+        )}
+      </section>
+
+      <section className="card mt-6">
+        <h2 className="text-lg font-semibold text-text">Restore assessment backup</h2>
+        <p className="mt-1 text-sm text-text-muted">
+          Upload a <code>.reportly</code> backup file to restore an assessment.
+          Restored assessments keep the same name with a numeric suffix (for
+          example <code>(1)</code>).
+        </p>
+        <form onSubmit={restoreBackup} className="mt-4 space-y-3">
+          <div>
+            <label className="label" htmlFor="restore-file">
+              Backup file
+            </label>
+            <input
+              id="restore-file"
+              name="file"
+              type="file"
+              accept=".reportly,application/json"
+              className="input"
+              required
+            />
+          </div>
+          <button type="submit" className="btn-primary" disabled={restoring}>
+            {restoring ? "Restoring…" : "Restore backup"}
+          </button>
+        </form>
+        {restoreMessage && (
+          <p className="mt-3 text-sm text-text">
+            {restoreMessage}
+            {restoredAssessmentId ? (
+              <>
+                {" "}
+                <Link
+                  href={`/assessments/${restoredAssessmentId}`}
+                  className="text-primary hover:underline"
+                >
+                  Open restored assessment
+                </Link>
+              </>
+            ) : null}
+          </p>
         )}
       </section>
 
