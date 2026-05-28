@@ -12,6 +12,11 @@ export const metadata: Metadata = {
   title: "Reportly.io — M365 Compliance Reporting",
   description:
     "Automate M365 Application Compliance Program audit and review reporting.",
+  icons: {
+    icon: "/brand/reportly-favicon.png",
+    shortcut: "/brand/reportly-favicon.png",
+    apple: "/brand/reportly-favicon.png",
+  },
 };
 
 export default function RootLayout({

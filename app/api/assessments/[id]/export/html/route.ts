@@ -8,6 +8,7 @@ import {
   exportFilename,
 } from "@/lib/export/report-data";
 import { renderAssessmentHtml } from "@/lib/export/html-report";
+import { generateExecutiveSummaryWithGroq } from "@/lib/ai/generate-corrective";
 
 export async function GET(
   _request: Request,
@@ -33,7 +34,33 @@ export async function GET(
       states
     );
 
-    const html = renderAssessmentHtml(data);
+    const domainFindings = data.domains.map((d) => ({
+      domain: d.label,
+      notInPlace: d.controls.filter((c) => c.outcome === "Not in place").length,
+      partiallyInPlace: d.controls.filter((c) => c.outcome === "Partially in place").length,
+    }));
+    const totalFlagged = domainFindings.reduce(
+      (sum, d) => sum + d.notInPlace + d.partiallyInPlace,
+      0
+    );
+
+    let executiveSummary = "";
+    try {
+      executiveSummary = await generateExecutiveSummaryWithGroq({
+        clientName: data.clientName,
+        appName: data.appName,
+        frameworkName: data.frameworkName,
+        domainFindings,
+        totalFlagged,
+      });
+    } catch {
+      executiveSummary =
+        totalFlagged > 0
+          ? `This assessment identified ${totalFlagged} flagged controls across the reviewed domains. Priority should be given to controls marked as Not in place, followed by those marked as Partially in place, starting with domains showing the highest concentration of gaps.`
+          : "No controls were flagged as Not in place or Partially in place in this assessment. Continue routine monitoring to maintain the current posture.";
+    }
+
+    const html = renderAssessmentHtml(data, { executiveSummary });
     const filename = exportFilename(
       assessment.clientName,
       assessment.assessmentDate,

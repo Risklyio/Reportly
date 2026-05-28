@@ -8,6 +8,12 @@ function loadLogoBase64(): string | null {
   return `data:image/png;base64,${fs.readFileSync(logoPath).toString("base64")}`;
 }
 
+function loadFaviconBase64(): string | null {
+  const faviconPath = path.join(process.cwd(), "public", "brand", "reportly-favicon.png");
+  if (!fs.existsSync(faviconPath)) return null;
+  return `data:image/png;base64,${fs.readFileSync(faviconPath).toString("base64")}`;
+}
+
 type SectionStatus = "ok" | "partial" | "fail";
 
 function sectionStatus(rows: ExportControlRow[]): SectionStatus {
@@ -186,9 +192,25 @@ function renderDomain(domainLabel: string, domainId: string, controls: ExportCon
 </details>`;
 }
 
-export function renderAssessmentHtml(data: AssessmentExportData): string {
-  const s = data.summary;
+function buildDomainFindings(data: AssessmentExportData) {
+  return data.domains.map((d) => ({
+    label: d.label,
+    notInPlace: d.controls.filter((c) => c.outcome === "Not in place").length,
+    partiallyInPlace: d.controls.filter((c) => c.outcome === "Partially in place").length,
+    flagged: d.controls.filter(
+      (c) => c.outcome === "Not in place" || c.outcome === "Partially in place"
+    ).length,
+  }));
+}
+
+export function renderAssessmentHtml(
+  data: AssessmentExportData,
+  options: { executiveSummary?: string } = {}
+): string {
   const logoUri = loadLogoBase64();
+  const faviconUri = loadFaviconBase64();
+  const domainFindings = buildDomainFindings(data);
+  const totalFlagged = domainFindings.reduce((sum, d) => sum + d.flagged, 0);
 
   let domains = "";
   const isCeplus = data.frameworkId === CEPLUS_FRAMEWORK_ID;
@@ -204,6 +226,7 @@ export function renderAssessmentHtml(data: AssessmentExportData): string {
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>${esc(data.clientName)} — ${esc(data.frameworkName)}</title>
+${faviconUri ? `<link rel="icon" type="image/png" href="${faviconUri}"/>` : ""}
 <style>
 :root {
   --black: #060606;
@@ -227,7 +250,7 @@ export function renderAssessmentHtml(data: AssessmentExportData): string {
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--black);font-size:13px;line-height:1.5}
-.report{max-width:1200px;margin:0 auto;padding:0 24px 60px}
+.report{max-width:1680px;width:calc(100vw - 32px);margin:0 auto;padding:0 16px 60px}
 
 /* Header */
 .report-header{background:var(--header-bg);border-bottom:1px solid var(--border);padding:14px 24px;margin:0 -24px 32px;display:flex;align-items:center;justify-content:space-between}
@@ -243,9 +266,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica N
 .meta-grid dt{font-weight:600;color:var(--black)}
 .meta-grid dd{color:var(--muted)}
 
-/* Executive summary */
+/* Assessment findings */
 .exec-summary{margin-bottom:32px}
-.exec-summary h2{font-size:16px;font-weight:700;margin-bottom:12px}
+.exec-summary h2{font-size:16px;font-weight:700;margin-bottom:10px}
+.exec-summary .exec-text{margin-bottom:14px;color:var(--black);line-height:1.55;white-space:pre-line}
 .summary-table{width:100%;border-collapse:collapse;font-size:13px}
 .summary-table th,.summary-table td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
 .summary-table th{background:var(--header-bg);font-weight:600;color:var(--black)}
@@ -354,20 +378,29 @@ details[open]>.sub-control-title::before{transform:rotate(90deg)}
   </div>
 
   <div class="exec-summary">
-    <h2>Executive Summary</h2>
+    <h2>Assessment Findings</h2>
+    <p class="exec-text">${nl2br(
+      options.executiveSummary ||
+        (totalFlagged > 0
+          ? `This assessment identified ${totalFlagged} flagged controls that should be prioritized for remediation based on business risk.`
+          : "No controls were flagged as not in place or partially in place.")
+    )}</p>
     <table class="summary-table">
-      <thead><tr><th>Metric</th><th>Count</th></tr></thead>
+      <thead><tr><th>Control domain</th><th>Not in place</th><th>Partially in place</th><th>Total flagged</th></tr></thead>
       <tbody>
-        <tr><td>Total controls</td><td>${s.total}</td></tr>
-        <tr><td>Controls reviewed</td><td>${s.reviewed}</td></tr>
-        <tr><td>In place</td><td>${s.inPlace}</td></tr>
-        <tr><td>Not in place</td><td>${s.notInPlace}</td></tr>
-        <tr><td>Partially in place</td><td>${s.partiallyInPlace}</td></tr>
-        <tr><td>Not applicable</td><td>${s.notApplicable}</td></tr>
-        <tr><td>Pending</td><td>${s.pending}</td></tr>
-        <tr><td>Not yet reviewed</td><td>${s.notReviewed}</td></tr>
-        <tr><td>Hard-fail controls</td><td>${s.hardFailTotal}</td></tr>
-        <tr><td>Hard-fail with gaps</td><td>${s.hardFailGaps}</td></tr>
+        ${domainFindings
+          .map(
+            (d) =>
+              `<tr><td>${esc(d.label)}</td><td>${d.notInPlace}</td><td>${d.partiallyInPlace}</td><td>${d.flagged}</td></tr>`
+          )
+          .join("")}
+        <tr><td><strong>Total</strong></td><td><strong>${domainFindings.reduce(
+          (sum, d) => sum + d.notInPlace,
+          0
+        )}</strong></td><td><strong>${domainFindings.reduce(
+          (sum, d) => sum + d.partiallyInPlace,
+          0
+        )}</strong></td><td><strong>${totalFlagged}</strong></td></tr>
       </tbody>
     </table>
   </div>

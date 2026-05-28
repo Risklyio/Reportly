@@ -223,6 +223,13 @@ Keep wording close to the original text and do not add new facts, claims, tools,
 Keep the same tone and approximate length.
 Return only the rewritten notes text with no markdown or commentary.`;
 
+const EXEC_SUMMARY_SYSTEM = `You are writing an executive summary for non-technical stakeholders.
+Use plain business language with no jargon.
+Focus on risk posture and priorities, not implementation details.
+Do not invent facts.
+Keep the summary concise (2 short paragraphs max).
+Return plain text only.`;
+
 export async function cleanupAssessorNotesWithGroq(rawNotes: string): Promise<string> {
   const notes = rawNotes.trim();
   if (!notes) {
@@ -258,4 +265,60 @@ export async function cleanupAssessorNotesWithGroq(rawNotes: string): Promise<st
     throw new Error("AI returned an empty response. Try again.");
   }
   return cleaned;
+}
+
+export async function generateExecutiveSummaryWithGroq(input: {
+  clientName: string;
+  appName: string;
+  frameworkName: string;
+  domainFindings: { domain: string; notInPlace: number; partiallyInPlace: number }[];
+  totalFlagged: number;
+}): Promise<string> {
+  const groq = createGroq({
+    apiKey: requireKey(
+      "GROQ_API_KEY",
+      process.env.GROQ_API_KEY,
+      "https://console.groq.com/keys"
+    ),
+  });
+  const modelId =
+    process.env.GROQ_EXEC_SUMMARY_MODEL?.trim() ||
+    process.env.GROQ_MODEL?.trim() ||
+    DEFAULT_GROQ_CLEANUP_MODEL;
+
+  const domainLines = input.domainFindings
+    .map(
+      (d) =>
+        `- ${d.domain}: ${d.notInPlace} not in place, ${d.partiallyInPlace} partially in place`
+    )
+    .join("\n");
+
+  const prompt = `Create an executive summary for this assessment:
+Client: ${input.clientName}
+Application: ${input.appName}
+Framework: ${input.frameworkName}
+Total flagged controls (Not in place + Partially in place): ${input.totalFlagged}
+
+Domain findings:
+${domainLines || "- No flagged controls"}
+
+Write for non-technical stakeholders and highlight overall posture and priority areas.`;
+
+  let text: string;
+  try {
+    const result = await generateText({
+      model: groq(modelId),
+      system: EXEC_SUMMARY_SYSTEM,
+      prompt,
+    });
+    text = result.text;
+  } catch (e) {
+    throw friendlyAiError(e, "groq");
+  }
+
+  const summary = text.trim();
+  if (!summary) {
+    throw new Error("AI returned an empty executive summary.");
+  }
+  return summary;
 }
