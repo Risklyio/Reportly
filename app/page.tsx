@@ -24,7 +24,7 @@ export default async function DashboardPage({
   const allAssessments = await listAssessmentsWithProgress();
   const assessments = selectedFrameworkId
     ? allAssessments.filter((a) => a.frameworkId === selectedFrameworkId)
-    : allAssessments;
+    : [];
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 lg:px-8">
@@ -52,7 +52,14 @@ export default async function DashboardPage({
         </Link>
       </div>
 
-      {assessments.length === 0 ? (
+      {!selectedFrameworkId ? (
+        <div className="card text-center text-text-muted">
+          <p className="text-base">Select a framework to review current assessments 🙂</p>
+          <p className="mt-2 text-sm">
+            Or select <strong>New assessment</strong> to get started.
+          </p>
+        </div>
+      ) : assessments.length === 0 ? (
         <div className="card text-center text-text-muted">
           <p>No assessments yet.</p>
           <p className="mt-2 text-sm">
