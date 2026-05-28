@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { AssessmentListItem } from "@/lib/types";
+import { FRAMEWORKS } from "@/lib/controls/catalog";
 
 function formatOptionLabel(a: AssessmentListItem): string {
   return `${a.clientName} — ${a.appName} (assessment: ${a.assessmentDate}${a.dueDate ? `, due: ${a.dueDate}` : ""})`;
@@ -199,7 +200,7 @@ function AssessmentGroupList({
                   </div>
                   <details className="rounded-lg border border-red-200 bg-red-50 p-2">
                     <summary className="cursor-pointer text-xs font-medium text-red-800">
-                      Danger zone
+                      Delete assessment
                     </summary>
                     <p className="mt-2 text-xs text-red-700">
                       Type <code>DELETE</code> to enable delete.
@@ -235,31 +236,57 @@ export function AssessmentDashboard({
 }: {
   assessments: AssessmentListItem[];
 }) {
-  const completed = assessments.filter((a) => a.isFullyReviewed);
-  const inProgress = assessments.filter((a) => !a.isFullyReviewed);
+  const groupedByFramework = useMemo(() => {
+    const map = new Map<string, AssessmentListItem[]>();
+    for (const a of assessments) {
+      const list = map.get(a.frameworkId) ?? [];
+      list.push(a);
+      map.set(a.frameworkId, list);
+    }
+    return FRAMEWORKS.map((fw) => ({
+      frameworkId: fw.id,
+      frameworkName: fw.name,
+      items: map.get(fw.id) ?? [],
+    })).filter((g) => g.items.length > 0);
+  }, [assessments]);
 
   return (
     <div className="space-y-6">
-      <div className="card grid gap-4 sm:grid-cols-2">
-        <AssessmentSelect
-          id="completed-assessments"
-          label="Completed assessments"
-          emptyMessage="No completed assessments"
-          items={completed}
-        />
-        <AssessmentSelect
-          id="in-progress-assessments"
-          label="In progress"
-          emptyMessage="No in-progress assessments"
-          items={inProgress}
-          showProgress
-        />
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        <AssessmentGroupList title="Completed" items={completed} />
-        <AssessmentGroupList title="In progress" items={inProgress} />
-      </div>
+      {groupedByFramework.map((group) => {
+        const completed = group.items.filter((a) => a.isFullyReviewed);
+        const inProgress = group.items.filter((a) => !a.isFullyReviewed);
+        return (
+          <section key={group.frameworkId} className="space-y-4">
+            <div className="card">
+              <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+                Framework
+              </p>
+              <h2 className="mt-1 text-lg font-semibold text-text">
+                {group.frameworkName}
+              </h2>
+            </div>
+            <div className="card grid gap-4 sm:grid-cols-2">
+              <AssessmentSelect
+                id={`completed-${group.frameworkId}`}
+                label="Completed assessments"
+                emptyMessage="No completed assessments"
+                items={completed}
+              />
+              <AssessmentSelect
+                id={`inprogress-${group.frameworkId}`}
+                label="In progress"
+                emptyMessage="No in-progress assessments"
+                items={inProgress}
+                showProgress
+              />
+            </div>
+            <div className="grid gap-4 lg:grid-cols-2">
+              <AssessmentGroupList title="Completed" items={completed} />
+              <AssessmentGroupList title="In progress" items={inProgress} />
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }
