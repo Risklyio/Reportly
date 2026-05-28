@@ -102,7 +102,7 @@ export async function listAssessmentsWithProgress(): Promise<AssessmentListItem[
     const totalControls = getControlsForFramework(a.frameworkId).filter(
       (c) => c.domain !== "ce_sampling"
     ).length;
-    const reviewedCount = reviewedByAssessment.get(a.id) ?? 0;
+    const reviewedCount = Math.min(reviewedByAssessment.get(a.id) ?? 0, totalControls);
     const progressPercent = totalControls
       ? Math.round((reviewedCount / totalControls) * 100)
       : 0;

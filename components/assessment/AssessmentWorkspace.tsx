@@ -75,7 +75,7 @@ export function AssessmentWorkspace({
     const done = stateList.filter((s) => {
       const control = frameworkControls.find((c) => c.id === s.controlId);
       if (!control) return false;
-      if (control.domain === "ce_sampling") return true;
+      if (control.domain === "ce_sampling") return false;
       return s.outcome != null;
     }).length;
     return Math.round((done / total) * 100);

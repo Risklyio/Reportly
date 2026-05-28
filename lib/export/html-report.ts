@@ -68,10 +68,14 @@ function groupBySection(rows: ExportControlRow[]): Map<string, ExportControlRow[
   return map;
 }
 
-function getSamplingText(data: AssessmentExportData): string {
+function getSamplingFields(data: AssessmentExportData) {
   const samplingDomain = data.domains.find((d) => d.id === "ce_sampling");
   const sampleRow = samplingDomain?.controls[0];
-  return (sampleRow?.assessorNotes || "").trim();
+  return {
+    devices: (sampleRow?.reason || "").trim(),
+    cloudServices: (sampleRow?.assessorNotes || "").trim(),
+    externalIps: (sampleRow?.correctiveAction || "").trim(),
+  };
 }
 
 function renderControlRow(r: ExportControlRow): string {
@@ -217,7 +221,7 @@ export function renderAssessmentHtml(
 ): string {
   const logoUri = loadLogoBase64();
   const faviconUri = loadFaviconBase64();
-  const samplingText = getSamplingText(data);
+  const sampling = getSamplingFields(data);
   const domainFindings = buildDomainFindings(data);
   const totalFlagged = domainFindings.reduce((sum, d) => sum + d.flagged, 0);
 
@@ -235,7 +239,11 @@ export function renderAssessmentHtml(
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>${esc(data.clientName)} — ${esc(data.frameworkName)}</title>
+<title>${esc(
+    isCeplus
+      ? `${data.clientName} — ${data.frameworkName}`
+      : `${data.clientName} — ${data.frameworkName}`
+  )}</title>
 ${faviconUri ? `<link rel="icon" type="image/png" href="${faviconUri}"/>` : ""}
 <style>
 :root {
@@ -279,7 +287,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica N
 /* Sampling section */
 .sampling-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-bottom:24px}
 .sampling-card h2{font-size:15px;font-weight:700;margin-bottom:8px}
-.sampling-card p{line-height:1.55}
+.sampling-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.sampling-col{border:1px solid var(--border);border-radius:8px;background:#fff;padding:10px}
+.sampling-col h3{font-size:12px;font-weight:700;margin-bottom:6px}
+.sampling-col p{line-height:1.55}
 
 /* Assessment findings */
 .exec-summary{margin-bottom:32px}
@@ -381,10 +392,12 @@ details[open]>.sub-control-title::before{transform:rotate(90deg)}
   </header>
 
   <div class="meta-card">
-    <div class="title">${esc(data.clientName)} — ${esc(data.appName)}</div>
+    <div class="title">${esc(
+      isCeplus ? data.clientName : `${data.clientName} — ${data.appName}`
+    )}</div>
     <dl class="meta-grid">
       <dt>Client</dt><dd>${esc(data.clientName)}</dd>
-      <dt>Application</dt><dd>${esc(data.appName)}</dd>
+      ${isCeplus ? "" : `<dt>Application</dt><dd>${esc(data.appName)}</dd>`}
       <dt>Assessment date</dt><dd>${esc(data.assessmentDate)}</dd>
       <dt>Assessor</dt><dd>${esc(data.assessorName || "—")}</dd>
       <dt>Generated</dt><dd>${esc(data.generatedAt)}</dd>
@@ -396,7 +409,20 @@ details[open]>.sub-control-title::before{transform:rotate(90deg)}
     isCeplus
       ? `<section class="sampling-card">
     <h2>Sampling</h2>
-    <p>${nl2br(samplingText || "No sampled device list has been provided.")}</p>
+    <div class="sampling-grid">
+      <div class="sampling-col">
+        <h3>Devices</h3>
+        <p>${nl2br(sampling.devices || "No sampled devices provided.")}</p>
+      </div>
+      <div class="sampling-col">
+        <h3>Cloud services</h3>
+        <p>${nl2br(sampling.cloudServices || "No sampled cloud services provided.")}</p>
+      </div>
+      <div class="sampling-col">
+        <h3>External IP addresses</h3>
+        <p>${nl2br(sampling.externalIps || "No sampled external IP addresses provided.")}</p>
+      </div>
+    </div>
   </section>`
       : ""
   }

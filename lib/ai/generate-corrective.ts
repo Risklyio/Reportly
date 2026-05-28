@@ -271,7 +271,7 @@ export async function cleanupAssessorNotesWithGroq(rawNotes: string): Promise<st
 
 export async function generateExecutiveSummaryWithGroq(input: {
   clientName: string;
-  appName: string;
+  appName?: string;
   frameworkName: string;
   domainFindings: { domain: string; notInPlace: number; partiallyInPlace: number }[];
   totalFlagged: number;
@@ -295,10 +295,10 @@ export async function generateExecutiveSummaryWithGroq(input: {
     )
     .join("\n");
 
+  const appLine = input.appName ? `Application: ${input.appName}\n` : "";
   const prompt = `Create an executive summary for this assessment:
 Client: ${input.clientName}
-Application: ${input.appName}
-Framework: ${input.frameworkName}
+${appLine}Framework: ${input.frameworkName}
 Total flagged controls (Not in place + Partially in place): ${input.totalFlagged}
 
 Domain findings:

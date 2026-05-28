@@ -9,6 +9,7 @@ import {
 } from "@/lib/export/report-data";
 import { renderAssessmentHtml } from "@/lib/export/html-report";
 import { generateExecutiveSummaryWithGroq } from "@/lib/ai/generate-corrective";
+import { CEPLUS_FRAMEWORK_ID } from "@/lib/controls/catalog";
 
 export async function GET(
   _request: Request,
@@ -50,7 +51,7 @@ export async function GET(
     try {
       executiveSummary = await generateExecutiveSummaryWithGroq({
         clientName: data.clientName,
-        appName: data.appName,
+        appName: data.frameworkId === CEPLUS_FRAMEWORK_ID ? undefined : data.appName,
         frameworkName: data.frameworkName,
         domainFindings,
         totalFlagged,

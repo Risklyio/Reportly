@@ -262,7 +262,20 @@ export function ControlCard({
   }
 
   async function handleComplete() {
-    if (showGapFields || showPendingFields) {
+    if (isSamplingControl) {
+      pendingPatch.current = {
+        notInPlaceReason: draftReason,
+        assessorNotes: draftNotes,
+        correctiveAction: draftCorrective,
+      };
+      await flushAutosave();
+      await persist({
+        outcome: "in_place",
+        notInPlaceReason: draftReason,
+        assessorNotes: draftNotes,
+        correctiveAction: draftCorrective,
+      });
+    } else if (showGapFields || showPendingFields) {
       pendingPatch.current = {
         notInPlaceReason: draftReason,
         assessorNotes: draftNotes,
@@ -348,25 +361,57 @@ export function ControlCard({
 
       <div id={`${control.id}-panel`} className="space-y-4">
         {isSamplingControl ? (
-          <div>
-            <label className="label">Sampled devices</label>
-            <p className="mb-1 text-xs text-text-muted">
-              Example: 2 x Windows 11 25H2 end user devices, 5 x Android 16
-              mobile devices, 1 x Windows Server 2022.
-            </p>
-            <textarea
-              className="input min-h-[92px]"
-              rows={4}
-              value={draftNotes}
-              onChange={(e) => {
-                const v = e.target.value;
-                setDraftNotes(v);
-                scheduleAutosave({ assessorNotes: v });
-              }}
-              onBlur={() => void persist({ assessorNotes: draftNotes })}
-              placeholder="List the sampled devices used in this assessment..."
-            />
-          </div>
+          <>
+            <div>
+              <label className="label">Devices</label>
+              <p className="mb-1 text-xs text-text-muted">
+                Example: 2 x Windows 11 25H2 end user devices, 5 x Android 16
+                mobile devices, 1 x Windows Server 2022.
+              </p>
+              <textarea
+                className="input min-h-[88px]"
+                rows={3}
+                value={draftReason}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setDraftReason(v);
+                  scheduleAutosave({ notInPlaceReason: v });
+                }}
+                onBlur={() => void persist({ notInPlaceReason: draftReason })}
+                placeholder="List sampled end-user and server devices..."
+              />
+            </div>
+            <div>
+              <label className="label">Cloud services</label>
+              <textarea
+                className="input min-h-[88px]"
+                rows={3}
+                value={draftNotes}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setDraftNotes(v);
+                  scheduleAutosave({ assessorNotes: v });
+                }}
+                onBlur={() => void persist({ assessorNotes: draftNotes })}
+                placeholder="List sampled cloud services..."
+              />
+            </div>
+            <div>
+              <label className="label">External IP addresses</label>
+              <textarea
+                className="input min-h-[88px]"
+                rows={3}
+                value={draftCorrective}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setDraftCorrective(v);
+                  scheduleAutosave({ correctiveAction: v });
+                }}
+                onBlur={() => void persist({ correctiveAction: draftCorrective })}
+                placeholder="List sampled external/public IP addresses..."
+              />
+            </div>
+          </>
         ) : (
           <>
         <div>

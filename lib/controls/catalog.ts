@@ -114,6 +114,11 @@ const m365Domains: FrameworkDefinition["domains"] = [
 
 const ceplusDomains: FrameworkDefinition["domains"] = [
   {
+    id: "ce_sampling",
+    label: "Sampling",
+    shortLabel: "Sampling",
+  },
+  {
     id: "ce_external_vulnerability_assessment",
     label: "External vulnerability assessment",
     shortLabel: "External VA",
@@ -137,11 +142,6 @@ const ceplusDomains: FrameworkDefinition["domains"] = [
     id: "ce_account_separation",
     label: "Account separation",
     shortLabel: "Accounts",
-  },
-  {
-    id: "ce_sampling",
-    label: "Sampling",
-    shortLabel: "Sampling",
   },
 ];
 
