@@ -256,41 +256,38 @@ export function AssessmentDashboard({
         const completed = group.items.filter((a) => a.isFullyReviewed);
         const inProgress = group.items.filter((a) => !a.isFullyReviewed);
         return (
-          <details
+          <section
             key={group.frameworkId}
-            className="overflow-hidden rounded-xl border border-border bg-white"
-            open
+            className="space-y-4 rounded-xl border border-border bg-white p-4"
           >
-            <summary className="cursor-pointer list-none px-4 py-3 hover:bg-muted/40">
+            <div>
               <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">
                 Framework
               </span>
               <h2 className="mt-1 text-lg font-semibold text-text">
                 {group.frameworkName}
               </h2>
-            </summary>
-            <div className="space-y-4 border-t border-border p-4">
-              <div className="card grid gap-4 sm:grid-cols-2">
-                <AssessmentSelect
-                  id={`completed-${group.frameworkId}`}
-                  label="Completed assessments"
-                  emptyMessage="No completed assessments"
-                  items={completed}
-                />
-                <AssessmentSelect
-                  id={`inprogress-${group.frameworkId}`}
-                  label="In progress"
-                  emptyMessage="No in-progress assessments"
-                  items={inProgress}
-                  showProgress
-                />
-              </div>
-              <div className="grid gap-4 lg:grid-cols-2">
-                <AssessmentGroupList title="Completed" items={completed} />
-                <AssessmentGroupList title="In progress" items={inProgress} />
-              </div>
             </div>
-          </details>
+            <div className="card grid gap-4 sm:grid-cols-2">
+              <AssessmentSelect
+                id={`completed-${group.frameworkId}`}
+                label="Completed assessments"
+                emptyMessage="No completed assessments"
+                items={completed}
+              />
+              <AssessmentSelect
+                id={`inprogress-${group.frameworkId}`}
+                label="In progress"
+                emptyMessage="No in-progress assessments"
+                items={inProgress}
+                showProgress
+              />
+            </div>
+            <div className="grid gap-4 lg:grid-cols-2">
+              <AssessmentGroupList title="Completed" items={completed} />
+              <AssessmentGroupList title="In progress" items={inProgress} />
+            </div>
+          </section>
         );
       })}
     </div>

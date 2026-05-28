@@ -347,9 +347,6 @@ function ReportDropdown({
 export function CollapsibleSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [frameworkDomains, setFrameworkDomains] = useState(DOMAINS);
-  const [frameworkMenuOpen, setFrameworkMenuOpen] = useState<Record<string, boolean>>(
-    {}
-  );
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeDomain =
@@ -416,38 +413,22 @@ export function CollapsibleSidebar() {
             </p>
             <div className="space-y-1">
               {Object.entries(frameworksByVendor).map(([vendor, frameworks]) => (
-                <div
-                  key={vendor}
-                  className="overflow-hidden rounded-lg border border-neutral-200 bg-white"
-                >
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setFrameworkMenuOpen((prev) => ({
-                        ...prev,
-                        [vendor]: !prev[vendor],
-                      }))
-                    }
-                    className="flex w-full items-center justify-between px-3 py-2 text-left text-xs font-semibold text-text hover:bg-neutral-100"
-                  >
-                    <span>{vendor}</span>
-                    <span
-                      className={`transition-transform ${
-                        frameworkMenuOpen[vendor] ? "rotate-180" : ""
-                      }`}
-                    >
-                      <IconChevronDown />
-                    </span>
-                  </button>
-                  {frameworkMenuOpen[vendor] && (
-                    <ul className="border-t border-neutral-200 bg-neutral-50 px-3 py-2 text-xs text-text-muted">
-                      {frameworks.map((f) => (
-                        <li key={f.id} className="py-1">
+                <div key={vendor} className="rounded-lg border border-neutral-200 bg-white">
+                  <p className="border-b border-neutral-200 px-3 py-2 text-xs font-semibold text-text">
+                    {vendor}
+                  </p>
+                  <ul className="px-1 py-1">
+                    {frameworks.map((f) => (
+                      <li key={f.id}>
+                        <Link
+                          href={`/?frameworkId=${encodeURIComponent(f.id)}`}
+                          className="block rounded-md px-2 py-1.5 text-xs text-text hover:bg-neutral-100"
+                        >
                           {f.name}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               ))}
             </div>
