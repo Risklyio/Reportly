@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import type { AssessmentListItem } from "@/lib/types";
 
 function formatOptionLabel(a: AssessmentListItem): string {
-  return `${a.clientName} — ${a.appName} (${a.assessmentDate}${a.dueDate ? `, due ${a.dueDate}` : ""})`;
+  return `${a.clientName} — ${a.appName} (assessment: ${a.assessmentDate}${a.dueDate ? `, due: ${a.dueDate}` : ""})`;
 }
 
 function AssessmentSelect({
@@ -146,8 +146,8 @@ function AssessmentGroupList({
                   <span className="font-medium text-text">{a.clientName}</span>
                   <span className="text-text-muted">
                     {" "}
-                    · {a.appName} · {a.assessmentDate}
-                    {a.dueDate ? ` · Due ${a.dueDate}` : ""}
+                    · {a.appName} · Assessment date: {a.assessmentDate}
+                    {a.dueDate ? ` · Report due date: ${a.dueDate}` : ""}
                   </span>
                 </Link>
                 <div className="flex items-center gap-2">
@@ -197,9 +197,19 @@ function AssessmentGroupList({
                       Cancel
                     </button>
                   </div>
-                  <div className="rounded-lg border border-red-200 bg-red-50 p-2">
-                    <p className="text-xs text-red-700">Type <code>DELETE</code> to enable delete.</p>
-                    <input className="input mt-2" value={deleteConfirm} onChange={(e)=>setDeleteConfirm(e.target.value)} placeholder="DELETE" />
+                  <details className="rounded-lg border border-red-200 bg-red-50 p-2">
+                    <summary className="cursor-pointer text-xs font-medium text-red-800">
+                      Danger zone
+                    </summary>
+                    <p className="mt-2 text-xs text-red-700">
+                      Type <code>DELETE</code> to enable delete.
+                    </p>
+                    <input
+                      className="input mt-2"
+                      value={deleteConfirm}
+                      onChange={(e)=>setDeleteConfirm(e.target.value)}
+                      placeholder="DELETE"
+                    />
                     <button
                       type="button"
                       className="mt-2 rounded-lg bg-red-600 px-3 py-2 text-xs font-medium text-white disabled:opacity-50"
@@ -208,7 +218,7 @@ function AssessmentGroupList({
                     >
                       {deleting ? "Deleting…" : "Delete assessment"}
                     </button>
-                  </div>
+                  </details>
                   {error && <p className="text-xs text-red-600">{error}</p>}
                 </div>
               )}

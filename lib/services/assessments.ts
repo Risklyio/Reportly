@@ -26,6 +26,11 @@ import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { FRAMEWORK_ID } from "@/lib/db/seed-data";
 import { ensureDueDateColumn } from "@/lib/db/migrate-supabase";
 
+function isDueDateSchemaCacheError(error: unknown): boolean {
+  const msg = error instanceof Error ? error.message : String(error);
+  return /due_date/i.test(msg) && /schema cache/i.test(msg);
+}
+
 function now() {
   return new Date().toISOString();
 }
@@ -126,10 +131,20 @@ export async function listAssessments(): Promise<AssessmentMetadata[]> {
   await ensureDueDateColumn();
   if (isSupabaseConfigured()) {
     const sb = getSupabaseAdmin();
-    const { data, error } = await sb
+    let data: any[] | null = null;
+    let error: { message: string } | null = null;
+    ({ data, error } = await sb
       .from("assessments")
       .select("*")
-      .order("updated_at", { ascending: false });
+      .order("updated_at", { ascending: false }));
+    if (error && isDueDateSchemaCacheError(error.message)) {
+      ({ data, error } = await sb
+        .from("assessments")
+        .select(
+          "id,framework_id,client_name,app_name,assessment_date,assessor_name,scope_notes,status,created_at,updated_at"
+        )
+        .order("updated_at", { ascending: false }));
+    }
     if (error) throw new Error(error.message);
     return (data ?? []).map(mapAssessmentRow);
   }
@@ -164,11 +179,22 @@ export async function getAssessment(
   await ensureDueDateColumn();
   if (isSupabaseConfigured()) {
     const sb = getSupabaseAdmin();
-    const { data, error } = await sb
+    let data: any = null;
+    let error: { message: string } | null = null;
+    ({ data, error } = await sb
       .from("assessments")
       .select("*")
       .eq("id", id)
-      .maybeSingle();
+      .maybeSingle());
+    if (error && isDueDateSchemaCacheError(error.message)) {
+      ({ data, error } = await sb
+        .from("assessments")
+        .select(
+          "id,framework_id,client_name,app_name,assessment_date,assessor_name,scope_notes,status,created_at,updated_at"
+        )
+        .eq("id", id)
+        .maybeSingle());
+    }
     if (error) throw new Error(error.message);
     return data ? mapAssessmentRow(data) : null;
   }
@@ -215,7 +241,8 @@ export async function createAssessment(input: {
 
   if (isSupabaseConfigured()) {
     const sb = getSupabaseAdmin();
-    const { error: aErr } = await sb.from("assessments").insert({
+    let aErr: { message: string } | null = null;
+    ({ error: aErr } = await sb.from("assessments").insert({
       id,
       framework_id: frameworkId,
       client_name: input.clientName,
@@ -227,7 +254,21 @@ export async function createAssessment(input: {
       status: "draft",
       created_at: ts,
       updated_at: ts,
-    });
+    }));
+    if (aErr && isDueDateSchemaCacheError(aErr.message)) {
+      ({ error: aErr } = await sb.from("assessments").insert({
+        id,
+        framework_id: frameworkId,
+        client_name: input.clientName,
+        app_name: input.appName,
+        assessment_date: input.assessmentDate,
+        assessor_name: input.assessorName ?? "",
+        scope_notes: input.scopeNotes ?? "",
+        status: "draft",
+        created_at: ts,
+        updated_at: ts,
+      }));
+    }
     if (aErr) throw new Error(aErr.message);
 
     const controlRows = frameworkControls.map((c) => ({
@@ -312,7 +353,12 @@ export async function updateAssessment(
     if (patch.assessorName !== undefined) row.assessor_name = patch.assessorName;
     if (patch.scopeNotes !== undefined) row.scope_notes = patch.scopeNotes;
     if (patch.status !== undefined) row.status = patch.status;
-    const { error } = await sb.from("assessments").update(row).eq("id", id);
+    let error: { message: string } | null = null;
+    ({ error } = await sb.from("assessments").update(row).eq("id", id));
+    if (error && isDueDateSchemaCacheError(error.message)) {
+      const { due_date: _skipDueDate, ...fallback } = row;
+      ({ error } = await sb.from("assessments").update(fallback).eq("id", id));
+    }
     if (error) throw new Error(error.message);
     return getAssessment(id);
   }
