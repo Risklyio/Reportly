@@ -157,7 +157,7 @@ export const FRAMEWORKS: FrameworkDefinition[] = [
   },
   {
     id: CEPLUS_FRAMEWORK_ID,
-    vendor: "NCSC",
+    vendor: "IASME",
     name: "Cyber Essentials Plus v3.2",
     description:
       "NCSC Cyber Essentials Plus technical test specification v3.2 aligned controls.",

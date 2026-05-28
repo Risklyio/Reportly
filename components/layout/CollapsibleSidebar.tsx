@@ -10,8 +10,6 @@ import {
 } from "@/lib/controls/catalog";
 import type { DomainId } from "@/lib/types";
 
-const FRAMEWORK_NAME = "M365 Application Compliance Program";
-
 /* ------------------------------------------------------------------ */
 /*  SVG Icons – 24×24 stroke-based for crisp rendering at all sizes    */
 /*  All icons use #060606 to match the site's deep black               */
@@ -348,8 +346,10 @@ function ReportDropdown({
 
 export function CollapsibleSidebar() {
   const [collapsed, setCollapsed] = useState(false);
-  const [frameworkName, setFrameworkName] = useState(FRAMEWORK_NAME);
   const [frameworkDomains, setFrameworkDomains] = useState(DOMAINS);
+  const [frameworkMenuOpen, setFrameworkMenuOpen] = useState<Record<string, boolean>>(
+    {}
+  );
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeDomain =
@@ -378,7 +378,6 @@ export function CollapsibleSidebar() {
         if (!fwId) return;
         const fw = FRAMEWORKS.find((f) => f.id === fwId);
         if (fw) {
-          setFrameworkName(fw.name);
           setFrameworkDomains(getDomainsForFramework(fw.id));
         }
       } catch {
@@ -393,6 +392,15 @@ export function CollapsibleSidebar() {
   }
 
   const width = collapsed ? "w-14" : "w-64";
+  const frameworksByVendor = FRAMEWORKS.reduce<Record<string, { id: string; name: string }[]>>(
+    (acc, fw) => {
+      const list = acc[fw.vendor] ?? [];
+      list.push({ id: fw.id, name: fw.name });
+      acc[fw.vendor] = list;
+      return acc;
+    },
+    {}
+  );
 
   /* ---- Non-assessment pages (idle sidebar) ---- */
   if (!isAssessment) {
@@ -404,11 +412,45 @@ export function CollapsibleSidebar() {
         {!collapsed && (
           <div className="flex-1 overflow-y-auto px-3 py-4">
             <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-text-muted">
-              Framework
+              Supported frameworks
             </p>
-            <p className="rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-xs text-text">
-              {frameworkName}
-            </p>
+            <div className="space-y-1">
+              {Object.entries(frameworksByVendor).map(([vendor, frameworks]) => (
+                <div
+                  key={vendor}
+                  className="overflow-hidden rounded-lg border border-neutral-200 bg-white"
+                >
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFrameworkMenuOpen((prev) => ({
+                        ...prev,
+                        [vendor]: !prev[vendor],
+                      }))
+                    }
+                    className="flex w-full items-center justify-between px-3 py-2 text-left text-xs font-semibold text-text hover:bg-neutral-100"
+                  >
+                    <span>{vendor}</span>
+                    <span
+                      className={`transition-transform ${
+                        frameworkMenuOpen[vendor] ? "rotate-180" : ""
+                      }`}
+                    >
+                      <IconChevronDown />
+                    </span>
+                  </button>
+                  {frameworkMenuOpen[vendor] && (
+                    <ul className="border-t border-neutral-200 bg-neutral-50 px-3 py-2 text-xs text-text-muted">
+                      {frameworks.map((f) => (
+                        <li key={f.id} className="py-1">
+                          {f.name}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
             <p className="mt-4 px-3 text-xs text-text-muted">
               Start or open an assessment to navigate domains and filters.
             </p>
