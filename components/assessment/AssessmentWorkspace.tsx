@@ -213,7 +213,7 @@ export function AssessmentWorkspace({
 
 
   return (
-    <div className="px-4 py-8 lg:px-10 lg:py-10 max-w-7xl mx-auto">
+    <div className="px-4 py-8 lg:pl-6 lg:pr-8 lg:py-10">
       <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6 rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-6 border border-primary/10">
         <div>
           <div className="flex items-center gap-3 mb-2">

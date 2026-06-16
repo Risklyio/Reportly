@@ -20,15 +20,15 @@
 
   --border: #ebebeb;
 
-  --primary: #060606;
+  --primary: #007b8b;
 
-  --primary-hover: #1a1a1a;
+  --primary-hover: #00616e;
 
-  --primary-foreground: #fcfcfc;
+  --primary-foreground: #ffffff;
 
-  --primary-ring: rgba(6, 6, 6, 0.25);
+  --primary-ring: rgba(0, 123, 139, 0.3);
 
-  --primary-border-soft: rgba(6, 6, 6, 0.3);
+  --primary-border-soft: rgba(0, 123, 139, 0.35);
 
   --text: #060606;
 
@@ -54,15 +54,15 @@
 
   --border: #3a3a3c;
 
-  --primary: #f4f4f5;
+  --primary: #14a4b6;
 
-  --primary-hover: #e4e4e7;
+  --primary-hover: #1bbacf;
 
-  --primary-foreground: #242426;
+  --primary-foreground: #ffffff;
 
-  --primary-ring: rgba(244, 244, 245, 0.25);
+  --primary-ring: rgba(20, 164, 182, 0.35);
 
-  --primary-border-soft: rgba(244, 244, 245, 0.3);
+  --primary-border-soft: rgba(20, 164, 182, 0.4);
 
   --text: #f4f4f5;
 

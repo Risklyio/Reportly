@@ -171,7 +171,7 @@ function SidebarItem({
         href={href}
         className={`group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition ${
           active
-            ? "bg-muted font-semibold text-text"
+            ? "bg-primary/10 font-semibold text-primary ring-1 ring-inset ring-primary/20"
             : "text-text hover:bg-muted"
         } ${collapsed ? "justify-center" : ""}`}
         title={collapsed ? label : undefined}
