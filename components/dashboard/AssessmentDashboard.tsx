@@ -258,7 +258,7 @@ export function AssessmentDashboard({
         return (
           <section
             key={group.frameworkId}
-            className="space-y-4 rounded-xl border border-border bg-white p-4"
+            className="space-y-4 rounded-xl border border-border bg-surface p-4"
           >
             <div>
               <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">

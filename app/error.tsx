@@ -9,7 +9,7 @@ export default function Error({
 }) {
   return (
     <div className="mx-auto max-w-lg px-4 py-16">
-      <div className="card border-red-200 bg-red-50">
+      <div className="card border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/40">
         <h1 className="text-lg font-bold text-text">Something went wrong</h1>
         <p className="mt-2 text-sm text-text-muted break-words">
           {error.message}

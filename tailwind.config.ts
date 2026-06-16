@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,33 +10,34 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        topbar: "#f7f7f7",
-        sidebar: "#f7f7f7",
-        app: "#fcfcfc",
+        topbar: "var(--topbar)",
+        sidebar: "var(--sidebar)",
+        app: "var(--app)",
         primary: {
-          DEFAULT: "#060606",
-          hover: "#1a1a1a",
-          foreground: "#fcfcfc",
+          DEFAULT: "var(--primary)",
+          hover: "var(--primary-hover)",
+          foreground: "var(--primary-foreground)",
         },
-        accent: "#060606",
-        surface: "#ffffff",
-        muted: "#f7f7f7",
-        border: "#f7f7f7",
+        accent: "var(--primary)",
+        surface: "var(--surface)",
+        muted: "var(--muted)",
+        border: "var(--border)",
         text: {
-          DEFAULT: "#060606",
-          muted: "#6b7280",
+          DEFAULT: "var(--text)",
+          muted: "var(--text-muted)",
         },
         "on-dark": {
-          DEFAULT: "#060606",
-          muted: "#6b7280",
+          DEFAULT: "var(--text)",
+          muted: "var(--text-muted)",
         },
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
       boxShadow: {
-        card: "0 1px 3px 0 rgb(6 6 6 / 0.04), 0 1px 2px -1px rgb(6 6 6 / 0.03)",
-        elevated: "0 4px 6px -1px rgb(6 6 6 / 0.06), 0 2px 4px -2px rgb(6 6 6 / 0.04)",
+        card: "var(--shadow-card)",
+        elevated:
+          "0 4px 6px -1px rgb(6 6 6 / 0.06), 0 2px 4px -2px rgb(6 6 6 / 0.04)",
       },
     },
   },

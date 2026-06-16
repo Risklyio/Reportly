@@ -40,7 +40,7 @@ export function SetupRequired() {
             <p className="mt-1 text-text-muted">
               Supabase → <strong>SQL Editor</strong> → New query → paste the
               contents of{" "}
-              <code className="rounded bg-white px-1 text-xs">
+              <code className="rounded bg-surface px-1 text-xs">
                 supabase/schema.sql
               </code>{" "}
               from your GitHub repo → <strong>Run</strong>.
@@ -53,7 +53,7 @@ export function SetupRequired() {
             </h2>
             <p className="mt-1 text-text-muted">
               Supabase → <strong>Storage</strong> → New bucket → name:{" "}
-              <code className="rounded bg-white px-1 text-xs">
+              <code className="rounded bg-surface px-1 text-xs">
                 reportly-templates
               </code>{" "}
               (private is fine).
@@ -71,14 +71,14 @@ export function SetupRequired() {
             </p>
             <ul className="mt-2 space-y-2 font-mono text-xs">
               <li
-                className={`rounded border px-2 py-1 ${hasUrl ? "border-green-300 bg-green-50" : "border-amber-300 bg-white"}`}
+                className={`rounded border px-2 py-1 ${hasUrl ? "border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-950/40" : "border-amber-300 bg-surface"}`}
               >
                 NEXT_PUBLIC_SUPABASE_URL — Supabase → Settings → API → Project
                 URL
                 {hasUrl ? " ✓ detected" : " ✗ missing"}
               </li>
               <li
-                className={`rounded border px-2 py-1 ${missing.includes("SUPABASE_SERVICE_ROLE_KEY") ? "border-amber-300 bg-white" : "border-green-300 bg-green-50"}`}
+                className={`rounded border px-2 py-1 ${missing.includes("SUPABASE_SERVICE_ROLE_KEY") ? "border-amber-300 bg-surface" : "border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-950/40"}`}
               >
                 SUPABASE_SERVICE_ROLE_KEY — Supabase → Settings → API →{" "}
                 <strong>service_role</strong> (secret, not anon)
@@ -86,7 +86,7 @@ export function SetupRequired() {
                   ? " ✗ missing (most common)"
                   : " ✓ detected"}
               </li>
-              <li className="rounded border border-border bg-white px-2 py-1">
+              <li className="rounded border border-border bg-surface px-2 py-1">
                 NEXT_PUBLIC_SUPABASE_ANON_KEY — optional but recommended (anon
                 public key)
               </li>
@@ -106,7 +106,7 @@ export function SetupRequired() {
             </p>
           </div>
 
-          <div className="rounded-lg border border-primary/30 bg-white p-3">
+          <div className="rounded-lg border border-primary/30 bg-surface p-3">
             <h2 className="font-semibold text-text">Automated setup</h2>
             <p className="mt-1 text-xs text-text-muted">
               On your PC: copy keys to <code>.env.local</code> and run{" "}

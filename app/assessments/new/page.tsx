@@ -42,7 +42,7 @@ export default function NewAssessmentPage() {
         Select a vendor and framework, then start your control review.
       </p>
 
-      <div className="card mt-4 border-neutral-200 bg-muted p-4 text-sm">
+      <div className="card mt-4 border-border bg-muted p-4 text-sm">
         <p className="font-medium text-text">Report template (optional)</p>
         <p className="mt-1 text-text-muted">
           Upload your Word report template before or after starting the review.

@@ -23,18 +23,19 @@ function outcomeBadgeClass(outcome: ControlOutcome): string {
     "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold leading-none";
   switch (outcome) {
     case "in_place":
-      return `${base} border-green-700/25 bg-green-100 text-green-800`;
+      return `${base} border-green-700/25 bg-green-100 text-green-800 dark:border-green-500/30 dark:bg-green-950/40 dark:text-green-200`;
     case "not_in_place":
-      return `${base} border-red-700/20 bg-red-100 text-red-800`;
+      return `${base} border-red-700/20 bg-red-100 text-red-800 dark:border-red-500/30 dark:bg-red-950/40 dark:text-red-200`;
     case "partially_in_place":
-      return `${base} border-amber-700/25 bg-amber-100 text-amber-900`;
+      return `${base} border-amber-700/25 bg-amber-100 text-amber-900 dark:border-amber-500/30 dark:bg-amber-950/40 dark:text-amber-200`;
     case "not_applicable":
-      return `${base} border-slate-400/40 bg-slate-200 text-slate-700`;
+      return `${base} border-slate-400/40 bg-slate-200 text-slate-700 dark:border-slate-500/40 dark:bg-slate-800 dark:text-slate-200`;
     case "not_tested":
-      return `${base} border-violet-700/25 bg-violet-100 text-violet-900`;
+      return `${base} border-violet-700/25 bg-violet-100 text-violet-900 dark:border-violet-500/30 dark:bg-violet-950/40 dark:text-violet-200`;
     case "in_place_compensating":
-      return `${base} border-teal-700/25 bg-teal-100 text-teal-900`;
-    case "pending":      return `${base} border-slate-500/45 bg-blue-50 text-blue-900`;
+      return `${base} border-teal-700/25 bg-teal-100 text-teal-900 dark:border-teal-500/30 dark:bg-teal-950/40 dark:text-teal-200`;
+    case "pending":
+      return `${base} border-slate-500/45 bg-blue-50 text-blue-900 dark:border-blue-500/30 dark:bg-blue-950/40 dark:text-blue-200`;
     default:
       return `${base} border-border bg-muted text-text-muted`;
   }
@@ -43,7 +44,7 @@ function outcomeBadgeClass(outcome: ControlOutcome): string {
 function InPlaceShieldIcon() {
   return (
     <svg
-      className="h-3.5 w-3.5 shrink-0 text-green-700"
+      className="h-3.5 w-3.5 shrink-0 text-green-700 dark:text-green-300"
       viewBox="0 0 20 20"
       fill="currentColor"
       aria-hidden

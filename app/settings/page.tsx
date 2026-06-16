@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { ALL_CONTROLS } from "@/lib/controls/catalog";
 
 interface TemplateRow {
@@ -153,6 +154,17 @@ export default function SettingsPage() {
       <p className="mt-1 text-sm text-text-muted">
         Word templates and custom corrective-action snippets
       </p>
+
+      <section className="card mt-8">
+        <h2 className="text-lg font-semibold text-text">Appearance</h2>
+        <p className="mt-1 text-sm text-text-muted">
+          Switch between light and dark mode. Dark mode uses background{" "}
+          <code className="rounded bg-muted px-1">#242426</code>.
+        </p>
+        <div className="mt-4">
+          <ThemeToggle />
+        </div>
+      </section>
 
       <section id="report-templates" className="card mt-8 scroll-mt-20">
         <h2 className="text-lg font-semibold text-text">Report templates</h2>

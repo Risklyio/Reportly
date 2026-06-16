@@ -12,15 +12,13 @@ import type { DomainId } from "@/lib/types";
 
 /* ------------------------------------------------------------------ */
 /*  SVG Icons – 24×24 stroke-based for crisp rendering at all sizes    */
-/*  All icons use #060606 to match the site's deep black               */
 /* ------------------------------------------------------------------ */
 
-const IC = "h-[22px] w-[22px] shrink-0";
-const STROKE_COLOR = "#060606";
+const IC = "h-[22px] w-[22px] shrink-0 text-text";
 
 function IconShield() {
   return (
-    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 2l8 4v6c0 5.25-3.4 9.74-8 11-4.6-1.26-8-5.75-8-11V6l8-4z" />
     </svg>
   );
@@ -28,7 +26,7 @@ function IconShield() {
 
 function IconCheckCircle() {
   return (
-    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="10" />
       <path d="M9 12l2 2 4-4" />
     </svg>
@@ -37,7 +35,7 @@ function IconCheckCircle() {
 
 function IconDatabase() {
   return (
-    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <ellipse cx="12" cy="5" rx="9" ry="3" />
       <path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5" />
       <path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3" />
@@ -47,7 +45,7 @@ function IconDatabase() {
 
 function IconList() {
   return (
-    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <line x1="8" y1="6" x2="21" y2="6" />
       <line x1="8" y1="12" x2="21" y2="12" />
       <line x1="8" y1="18" x2="21" y2="18" />
@@ -60,7 +58,7 @@ function IconList() {
 
 function IconEyeOff() {
   return (
-    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94" />
       <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19" />
       <path d="M14.12 14.12a3 3 0 11-4.24-4.24" />
@@ -71,7 +69,7 @@ function IconEyeOff() {
 
 function IconAlertTriangle() {
   return (
-    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
       <line x1="12" y1="9" x2="12" y2="13" />
       <line x1="12" y1="17" x2="12.01" y2="17" />
@@ -81,7 +79,7 @@ function IconAlertTriangle() {
 
 function IconXOctagon() {
   return (
-    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2" />
       <line x1="15" y1="9" x2="9" y2="15" />
       <line x1="9" y1="9" x2="15" y2="15" />
@@ -91,7 +89,7 @@ function IconXOctagon() {
 
 function IconMenu() {
   return (
-    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <line x1="3" y1="6" x2="21" y2="6" />
       <line x1="3" y1="12" x2="21" y2="12" />
       <line x1="3" y1="18" x2="21" y2="18" />
@@ -101,7 +99,7 @@ function IconMenu() {
 
 function IconChevronLeft() {
   return (
-    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="15 18 9 12 15 6" />
     </svg>
   );
@@ -109,7 +107,7 @@ function IconChevronLeft() {
 
 function IconFileText() {
   return (
-    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
       <polyline points="14 2 14 8 20 8" />
       <line x1="16" y1="13" x2="8" y2="13" />
@@ -121,7 +119,7 @@ function IconFileText() {
 
 function IconChevronDown() {
   return (
-    <svg className="h-4 w-4 shrink-0 transition-transform" viewBox="0 0 24 24" fill="none" stroke={STROKE_COLOR} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className="h-4 w-4 shrink-0 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="6 9 12 15 18 9" />
     </svg>
   );
@@ -173,8 +171,8 @@ function SidebarItem({
         href={href}
         className={`group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition ${
           active
-            ? "bg-neutral-200/80 font-semibold text-text"
-            : "text-text hover:bg-neutral-200/50"
+            ? "bg-muted font-semibold text-text"
+            : "text-text hover:bg-muted"
         } ${collapsed ? "justify-center" : ""}`}
         title={collapsed ? label : undefined}
       >
@@ -258,7 +256,7 @@ function ReportDropdown({
         <button
           type="button"
           onClick={() => setOpen(!open)}
-          className="group flex w-full items-center justify-center rounded-lg px-3 py-2 text-sm text-text transition hover:bg-neutral-200/50"
+          className="group flex w-full items-center justify-center rounded-lg px-3 py-2 text-sm text-text transition hover:bg-muted"
           title="Generate Report"
         >
           <span className="flex items-center justify-center">
@@ -270,7 +268,7 @@ function ReportDropdown({
         </button>
         {open && (
           <div
-            className="absolute left-full top-0 z-50 ml-2 w-44 rounded-lg border border-neutral-200 bg-white py-1 shadow-lg"
+            className="absolute left-full top-0 z-50 ml-2 w-44 rounded-lg border border-border bg-surface py-1 shadow-lg"
           >
             {EXPORT_FORMATS.map((f) => (
               <button
@@ -278,10 +276,10 @@ function ReportDropdown({
                 type="button"
                 onClick={() => handleExport(f.id)}
                 disabled={downloading !== null}
-                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-text transition hover:bg-neutral-100 disabled:opacity-50"
+                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-text transition hover:bg-muted disabled:opacity-50"
               >
                 {downloading === f.id ? (
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-600" />
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-neutral-600" />
                 ) : (
                   <IconFileText />
                 )}
@@ -303,7 +301,7 @@ function ReportDropdown({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-text transition hover:bg-neutral-200/50"
+        className="group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-text transition hover:bg-muted"
       >
         <span className="flex items-center justify-center">
           <IconFileText />
@@ -321,10 +319,10 @@ function ReportDropdown({
                 type="button"
                 onClick={() => handleExport(f.id)}
                 disabled={downloading !== null}
-                className="flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-left text-sm text-text transition hover:bg-neutral-200/50 disabled:opacity-50"
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-left text-sm text-text transition hover:bg-muted disabled:opacity-50"
               >
                 {downloading === f.id && (
-                  <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-600" />
+                  <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-border border-t-neutral-600" />
                 )}
                 {downloading === f.id && f.id === "html"
                   ? "HTML Report (reviewing...)"
@@ -406,7 +404,7 @@ export function CollapsibleSidebar() {
   if (!isAssessment) {
     return (
       <aside
-        className={`${width} hidden shrink-0 flex-col border-r border-neutral-200 bg-sidebar transition-all duration-200 lg:flex`}
+        className={`${width} hidden shrink-0 flex-col border-r border-border bg-sidebar transition-all duration-200 lg:flex`}
       >
         <ToggleButton collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
         {!collapsed && (
@@ -418,7 +416,7 @@ export function CollapsibleSidebar() {
               {Object.entries(frameworksByVendor).map(([vendor, frameworks]) => (
                 <div
                   key={vendor}
-                  className="overflow-hidden rounded-lg border border-neutral-200 bg-white"
+                  className="overflow-hidden rounded-lg border border-border bg-surface"
                 >
                   <button
                     type="button"
@@ -428,7 +426,7 @@ export function CollapsibleSidebar() {
                         [vendor]: !prev[vendor],
                       }))
                     }
-                    className="flex w-full items-center justify-between px-3 py-2 text-left text-xs font-semibold text-text hover:bg-neutral-100"
+                    className="flex w-full items-center justify-between px-3 py-2 text-left text-xs font-semibold text-text hover:bg-muted"
                   >
                     <span>{vendor}</span>
                     <span
@@ -440,12 +438,12 @@ export function CollapsibleSidebar() {
                     </span>
                   </button>
                   {frameworkMenuOpen[vendor] && (
-                    <ul className="border-t border-neutral-200 bg-neutral-50 px-1 py-1">
+                    <ul className="border-t border-border bg-muted px-1 py-1">
                       {frameworks.map((f) => (
                         <li key={f.id}>
                           <Link
                             href={`/?frameworkId=${encodeURIComponent(f.id)}`}
-                            className="block rounded-md px-2 py-1.5 text-xs text-text hover:bg-neutral-100"
+                            className="block rounded-md px-2 py-1.5 text-xs text-text hover:bg-muted"
                           >
                             {f.name}
                           </Link>
@@ -468,7 +466,7 @@ export function CollapsibleSidebar() {
   /* ---- Assessment pages ---- */
   return (
     <aside
-      className={`${width} hidden shrink-0 flex-col border-r border-neutral-200 bg-sidebar transition-all duration-200 lg:flex`}
+      className={`${width} hidden shrink-0 flex-col border-r border-border bg-sidebar transition-all duration-200 lg:flex`}
     >
       <ToggleButton collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
 
@@ -479,7 +477,7 @@ export function CollapsibleSidebar() {
             Domains
           </p>
         )}
-        {collapsed && <div className="mb-1 border-b border-neutral-200 pb-1" />}
+        {collapsed && <div className="mb-1 border-b border-border pb-1" />}
         <ul className="space-y-0.5">
           {frameworkDomains.map((d) => {
             const Icon = DOMAIN_ICONS[d.id] ?? IconShield;
@@ -496,7 +494,7 @@ export function CollapsibleSidebar() {
           })}
         </ul>
 
-        <div className="my-3 border-b border-neutral-200" />
+        <div className="my-3 border-b border-border" />
 
         {/* Filters */}
         {!collapsed && (
@@ -517,7 +515,7 @@ export function CollapsibleSidebar() {
           ))}
         </ul>
 
-        <div className="my-3 border-b border-neutral-200" />
+        <div className="my-3 border-b border-border" />
 
         {/* Report */}
         {!collapsed && (
@@ -548,7 +546,7 @@ function ToggleButton({
     <button
       type="button"
       onClick={onToggle}
-      className="group relative flex h-11 items-center justify-center border-b border-neutral-200 text-text-muted transition hover:bg-neutral-200/50 hover:text-text"
+      className="group relative flex h-11 items-center justify-center border-b border-border text-text-muted transition hover:bg-muted hover:text-text"
       aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
     >
       {collapsed ? (
