@@ -17,6 +17,8 @@ const config: Config = {
           DEFAULT: "var(--primary)",
           hover: "var(--primary-hover)",
           foreground: "var(--primary-foreground)",
+          ring: "var(--primary-ring)",
+          "border-soft": "var(--primary-border-soft)",
         },
         accent: "var(--primary)",
         surface: "var(--surface)",

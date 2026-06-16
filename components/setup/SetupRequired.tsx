@@ -106,7 +106,7 @@ export function SetupRequired() {
             </p>
           </div>
 
-          <div className="rounded-lg border border-primary/30 bg-surface p-3">
+          <div className="rounded-lg border border-primary-border-soft bg-surface p-3">
             <h2 className="font-semibold text-text">Automated setup</h2>
             <p className="mt-1 text-xs text-text-muted">
               On your PC: copy keys to <code>.env.local</code> and run{" "}
