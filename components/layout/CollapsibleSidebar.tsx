@@ -18,27 +18,27 @@ const IC = "h-[22px] w-[22px] shrink-0 text-text";
 
 function IconShield() {
   return (
-    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2l8 4v6c0 5.25-3.4 9.74-8 11-4.6-1.26-8-5.75-8-11V6l8-4z" />
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
     </svg>
   );
 }
 
 function IconCheckCircle() {
   return (
-    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <path d="M9 12l2 2 4-4" />
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+      <polyline points="22 4 12 14.01 9 11.01" />
     </svg>
   );
 }
 
 function IconDatabase() {
   return (
-    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={IC} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <ellipse cx="12" cy="5" rx="9" ry="3" />
-      <path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5" />
-      <path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3" />
+      <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+      <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
     </svg>
   );
 }
@@ -399,6 +399,17 @@ export function CollapsibleSidebar() {
     },
     {}
   );
+
+  useEffect(() => {
+    // Open all vendors by default on non-assessment pages
+    if (!isAssessment) {
+      const initialState = Object.keys(frameworksByVendor).reduce((acc, vendor) => {
+        acc[vendor] = true;
+        return acc;
+      }, {} as Record<string, boolean>);
+      setFrameworkMenuOpen(initialState);
+    }
+  }, [isAssessment]);
 
   /* ---- Non-assessment pages (idle sidebar) ---- */
   if (!isAssessment) {

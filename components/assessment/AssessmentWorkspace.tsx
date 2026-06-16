@@ -213,36 +213,41 @@ export function AssessmentWorkspace({
 
 
   return (
-    <div className="px-4 py-6 lg:pl-6 lg:pr-8">
-      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+    <div className="px-4 py-8 lg:px-10 lg:py-10 max-w-7xl mx-auto">
+      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6 rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-6 border border-primary/10">
         <div>
-          <h1 className="text-2xl font-bold text-text">{assessment.clientName}</h1>
-          <p className="text-sm text-text-muted">
-            {assessment.appName} · {assessment.assessmentDate}
+          <div className="flex items-center gap-3 mb-2">
+            <span className="rounded-full bg-primary/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary">
+              {frameworkDomains.find((d) => d.id === domain)?.shortLabel ?? "Workspace"}
+            </span>
+            <span className="text-sm font-medium text-text-muted">
+              {assessment.assessmentDate}
+            </span>
+          </div>
+          <h1 className="text-3xl font-extrabold text-text tracking-tight">{assessment.clientName}</h1>
+          <p className="mt-1 text-lg text-text-muted font-medium">
+            {assessment.appName}
           </p>
-          <p className="mt-1 text-sm font-medium text-text">{domainLabel}</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2" />
-      </div>
-
-      <div className="card mb-6">
-        <p className="text-sm font-medium text-text">Progress</p>
-        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
-          <div
-            className="h-full bg-primary transition-all"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-        <p className="mt-1 text-xs text-text-muted">
-          {progress}% complete (
-          {
-            stateList.filter((s) => {
+        
+        <div className="flex-shrink-0 w-full md:w-64 bg-surface rounded-xl p-4 shadow-sm border border-border">
+          <div className="flex justify-between items-center mb-2">
+            <p className="text-sm font-bold text-text">Progress</p>
+            <p className="text-xs font-semibold text-primary">{progress}%</p>
+          </div>
+          <div className="h-2.5 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full bg-primary transition-all duration-500 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <p className="mt-2 text-xs text-text-muted text-center font-medium">
+            {stateList.filter((s) => {
               const control = frameworkControls.find((c) => c.id === s.controlId);
               return control?.domain !== "ce_sampling" && !!s.outcome;
-            }).length
-          }
-          /{frameworkControls.filter((c) => c.domain !== "ce_sampling").length} controls)
-        </p>
+            }).length} of {frameworkControls.filter((c) => c.domain !== "ce_sampling").length} controls reviewed
+          </p>
+        </div>
       </div>
 
       <MobileAssessmentNav
@@ -250,10 +255,16 @@ export function AssessmentWorkspace({
         frameworkId={assessment.frameworkId}
       />
 
-      <div className="space-y-8">
+      <div className="space-y-10">
         {Array.from(domainControls.entries()).map(([section, controls]) => (
-          <section key={section}>
-            <h2 className="mb-3 text-lg font-semibold text-text">{section}</h2>
+          <section key={section} className="scroll-mt-20">
+            <div className="mb-4 flex items-center gap-3">
+              <h2 className="text-xl font-bold text-text">{section}</h2>
+              <div className="h-px flex-1 bg-border/60"></div>
+              <span className="text-sm font-medium text-text-muted bg-muted px-2 py-0.5 rounded-md">
+                {controls.length} controls
+              </span>
+            </div>
             <div className="space-y-4">
               {controls.map((control) => {
                 const st = states.get(control.id)!;
