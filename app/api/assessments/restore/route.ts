@@ -33,6 +33,8 @@ type RestorePayload = {
     assessorNotes?: string;
     correctiveAction?: string;
     evidenceNotes?: string;
+    pciExpectedTestingDone?: boolean[];
+    pciExpectedTestingComments?: string[];
   }>;
 };
 
@@ -90,6 +92,8 @@ export async function POST(request: Request) {
         assessorNotes: row.assessorNotes ?? "",
         correctiveAction: row.correctiveAction ?? "",
         evidenceNotes: row.evidenceNotes ?? "",
+        pciExpectedTestingDone: row.pciExpectedTestingDone ?? [],
+        pciExpectedTestingComments: row.pciExpectedTestingComments ?? [],
       });
     }
 

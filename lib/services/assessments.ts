@@ -35,6 +35,28 @@ function now() {
   return new Date().toISOString();
 }
 
+function parseBooleanArrayJson(value: unknown): boolean[] {
+  try {
+    const raw = typeof value === "string" ? value : JSON.stringify(value);
+    const parsed = JSON.parse(raw ?? "[]");
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map((x) => !!x);
+  } catch {
+    return [];
+  }
+}
+
+function parseStringArrayJson(value: unknown): string[] {
+  try {
+    const raw = typeof value === "string" ? value : JSON.stringify(value);
+    const parsed = JSON.parse(raw ?? "[]");
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map((x) => String(x));
+  } catch {
+    return [];
+  }
+}
+
 function mapAssessmentRow(row: {
   id: string;
   framework_id?: string;
@@ -398,6 +420,12 @@ export async function getAssessmentControlStates(
       assessorNotes: readAssessorNotes(r),
       correctiveAction: r.corrective_action ?? "",
       evidenceNotes: isSupabaseConfigured() ? "" : (r.evidence_notes ?? ""),
+      pciExpectedTestingDone: parseBooleanArrayJson(
+        (r as any).pci_expected_testing_done ?? "[]"
+      ),
+      pciExpectedTestingComments: parseStringArrayJson(
+        (r as any).pci_expected_testing_comments ?? "[]"
+      ),
       updatedAt: r.updated_at ?? "",
     }));
     await ensureAssessmentControlRows(
@@ -418,6 +446,12 @@ export async function getAssessmentControlStates(
       assessorNotes: readAssessorNotes(r),
       correctiveAction: r.corrective_action ?? "",
       evidenceNotes: isSupabaseConfigured() ? "" : (r.evidence_notes ?? ""),
+      pciExpectedTestingDone: parseBooleanArrayJson(
+        (r as any).pci_expected_testing_done ?? "[]"
+      ),
+      pciExpectedTestingComments: parseStringArrayJson(
+        (r as any).pci_expected_testing_comments ?? "[]"
+      ),
       updatedAt: r.updated_at ?? "",
     }));
   }
@@ -448,6 +482,12 @@ export async function getAssessmentControlStates(
     assessorNotes: r.assessorNotes ?? "",
     correctiveAction: r.correctiveAction,
     evidenceNotes: r.evidenceNotes,
+    pciExpectedTestingDone: parseBooleanArrayJson(
+      (r as any).pciExpectedTestingDone ?? "[]"
+    ),
+    pciExpectedTestingComments: parseStringArrayJson(
+      (r as any).pciExpectedTestingComments ?? "[]"
+    ),
     updatedAt: r.updatedAt,
   }));
 }
@@ -461,6 +501,8 @@ export async function updateAssessmentControl(
     assessorNotes: string;
     correctiveAction: string;
     evidenceNotes: string;
+    pciExpectedTestingDone: boolean[];
+    pciExpectedTestingComments: string[];
   }>
 ): Promise<void> {
   await assertDatabaseReady();
@@ -478,6 +520,12 @@ export async function updateAssessmentControl(
       row.corrective_action = patch.correctiveAction;
     if (patch.evidenceNotes !== undefined && !isSupabaseConfigured())
       row.evidence_notes = patch.evidenceNotes;
+    if (patch.pciExpectedTestingDone !== undefined)
+      row.pci_expected_testing_done = JSON.stringify(patch.pciExpectedTestingDone);
+    if (patch.pciExpectedTestingComments !== undefined)
+      row.pci_expected_testing_comments = JSON.stringify(
+        patch.pciExpectedTestingComments
+      );
 
     const { data: existing } = await sb
       .from("assessment_controls")
@@ -501,6 +549,12 @@ export async function updateAssessmentControl(
         not_in_place_reason: patch.notInPlaceReason ?? "",
         corrective_action: patch.correctiveAction ?? "",
         evidence_notes: patch.assessorNotes ?? "",
+        pci_expected_testing_done: JSON.stringify(
+          patch.pciExpectedTestingDone ?? []
+        ),
+        pci_expected_testing_comments: JSON.stringify(
+          patch.pciExpectedTestingComments ?? []
+        ),
         updated_at: ts,
       });
       if (error) throw new Error(error.message);
@@ -523,8 +577,22 @@ export async function updateAssessmentControl(
     .get();
 
   if (existing) {
+    const setData: any = { ...patch, updatedAt: ts };
+    delete setData.pciExpectedTestingDone;
+    delete setData.pciExpectedTestingComments;
+    if (patch.pciExpectedTestingDone !== undefined) {
+      setData.pciExpectedTestingDone = JSON.stringify(
+        patch.pciExpectedTestingDone
+      );
+    }
+    if (patch.pciExpectedTestingComments !== undefined) {
+      setData.pciExpectedTestingComments = JSON.stringify(
+        patch.pciExpectedTestingComments
+      );
+    }
+
     db.update(assessmentControls)
-      .set({ ...patch, updatedAt: ts })
+      .set(setData)
       .where(
         and(
           eq(assessmentControls.assessmentId, assessmentId),
@@ -542,6 +610,8 @@ export async function updateAssessmentControl(
         assessorNotes: patch.assessorNotes ?? "",
         correctiveAction: patch.correctiveAction ?? "",
         evidenceNotes: patch.evidenceNotes ?? "",
+        pciExpectedTestingDone: JSON.stringify(patch.pciExpectedTestingDone ?? []),
+        pciExpectedTestingComments: JSON.stringify(patch.pciExpectedTestingComments ?? []),
         updatedAt: ts,
       })
       .run();

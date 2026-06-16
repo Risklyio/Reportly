@@ -49,6 +49,8 @@ create table if not exists assessment_controls (
   assessor_notes text not null default '',
   corrective_action text not null default '',
   evidence_notes text not null default '',
+  pci_expected_testing_done text not null default '[]',
+  pci_expected_testing_comments text not null default '[]',
   updated_at timestamptz not null default now(),
   primary key (assessment_id, control_id)
 );

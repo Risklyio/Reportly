@@ -64,6 +64,17 @@ export interface AssessmentControlState {
   assessorNotes: string;
   correctiveAction: string;
   evidenceNotes: string;
+  /**
+   * PCI SAQ-A only:
+   * Per expected-testing item checkboxes for tracking assessor completion.
+   * Stored as arrays aligned by index to the control definition's expectedTesting list.
+   */
+  pciExpectedTestingDone: boolean[];
+  /**
+   * PCI SAQ-A only:
+   * Per expected-testing item notes (free text), aligned by index to the control definition's expectedTesting list.
+   */
+  pciExpectedTestingComments: string[];
   updatedAt: string;
 }
 

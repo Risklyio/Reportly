@@ -39,6 +39,8 @@ function buildStateMap(
         assessorNotes: "",
         correctiveAction: "",
         evidenceNotes: "",
+        pciExpectedTestingDone: [],
+        pciExpectedTestingComments: [],
         updatedAt: new Date().toISOString(),
       }
     );
@@ -140,6 +142,8 @@ export function AssessmentWorkspace({
         notInPlaceReason: string;
         assessorNotes: string;
         correctiveAction: string;
+        pciExpectedTestingDone: boolean[];
+        pciExpectedTestingComments: string[];
       }>
     ) => {
       const res = await fetch(
@@ -258,6 +262,8 @@ export function AssessmentWorkspace({
                     assessorNotes={st.assessorNotes}
                     correctiveAction={st.correctiveAction}
                     outcomeProfile={outcomeProfile}
+                    pciExpectedTestingDone={st.pciExpectedTestingDone}
+                    pciExpectedTestingComments={st.pciExpectedTestingComments}
                     onSave={(patch) => updateControl(control.id, patch)}
                     onSuggest={() =>
                       suggest(control.id, st.notInPlaceReason)

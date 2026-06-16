@@ -45,6 +45,8 @@ export function normalizeControlStates(
       assessorNotes: "",
       correctiveAction: "",
       evidenceNotes: "",
+      pciExpectedTestingDone: [],
+      pciExpectedTestingComments: [],
       updatedAt: now,
     };
   });

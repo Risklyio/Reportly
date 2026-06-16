@@ -72,6 +72,8 @@ type TextPatch = {
   notInPlaceReason?: string;
   assessorNotes?: string;
   correctiveAction?: string;
+  pciExpectedTestingDone?: boolean[];
+  pciExpectedTestingComments?: string[];
 };
 
 export function ControlCard({
@@ -81,6 +83,8 @@ export function ControlCard({
   notInPlaceReason,
   assessorNotes,
   correctiveAction,
+  pciExpectedTestingDone,
+  pciExpectedTestingComments,
   onSave,
   onSuggest,
   onOutcomeChange,
@@ -93,11 +97,15 @@ export function ControlCard({
   notInPlaceReason: string;
   assessorNotes: string;
   correctiveAction: string;
+  pciExpectedTestingDone: boolean[];
+  pciExpectedTestingComments: string[];
   onSave: (patch: {
     outcome?: ControlOutcome;
     notInPlaceReason?: string;
     assessorNotes?: string;
     correctiveAction?: string;
+    pciExpectedTestingDone?: boolean[];
+    pciExpectedTestingComments?: string[];
   }) => Promise<void>;
   onSuggest: () => Promise<{ text: string; links: string[] }>;
   /** When set, outcome buttons call this instead of a single-control save (e.g. pentest bulk Pending). */
@@ -115,6 +123,11 @@ export function ControlCard({
   const [draftReason, setDraftReason] = useState(notInPlaceReason);
   const [draftNotes, setDraftNotes] = useState(assessorNotes);
   const [draftCorrective, setDraftCorrective] = useState(correctiveAction);
+  const [draftExpectedTestingDone, setDraftExpectedTestingDone] = useState(
+    pciExpectedTestingDone
+  );
+  const [draftExpectedTestingComments, setDraftExpectedTestingComments] =
+    useState(pciExpectedTestingComments);
 
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingPatch = useRef<TextPatch | null>(null);
@@ -129,7 +142,24 @@ export function ControlCard({
     setDraftReason(notInPlaceReason);
     setDraftNotes(assessorNotes);
     setDraftCorrective(correctiveAction);
-  }, [control.id, notInPlaceReason, assessorNotes, correctiveAction]);
+    const expected = control.expectedTesting ?? [];
+    setDraftExpectedTestingDone(
+      Array.from({ length: expected.length }, (_, i) => pciExpectedTestingDone[i] ?? false)
+    );
+    setDraftExpectedTestingComments(
+      Array.from(
+        { length: expected.length },
+        (_, i) => pciExpectedTestingComments[i] ?? ""
+      )
+    );
+  }, [
+    control.id,
+    notInPlaceReason,
+    assessorNotes,
+    correctiveAction,
+    pciExpectedTestingDone,
+    pciExpectedTestingComments,
+  ]);
 
   useEffect(() => {
     return () => {
@@ -275,6 +305,7 @@ export function ControlCard({
   }
 
   async function handleComplete() {
+    await flushAutosave();
     if (isSamplingControl) {
       pendingPatch.current = {
         notInPlaceReason: draftReason,
@@ -375,11 +406,55 @@ export function ControlCard({
           <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
             Expected testing (assessor guidance)
           </p>
-          <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text">
-            {control.expectedTesting.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
+          <div className="mt-3 space-y-4">
+            {control.expectedTesting.map((item, idx) => {
+              const checked = draftExpectedTestingDone[idx] ?? false;
+              const comment = draftExpectedTestingComments[idx] ?? "";
+              return (
+                <div
+                  key={`${idx}-${item}`}
+                  className="rounded-lg border border-border/60 bg-surface px-3 py-2"
+                >
+                  <label className="flex items-start gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      className="mt-1 h-4 w-4"
+                      checked={checked}
+                      onChange={(e) => {
+                        const v = e.target.checked;
+                        const next = [...draftExpectedTestingDone];
+                        next[idx] = v;
+                        setDraftExpectedTestingDone(next);
+                        scheduleAutosave({ pciExpectedTestingDone: next });
+                      }}
+                    />
+                    <span className="font-medium">{item}</span>
+                  </label>
+
+                  <div className="mt-2">
+                    <p className="text-xs font-medium text-text-muted">
+                      Notes for this expected testing
+                    </p>
+                    <textarea
+                      className="input mt-1 min-h-[72px]"
+                      rows={3}
+                      value={comment}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        const next = [...draftExpectedTestingComments];
+                        next[idx] = v;
+                        setDraftExpectedTestingComments(next);
+                        scheduleAutosave({
+                          pciExpectedTestingComments: next,
+                        });
+                      }}
+                      placeholder="Evidence details, links, screenshots, interview notes…"
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 

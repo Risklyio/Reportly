@@ -60,6 +60,12 @@ export const assessmentControls = sqliteTable("assessment_controls", {
   assessorNotes: text("assessor_notes").notNull().default(""),
   correctiveAction: text("corrective_action").notNull().default(""),
   evidenceNotes: text("evidence_notes").notNull().default(""),
+  pciExpectedTestingDone: text("pci_expected_testing_done")
+    .notNull()
+    .default("[]"),
+  pciExpectedTestingComments: text("pci_expected_testing_comments")
+    .notNull()
+    .default("[]"),
   updatedAt: text("updated_at").notNull(),
 });
 

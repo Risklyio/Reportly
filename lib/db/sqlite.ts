@@ -76,6 +76,8 @@ function ensureSqliteTables(sqlite: import("better-sqlite3").Database) {
       assessor_notes TEXT NOT NULL DEFAULT '',
       corrective_action TEXT NOT NULL DEFAULT '',
       evidence_notes TEXT NOT NULL DEFAULT '',
+      pci_expected_testing_done TEXT NOT NULL DEFAULT '[]',
+      pci_expected_testing_comments TEXT NOT NULL DEFAULT '[]',
       updated_at TEXT NOT NULL,
       PRIMARY KEY (assessment_id, control_id)
     );
@@ -117,6 +119,16 @@ function ensureSqliteColumnMigrations(sqlite: import("better-sqlite3").Database)
   if (!names.has("assessor_notes")) {
     sqlite.exec(
       `ALTER TABLE assessment_controls ADD COLUMN assessor_notes TEXT NOT NULL DEFAULT ''`
+    );
+  }
+  if (!names.has("pci_expected_testing_done")) {
+    sqlite.exec(
+      `ALTER TABLE assessment_controls ADD COLUMN pci_expected_testing_done TEXT NOT NULL DEFAULT '[]'`
+    );
+  }
+  if (!names.has("pci_expected_testing_comments")) {
+    sqlite.exec(
+      `ALTER TABLE assessment_controls ADD COLUMN pci_expected_testing_comments TEXT NOT NULL DEFAULT '[]'`
     );
   }
 }
