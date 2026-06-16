@@ -6,7 +6,7 @@ import {
   PCI_ROC_FRAMEWORK_ID,
   formatControlRef,
 } from "@/lib/controls/catalog";
-import type { AssessmentControlState, ControlOutcome } from "@/lib/types";
+import type { AssessmentControlState } from "@/lib/types";
 import { getRocTemplatePath } from "./roc-template-path";
 import {
   loadCachedFieldMap,
@@ -79,6 +79,7 @@ export async function renderOfficialRocPdf(
     const ref = control.requirementRef ?? formatControlRef(control);
     const state = stateByControl.get(control.id);
     if (!state?.outcome) continue;
+    const outcome = state.outcome;
 
     const field =
       cachedMap?.get(ref) ??
@@ -88,7 +89,7 @@ export async function renderOfficialRocPdf(
     const page = pages[field.page - 1];
     if (!page) continue;
 
-    const col = ROC_OUTCOME_COLUMN[state.outcome as ControlOutcome];
+    const col = ROC_OUTCOME_COLUMN[outcome];
     if (col != null && field.checkboxes[col] != null) {
       page.drawText("X", {
         x: field.checkboxes[col]! - 3,
