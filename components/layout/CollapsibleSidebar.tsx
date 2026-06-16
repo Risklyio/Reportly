@@ -6,6 +6,7 @@ import { useState, useRef, useEffect, type ReactNode } from "react";
 import {
   DOMAINS,
   FRAMEWORKS,
+  PCI_ROC_FRAMEWORK_ID,
   getDomainsForFramework,
 } from "@/lib/controls/catalog";
 import type { DomainId } from "@/lib/types";
@@ -192,20 +193,34 @@ function SidebarItem({
 /*  Report dropdown                                                    */
 /* ------------------------------------------------------------------ */
 
-const EXPORT_FORMATS = [
+const BASE_EXPORT_FORMATS = [
   { id: "pdf", label: "PDF Report", ext: "pdf" },
   { id: "docx", label: "Word (DOCX)", ext: "docx" },
   { id: "html", label: "HTML Report", ext: "html" },
   { id: "backup", label: "Export backup (.reportly)", ext: "reportly" },
 ] as const;
 
+const ROC_OFFICIAL_EXPORT = {
+  id: "roc",
+  label: "Official PCI DSS ROC (PDF)",
+  ext: "pdf",
+} as const;
+
+function getExportFormats(isRocFramework: boolean) {
+  if (!isRocFramework) return [...BASE_EXPORT_FORMATS];
+  return [ROC_OFFICIAL_EXPORT, ...BASE_EXPORT_FORMATS];
+}
+
 function ReportDropdown({
   assessmentId,
   collapsed,
+  isRocFramework,
 }: {
   assessmentId: string;
   collapsed: boolean;
+  isRocFramework: boolean;
 }) {
+  const exportFormats = getExportFormats(isRocFramework);
   const [open, setOpen] = useState(false);
   const [downloading, setDownloading] = useState<string | null>(null);
   const containerRef = useRef<HTMLLIElement>(null);
@@ -219,6 +234,7 @@ function ReportDropdown({
   }, []);
 
   function exportUrl(format: string) {
+    if (format === "roc") return `/api/assessments/${assessmentId}/export/roc`;
     if (format === "pdf") return `/api/assessments/${assessmentId}/export/pdf`;
     if (format === "html") return `/api/assessments/${assessmentId}/export/html`;
     if (format === "backup")
@@ -231,7 +247,12 @@ function ReportDropdown({
     try {
       const url = exportUrl(format);
       const res = await fetch(url);
-      if (!res.ok) throw new Error("Export failed");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(
+          typeof data.error === "string" ? data.error : "Export failed"
+        );
+      }
       const blob = await res.blob();
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
@@ -242,8 +263,10 @@ function ReportDropdown({
       a.click();
       a.remove();
       URL.revokeObjectURL(a.href);
-    } catch {
-      /* silently fail */
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : "Export failed. Please try again.";
+      window.alert(message);
     } finally {
       setDownloading(null);
       setOpen(false);
@@ -270,7 +293,7 @@ function ReportDropdown({
           <div
             className="absolute left-full top-0 z-50 ml-2 w-44 rounded-lg border border-border bg-surface py-1 shadow-lg"
           >
-            {EXPORT_FORMATS.map((f) => (
+            {exportFormats.map((f) => (
               <button
                 key={f.id}
                 type="button"
@@ -283,7 +306,9 @@ function ReportDropdown({
                 ) : (
                   <IconFileText />
                 )}
-                {downloading === f.id && f.id === "html"
+                {downloading === f.id && f.id === "roc"
+                  ? "Generating official ROC…"
+                  : downloading === f.id && f.id === "html"
                   ? "HTML Report (reviewing...)"
                   : downloading === f.id && f.id === "backup"
                     ? "Export backup (.reportly)..."
@@ -313,7 +338,7 @@ function ReportDropdown({
       </button>
       {open && (
         <ul className="ml-8 mt-0.5 space-y-0.5">
-          {EXPORT_FORMATS.map((f) => (
+          {exportFormats.map((f) => (
             <li key={f.id}>
               <button
                 type="button"
@@ -324,7 +349,9 @@ function ReportDropdown({
                 {downloading === f.id && (
                   <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-border border-t-neutral-600" />
                 )}
-                {downloading === f.id && f.id === "html"
+                {downloading === f.id && f.id === "roc"
+                  ? "Generating official ROC…"
+                  : downloading === f.id && f.id === "html"
                   ? "HTML Report (reviewing...)"
                   : downloading === f.id && f.id === "backup"
                     ? "Export backup (.reportly)..."
@@ -345,6 +372,9 @@ function ReportDropdown({
 export function CollapsibleSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [frameworkDomains, setFrameworkDomains] = useState(DOMAINS);
+  const [assessmentFrameworkId, setAssessmentFrameworkId] = useState<string | null>(
+    null
+  );
   const [frameworkMenuOpen, setFrameworkMenuOpen] = useState<Record<string, boolean>>(
     {}
   );
@@ -374,6 +404,7 @@ export function CollapsibleSidebar() {
         };
         const fwId = data.assessment?.frameworkId;
         if (!fwId) return;
+        setAssessmentFrameworkId(fwId);
         const fw = FRAMEWORKS.find((f) => f.id === fwId);
         if (fw) {
           setFrameworkDomains(getDomainsForFramework(fw.id));
@@ -535,7 +566,11 @@ export function CollapsibleSidebar() {
           </p>
         )}
         <ul className="space-y-0.5">
-          <ReportDropdown assessmentId={assessmentId} collapsed={collapsed} />
+          <ReportDropdown
+            assessmentId={assessmentId}
+            collapsed={collapsed}
+            isRocFramework={assessmentFrameworkId === PCI_ROC_FRAMEWORK_ID}
+          />
         </ul>
       </nav>
     </aside>

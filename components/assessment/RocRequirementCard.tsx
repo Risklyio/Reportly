@@ -177,25 +177,23 @@ export function RocRequirementCard({
             </p>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-text-muted">
-                Assessment findings
-              </label>
-              <RocOutcomeSelect
-                value={outcome}
-                onChange={async (v) => {
-                  if (onOutcomeChange) await onOutcomeChange(v);
-                  else await onSave({ outcome: v });
-                }}
-              />
-            </div>
+          <div className="space-y-3">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+              Assessment findings
+            </h3>
+            <RocOutcomeSelect
+              value={outcome}
+              onChange={async (v) => {
+                if (onOutcomeChange) await onOutcomeChange(v);
+                else await onSave({ outcome: v });
+              }}
+            />
             <div>
               <label
                 htmlFor={`roc-rationale-${control.id}`}
-                className="mb-1 block text-xs font-semibold uppercase tracking-wide text-text-muted"
+                className="sr-only"
               >
-                Finding rationale
+                Assessment findings details
               </label>
               <textarea
                 id={`roc-rationale-${control.id}`}
@@ -246,9 +244,6 @@ export function RocRequirementCard({
                         <Chevron open={procOpen} />
                         <span className="font-mono text-sm font-semibold text-primary">
                           {proc.ref}
-                        </span>
-                        <span className="line-clamp-1 text-sm text-text-muted">
-                          {proc.procedure}
                         </span>
                       </button>
 
