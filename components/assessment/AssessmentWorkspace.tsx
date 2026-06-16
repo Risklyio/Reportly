@@ -8,6 +8,7 @@ import {
   getDomainsForFramework,
   getControlsByDomain,
   getOutcomeProfile,
+  PCI_ROC_FRAMEWORK_ID,
 } from "@/lib/controls/catalog";
 import type {
   AssessmentMetadata,
@@ -18,6 +19,7 @@ import type {
 import { PENTEST_LEAD_CONTROL_ID } from "@/lib/controls/pentest";
 import { ControlCard } from "./ControlCard";
 import { RocRequirementCard } from "./RocRequirementCard";
+import { RocAssessmentDashboard } from "./RocAssessmentDashboard";
 import { MobileAssessmentNav } from "./MobileAssessmentNav";
 import { stringifyRocProcedureNotes } from "@/lib/roc/notes";
 import type { RocProcedureNotesMap } from "@/lib/types";
@@ -63,6 +65,8 @@ export function AssessmentWorkspace({
   const frameworkControls = getControlsForFramework(initialAssessment.frameworkId);
   const outcomeProfile = getOutcomeProfile(initialAssessment.frameworkId);
   const searchParams = useSearchParams();
+  const isRoc = initialAssessment.frameworkId === PCI_ROC_FRAMEWORK_ID;
+  const showDashboard = isRoc && searchParams.get("view") === "dashboard";
   const domain =
     (searchParams.get("domain") as DomainId) || frameworkDomains[0]?.id;
   const filter = (searchParams.get("filter") as Filter) || "all";
@@ -214,6 +218,7 @@ export function AssessmentWorkspace({
 
   return (
     <div className="px-4 py-8 lg:pl-6 lg:pr-8 lg:py-10">
+      {!showDashboard && (
       <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6 rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-6 border border-primary/10">
         <div>
           <div className="flex items-center gap-3 mb-2">
@@ -249,12 +254,16 @@ export function AssessmentWorkspace({
           </p>
         </div>
       </div>
+      )}
 
       <MobileAssessmentNav
         assessmentId={assessment.id}
         frameworkId={assessment.frameworkId}
       />
 
+      {showDashboard ? (
+        <RocAssessmentDashboard assessment={assessment} states={states} />
+      ) : (
       <div className="space-y-10">
         {Array.from(domainControls.entries()).map(([section, controls]) => (
           <section key={section} className="scroll-mt-20">
@@ -319,6 +328,7 @@ export function AssessmentWorkspace({
           </p>
         )}
       </div>
+      )}
     </div>
   );
 }
