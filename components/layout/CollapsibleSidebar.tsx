@@ -201,126 +201,6 @@ function SidebarItem({
 }
 
 /* ------------------------------------------------------------------ */
-/*  ROC domain dropdown (selected requirement only)                    */
-/* ------------------------------------------------------------------ */
-
-function RocDomainDropdown({
-  assessmentId,
-  domains,
-  activeDomain,
-  activeFilter,
-  collapsed,
-}: {
-  assessmentId: string;
-  domains: ReturnType<typeof getDomainsForFramework>;
-  activeDomain: DomainId;
-  activeFilter: string;
-  collapsed: boolean;
-}) {
-  const [open, setOpen] = useState(false);
-  const containerRef = useRef<HTMLLIElement>(null);
-  const selected =
-    domains.find((d) => d.id === activeDomain) ?? domains[0];
-
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
-
-  function domainHref(domainId: string) {
-    return `/assessments/${assessmentId}?domain=${domainId}&filter=${activeFilter}`;
-  }
-
-  function domainSubtitle(label: string) {
-    return label.replace(/^Requirement \d+: |^Appendix A\d+: /, "");
-  }
-
-  if (collapsed) {
-    return (
-      <li ref={containerRef} className="relative">
-        <button
-          type="button"
-          onClick={() => setOpen(!open)}
-          className="group flex w-full items-center justify-center rounded-lg px-3 py-2 text-sm text-text transition hover:bg-muted"
-          title={selected?.label ?? "Requirement"}
-        >
-          <IconShield />
-        </button>
-        {open && (
-          <div className="absolute left-full top-0 z-50 ml-2 max-h-80 w-64 overflow-y-auto rounded-lg border border-border bg-surface py-1 shadow-lg">
-            {domains.map((d) => (
-              <Link
-                key={d.id}
-                href={domainHref(d.id)}
-                onClick={() => setOpen(false)}
-                className={`block px-3 py-2 text-sm hover:bg-muted ${
-                  d.id === activeDomain
-                    ? "font-semibold text-primary"
-                    : "text-text"
-                }`}
-              >
-                {d.shortLabel}: {domainSubtitle(d.label)}
-              </Link>
-            ))}
-          </div>
-        )}
-      </li>
-    );
-  }
-
-  return (
-    <li ref={containerRef} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition ${
-          open
-            ? "border-primary/40 bg-primary/5 ring-1 ring-primary/20"
-            : "border-border bg-surface hover:bg-muted"
-        }`}
-      >
-        <IconShield />
-        <span className="min-w-0 flex-1 truncate font-medium text-text">
-          {selected
-            ? `${selected.shortLabel}: ${domainSubtitle(selected.label)}`
-            : "Select requirement"}
-        </span>
-        <span className={`shrink-0 transition-transform ${open ? "rotate-180" : ""}`}>
-          <IconChevronDown />
-        </span>
-      </button>
-      {open && (
-        <ul className="absolute left-0 right-0 top-full z-50 mt-1 max-h-72 overflow-y-auto rounded-lg border border-border bg-surface py-1 shadow-lg">
-          {domains.map((d) => (
-            <li key={d.id}>
-              <Link
-                href={domainHref(d.id)}
-                onClick={() => setOpen(false)}
-                className={`block px-3 py-2 text-sm hover:bg-muted ${
-                  d.id === activeDomain
-                    ? "bg-primary/10 font-semibold text-primary"
-                    : "text-text"
-                }`}
-              >
-                <span className="font-mono text-xs text-primary">{d.shortLabel}</span>
-                <span className="mt-0.5 block text-xs leading-snug text-text-muted">
-                  {d.label}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </li>
-  );
-}
-
-/* ------------------------------------------------------------------ */
 /*  Report dropdown                                                    */
 /* ------------------------------------------------------------------ */
 
@@ -518,6 +398,7 @@ export function CollapsibleSidebar() {
     frameworkDomains[0]?.id ??
     "application_security";
   const activeFilter = searchParams.get("filter") ?? "all";
+  const activeRef = searchParams.get("ref");
   const isRocFramework = assessmentFrameworkId === PCI_ROC_FRAMEWORK_ID;
 
   const assessmentMatch = pathname.match(/^\/assessments\/([^/]+)/);
@@ -551,6 +432,10 @@ export function CollapsibleSidebar() {
   }, [assessmentId, isAssessment]);
 
   function assessmentHref(domain: DomainId, filter: string) {
+    if (isRocFramework && activeRef) {
+      const params = new URLSearchParams({ ref: activeRef, filter });
+      return `/assessments/${assessmentId}?${params.toString()}`;
+    }
     return `/assessments/${assessmentId}?domain=${domain}&filter=${filter}`;
   }
 
@@ -664,21 +549,6 @@ export function CollapsibleSidebar() {
                 icon={<IconLayoutDashboard />}
                 label="Dashboard"
                 active={isDashboard}
-                collapsed={collapsed}
-              />
-            </ul>
-            {!collapsed && (
-              <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-text-muted">
-                Requirement
-              </p>
-            )}
-            {collapsed && <div className="mb-1 border-b border-border pb-1" />}
-            <ul className="space-y-0.5">
-              <RocDomainDropdown
-                assessmentId={assessmentId}
-                domains={frameworkDomains}
-                activeDomain={activeDomain}
-                activeFilter={activeFilter}
                 collapsed={collapsed}
               />
             </ul>

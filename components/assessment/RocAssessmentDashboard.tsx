@@ -162,11 +162,19 @@ export function RocAssessmentDashboard({
 
         <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
           <div className="space-y-4">
-            {domainProgress.map((d) => (
+            {domainProgress.map((d) => {
+              const firstRef =
+                controls.find((c) => c.domain === d.domainId)?.requirementRef ??
+                "";
+              return (
               <div key={d.domainId}>
                 <div className="mb-1.5 flex items-baseline justify-between gap-3">
                   <Link
-                    href={`/assessments/${assessment.id}?domain=${d.domainId}&filter=all`}
+                    href={
+                      firstRef
+                        ? `/assessments/${assessment.id}?ref=${encodeURIComponent(firstRef)}`
+                        : `/assessments/${assessment.id}`
+                    }
                     className="text-sm font-medium text-text hover:text-primary"
                   >
                     {d.label}
@@ -180,7 +188,8 @@ export function RocAssessmentDashboard({
                   {d.reviewed} of {d.total} requirements reviewed
                 </p>
               </div>
-            ))}
+            );
+            })}
           </div>
 
           <div className="flex justify-center lg:justify-end">

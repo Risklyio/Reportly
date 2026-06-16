@@ -3,10 +3,14 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
+  buildRocRequirementTree,
+  getDefaultRocRef,
+} from "@/lib/roc/tree";
+import {
   getDomainsForFramework,
   PCI_ROC_FRAMEWORK_ID,
 } from "@/lib/controls/catalog";
-import type { DomainId } from "@/lib/types";
+import type { AssessmentControlState, DomainId } from "@/lib/types";
 
 const FILTERS = [
   { id: "all", label: "All" },
@@ -18,25 +22,34 @@ const FILTERS = [
 export function MobileAssessmentNav({
   assessmentId,
   frameworkId,
+  states,
 }: {
   assessmentId: string;
   frameworkId: string;
+  states?: Map<string, AssessmentControlState>;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isRoc = frameworkId === PCI_ROC_FRAMEWORK_ID;
   const isDashboard = searchParams.get("view") === "dashboard";
+  const activeRef = searchParams.get("ref") ?? getDefaultRocRef(frameworkId) ?? "";
   const domains = getDomainsForFramework(frameworkId);
   const domain =
     (searchParams.get("domain") as DomainId) || domains[0]?.id || "";
   const filter = searchParams.get("filter") ?? "all";
 
-  function href(d: string, f: string) {
+  function domainHref(d: string, f: string) {
     return `/assessments/${assessmentId}?domain=${d}&filter=${f}`;
   }
 
+  function refHref(ref: string) {
+    const params = new URLSearchParams({ ref });
+    if (filter !== "all") params.set("filter", filter);
+    return `/assessments/${assessmentId}?${params.toString()}`;
+  }
+
   if (isRoc) {
-    const selected = domains.find((d) => d.id === domain) ?? domains[0];
+    const tree = buildRocRequirementTree(frameworkId);
     return (
       <div className="mb-4 space-y-3 lg:hidden">
         <div className="flex gap-2">
@@ -55,31 +68,41 @@ export function MobileAssessmentNav({
           <>
             <select
               className="input w-full text-sm"
-              value={domain}
-              onChange={(e) => {
-                router.push(href(e.target.value, filter));
-              }}
+              value={activeRef}
+              onChange={(e) => router.push(refHref(e.target.value))}
             >
-              {domains.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.shortLabel}: {d.label}
-                </option>
+              {tree.map((domainNode) => (
+                <optgroup
+                  key={domainNode.domainId}
+                  label={`${domainNode.shortLabel}: ${domainNode.label}`}
+                >
+                  {domainNode.children.map((child) => (
+                    <option key={child.controlId} value={child.requirementRef}>
+                      {child.requirementRef}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
             </select>
             <div className="flex gap-2 overflow-x-auto pb-1">
-              {FILTERS.map((f) => (
-                <Link
-                  key={f.id}
-                  href={href(selected?.id ?? domain, f.id)}
-                  className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium ${
-                    filter === f.id
-                      ? "bg-primary font-semibold text-primary-foreground"
-                      : "border border-border bg-surface text-text"
-                  }`}
-                >
-                  {f.label}
-                </Link>
-              ))}
+              {FILTERS.map((f) => {
+                const params = new URLSearchParams();
+                if (activeRef) params.set("ref", activeRef);
+                if (f.id !== "all") params.set("filter", f.id);
+                return (
+                  <Link
+                    key={f.id}
+                    href={`/assessments/${assessmentId}?${params.toString()}`}
+                    className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium ${
+                      filter === f.id
+                        ? "bg-primary font-semibold text-primary-foreground"
+                        : "border border-border bg-surface text-text"
+                    }`}
+                  >
+                    {f.label}
+                  </Link>
+                );
+              })}
             </div>
           </>
         )}
@@ -93,7 +116,7 @@ export function MobileAssessmentNav({
         {domains.map((d) => (
           <Link
             key={d.id}
-            href={href(d.id, filter)}
+            href={domainHref(d.id, filter)}
             className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium ${
               domain === d.id
                 ? "bg-primary font-semibold text-primary-foreground"
@@ -108,7 +131,7 @@ export function MobileAssessmentNav({
         {FILTERS.map((f) => (
           <Link
             key={f.id}
-            href={href(domain, f.id)}
+            href={domainHref(domain, f.id)}
             className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium ${
               filter === f.id
                 ? "bg-primary font-semibold text-primary-foreground"
