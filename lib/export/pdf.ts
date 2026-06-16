@@ -3,6 +3,7 @@ import autoTable from "jspdf-autotable";
 import fs from "fs";
 import path from "path";
 import type { AssessmentExportData, ExportControlRow } from "./report-data";
+import { PCI_SAQU_A_FRAMEWORK_ID } from "@/lib/controls/catalog";
 import { drawLandscapeCoverPage } from "./pdf-cover";
 
 type PdfWithTable = jsPDF & { lastAutoTable?: { finalY: number } };
@@ -68,9 +69,16 @@ type OutcomeVisual = {
 
 const OUTCOME_VISUALS: Record<string, OutcomeVisual> = {
   "In place": { fill: C_GREEN, ring: C_GREEN_RING, text: C_WHITE, short: "In place" },
+  "In place via compensating control": {
+    fill: [13, 148, 136],
+    ring: [15, 118, 110],
+    text: C_WHITE,
+    short: "CCW",
+  },
   "Not in place": { fill: C_RED, ring: C_RED_RING, text: C_WHITE, short: "Not in place" },
   "Partially in place": { fill: C_AMBER, ring: C_AMBER_RING, text: C_BLACK, short: "Partial" },
   "Not applicable": { fill: C_SLATE, ring: C_SLATE_RING, text: C_WHITE, short: "N/A" },
+  "Not tested": { fill: [124, 58, 237], ring: [91, 33, 182], text: C_WHITE, short: "Not tested" },
   Pending: { fill: C_BLUE_LIGHT, ring: C_BLUE_RING, text: C_BLUE_TEXT, short: "Pending" },
   "Not reviewed": { fill: C_GREY_LIGHT, ring: C_SLATE, text: C_MUTED, short: "Open" },
 };
@@ -83,6 +91,13 @@ const DOMAIN_ICON_MAP: Record<string, string> = {
   application_security: "shield",
   operational_security: "check-circle",
   data_handling: "database",
+  pci_req_2: "shield",
+  pci_req_3: "database",
+  pci_req_6: "shield",
+  pci_req_8: "check-circle",
+  pci_req_9: "shield",
+  pci_req_11: "check-circle",
+  pci_req_12: "database",
 };
 
 function drawDomainIcon(doc: jsPDF, type: string, cx: number, cy: number, size: number) {
@@ -301,7 +316,8 @@ function measureOutcomeBadge(doc: jsPDF, label: string, withShield: boolean) {
 function drawOutcomeBadge(doc: jsPDF, x: number, y: number, width: number, height: number, outcome: string) {
   const visual = OUTCOME_VISUALS[outcome] ?? OUTCOME_VISUALS["Not reviewed"];
   const label = visual.short;
-  const withShield = outcome === "In place";
+  const withShield =
+    outcome === "In place" || outcome === "In place via compensating control";
   const { boxW, boxH, textW } = measureOutcomeBadge(doc, label, withShield);
 
   const cx = x + width / 2;
@@ -407,7 +423,20 @@ function addFooter(doc: jsPDF, coverPageCount = 1) {
 /*  Table body builder                                                 */
 /* ------------------------------------------------------------------ */
 
-function controlTableBody(rows: ExportControlRow[]): string[][] {
+function controlTableBody(rows: ExportControlRow[], isPci = false): string[][] {
+  if (isPci) {
+    return rows.map((r) => [
+      r.ref,
+      normalizeCellText(r.title),
+      normalizeCellText(r.requirement),
+      r.outcome,
+      normalizeCellText(
+        r.reason || r.correctiveAction || r.assessorNotes
+      ),
+      normalizeCellText(r.implementation),
+      normalizeCellText(r.compensatingControl),
+    ]);
+  }
   return rows.map((r) => [
     r.ref,
     normalizeCellText(r.title),
@@ -426,6 +455,7 @@ function controlTableBody(rows: ExportControlRow[]): string[][] {
 export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
   const logoDataUri = loadLogoDataUri();
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+  const isPci = data.frameworkId === PCI_SAQU_A_FRAMEWORK_ID;
 
   /* ---- Cover page ---- */
   drawLandscapeCoverPage(doc, data, logoDataUri);
@@ -501,6 +531,11 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
       ["Not in place", String(data.summary.notInPlace)],
       ["Partially in place", String(data.summary.partiallyInPlace)],
       ["Not applicable", String(data.summary.notApplicable)],
+      ["Not tested", String(data.summary.notTested ?? 0)],
+      [
+        "In place via compensating control",
+        String(data.summary.inPlaceCompensating ?? 0),
+      ],
       ["Pending", String(data.summary.pending)],
       ["Not yet reviewed", String(data.summary.notReviewed)],
       ["Hard-fail controls (total)", String(data.summary.hardFailTotal)],
@@ -548,11 +583,11 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
       doc.text(section, MARGIN + 2, y);
       y += 3;
 
-      const tableBody = controlTableBody(rows);
+      const tableBody = controlTableBody(rows, isPci);
       const contentW = w - MARGIN * 2;
 
       const colRef = 10;
-      const colOutcome = 24;
+      const colOutcome = isPci ? 28 : 24;
       const flexW = contentW - colRef - colOutcome;
       const colControl = Math.round(flexW * 0.15);
       const colReq = Math.round(flexW * 0.24);
@@ -560,19 +595,31 @@ export function renderAssessmentPdf(data: AssessmentExportData): Buffer {
       const colAction = Math.round(flexW * 0.22);
       const colNotes = flexW - colControl - colReq - colGap - colAction;
 
+      const tableHead = isPci
+        ? [
+            "Req",
+            "Requirement",
+            "Testing / intent",
+            "Outcome",
+            "Notes / N/A reason",
+            "Implementation",
+            "Compensating control",
+          ]
+        : [
+            "#",
+            "Control",
+            "Requirement",
+            "Outcome",
+            "Gap / Reason",
+            "Assessor Notes",
+            "Corrective Action",
+          ];
+
       autoTable(doc, {
         startY: y,
         margin: { left: MARGIN, right: MARGIN },
         tableWidth: contentW,
-        head: [[
-          "#",
-          "Control",
-          "Requirement",
-          "Outcome",
-          "Gap / Reason",
-          "Assessor Notes",
-          "Corrective Action",
-        ]],
+        head: [tableHead],
         body: tableBody,
         styles: {
           fontSize: 6.5,

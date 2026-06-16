@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AI_BUILD_STAMP } from "@/lib/ai/build-stamp";
 import { formatControlRef } from "@/lib/controls/catalog";
-import type { ControlDefinition, ControlOutcome } from "@/lib/types";
+import type { ControlDefinition, ControlOutcome, OutcomeProfile } from "@/lib/types";
 import { OutcomeSelector } from "./OutcomeSelector";
 
 const OUTCOME_LABELS: Record<string, string> = {
@@ -11,9 +11,10 @@ const OUTCOME_LABELS: Record<string, string> = {
   not_in_place: "Not in place",
   partially_in_place: "Partially in place",
   not_applicable: "Not applicable",
+  not_tested: "Not tested",
+  in_place_compensating: "In place via compensating control",
   pending: "Pending",
 };
-
 /** Wait after typing stops before autosave (reduces lag and API calls) */
 const AUTOSAVE_DELAY_MS = 1200;
 
@@ -29,8 +30,11 @@ function outcomeBadgeClass(outcome: ControlOutcome): string {
       return `${base} border-amber-700/25 bg-amber-100 text-amber-900`;
     case "not_applicable":
       return `${base} border-slate-400/40 bg-slate-200 text-slate-700`;
-    case "pending":
-      return `${base} border-slate-500/45 bg-blue-50 text-blue-900`;
+    case "not_tested":
+      return `${base} border-violet-700/25 bg-violet-100 text-violet-900`;
+    case "in_place_compensating":
+      return `${base} border-teal-700/25 bg-teal-100 text-teal-900`;
+    case "pending":      return `${base} border-slate-500/45 bg-blue-50 text-blue-900`;
     default:
       return `${base} border-border bg-muted text-text-muted`;
   }
@@ -59,7 +63,7 @@ function OutcomeBadgeContent({
   return (
     <span className={outcomeBadgeClass(outcome)}>
       {outcome === "in_place" && <InPlaceShieldIcon />}
-      {label}
+      {outcome === "in_place_compensating" && <InPlaceShieldIcon />}      {label}
     </span>
   );
 }
@@ -80,6 +84,7 @@ export function ControlCard({
   onSave,
   onSuggest,
   onOutcomeChange,
+  outcomeProfile = "microsoft",
   showPendingOption = false,
 }: {
   assessmentId: string;
@@ -97,9 +102,9 @@ export function ControlCard({
   onSuggest: () => Promise<{ text: string; links: string[] }>;
   /** When set, outcome buttons call this instead of a single-control save (e.g. pentest bulk Pending). */
   onOutcomeChange?: (outcome: ControlOutcome) => Promise<void>;
+  outcomeProfile?: OutcomeProfile;
   showPendingOption?: boolean;
-}) {
-  const [expanded, setExpanded] = useState(false);
+}) {  const [expanded, setExpanded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [generateError, setGenerateError] = useState<string | null>(null);
@@ -132,11 +137,19 @@ export function ControlCard({
     };
   }, []);
 
+  const isPci = outcomeProfile === "pci";
   const showGapFields =
-    outcome === "not_in_place" || outcome === "partially_in_place";
+    outcome === "not_in_place" ||
+    (!isPci && outcome === "partially_in_place");
   const showPendingFields = outcome === "pending";
+  const showImplementationFields =
+    isPci &&
+    (outcome === "in_place" || outcome === "in_place_compensating");
+  const showNaReasonFields =
+    isPci &&
+    (outcome === "not_applicable" || outcome === "not_tested");
   const isSamplingControl = control.domain === "ce_sampling";
-
+  const docsLabel = isPci ? "PCI SSC docs" : "Microsoft docs";
   const persist = useCallback(
     async (patch: TextPatch & { outcome?: ControlOutcome }) => {
       setSaving(true);
@@ -275,8 +288,7 @@ export function ControlCard({
         assessorNotes: draftNotes,
         correctiveAction: draftCorrective,
       });
-    } else if (showGapFields || showPendingFields) {
-      pendingPatch.current = {
+    } else if (showGapFields || showPendingFields || showImplementationFields || showNaReasonFields) {      pendingPatch.current = {
         notInPlaceReason: draftReason,
         assessorNotes: draftNotes,
         correctiveAction: draftCorrective,
@@ -343,8 +355,7 @@ export function ControlCard({
             rel="noopener noreferrer"
             className="text-xs text-primary hover:underline"
           >
-            Microsoft docs
-          </a>
+            {docsLabel}          </a>
           <button
             type="button"
             onClick={() => setExpanded(false)}
@@ -418,8 +429,8 @@ export function ControlCard({
           <label className="label">Outcome</label>
           <OutcomeSelector
             value={outcome}
-            showPendingOption={showPendingOption}
-            onChange={(v) => {
+            outcomeProfile={outcomeProfile}
+            showPendingOption={showPendingOption}            onChange={(v) => {
               if (onOutcomeChange) {
                 void (async () => {
                   setSaving(true);
@@ -467,8 +478,82 @@ export function ControlCard({
           </div>
         )}
 
-        {showGapFields && (
+        {showImplementationFields && (
           <>
+            <div>
+              <label className="label">
+                How the control is implemented (included in report)
+              </label>
+              <p className="mb-1 text-xs text-text-muted">
+                Describe how this requirement is met. This text appears in HTML and
+                PDF exports.
+              </p>
+              <textarea
+                className="input min-h-[100px]"
+                rows={4}
+                value={draftCorrective}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setDraftCorrective(v);
+                  scheduleAutosave({ correctiveAction: v });
+                }}
+                onBlur={() => void persist({ correctiveAction: draftCorrective })}
+                placeholder="e.g. Quarterly ASV scans performed by [vendor]; most recent passing scan dated…"
+              />
+            </div>
+            {outcome === "in_place_compensating" && (
+              <div>
+                <label className="label">
+                  Compensating control details (included in report)
+                </label>
+                <p className="mb-1 text-xs text-text-muted">
+                  Summarize constraints, compensating controls, validation, and
+                  maintenance per PCI DSS Appendix B.
+                </p>
+                <textarea
+                  className="input min-h-[88px]"
+                  rows={3}
+                  value={draftNotes}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setDraftNotes(v);
+                    scheduleAutosave({ assessorNotes: v });
+                  }}
+                  onBlur={() => void persist({ assessorNotes: draftNotes })}
+                  placeholder="Constraints, compensating control definition, objective, risk, validation…"
+                />
+              </div>
+            )}
+          </>
+        )}
+
+        {showNaReasonFields && (
+          <div>
+            <label className="label">
+              {outcome === "not_applicable"
+                ? "Why not applicable (included in report)"
+                : "Why not tested (included in report)"}
+            </label>
+            <textarea
+              className="input min-h-[88px]"
+              rows={3}
+              value={draftReason}
+              onChange={(e) => {
+                const v = e.target.value;
+                setDraftReason(v);
+                scheduleAutosave({ notInPlaceReason: v });
+              }}
+              onBlur={() => void persist({ notInPlaceReason: draftReason })}
+              placeholder={
+                outcome === "not_applicable"
+                  ? "e.g. Merchant does not store any paper records with account data…"
+                  : "e.g. Control was outside scope of this assessment…"
+              }
+            />
+          </div>
+        )}
+
+        {showGapFields && (          <>
             <div>
               <label className="label">Why not in place</label>
               <select

@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { CEPLUS_FRAMEWORK_ID } from "@/lib/controls/catalog";
+import { CEPLUS_FRAMEWORK_ID, PCI_SAQU_A_FRAMEWORK_ID } from "@/lib/controls/catalog";
 import type { AssessmentExportData, ExportControlRow } from "./report-data";
 function loadLogoBase64(): string | null {
   const logoPath = path.join(process.cwd(), "public", "brand", "reportly-logo.png");
@@ -35,14 +35,19 @@ const IN_PLACE_ICON = `<svg class="in-place-icon" viewBox="0 0 24 24" fill="none
 function outcomeBadge(outcome: string): string {
   const map: Record<string, string> = {
     "In place": "badge-green",
+    "In place via compensating control": "badge-teal",
     "Not in place": "badge-red",
     "Partially in place": "badge-amber",
     "Not applicable": "badge-slate",
+    "Not tested": "badge-violet",
     Pending: "badge-blue",
     "Not reviewed": "badge-grey",
   };
   const cls = map[outcome] ?? "badge-grey";
-  const icon = outcome === "In place" ? IN_PLACE_ICON : "";
+  const icon =
+    outcome === "In place" || outcome === "In place via compensating control"
+      ? IN_PLACE_ICON
+      : "";
   return `<span class="badge ${cls}">${icon}${esc(outcome)}</span>`;
 }
 
@@ -78,8 +83,25 @@ function getSamplingFields(data: AssessmentExportData) {
   };
 }
 
-function renderControlRow(r: ExportControlRow): string {
+function renderControlRow(r: ExportControlRow, isPci = false): string {
   const hardTag = r.hardFail === "Yes" ? `<span class="hard-fail-tag">HARD FAIL</span>` : "";
+  if (isPci) {
+    const detail =
+      r.implementation ||
+      r.compensatingControl ||
+      r.reason ||
+      r.correctiveAction ||
+      r.assessorNotes;
+    return `<tr>
+  <td class="col-ref">${esc(r.ref)}</td>
+  <td>${esc(r.title)}${hardTag}</td>
+  <td class="col-req">${nl2br(r.requirement)}</td>
+  <td class="col-outcome">${outcomeBadge(r.outcome)}</td>
+  <td>${nl2br(detail) || "—"}</td>
+  <td>${nl2br(r.implementation) || "—"}</td>
+  <td>${nl2br(r.compensatingControl) || "—"}</td>
+</tr>`;
+  }
   return `<tr>
   <td class="col-ref">${esc(r.ref)}</td>
   <td>${esc(r.title)}${hardTag}</td>
@@ -99,6 +121,16 @@ const TABLE_HEAD = `<thead><tr>
       <th>Gap / Reason</th>
       <th>Assessor Notes</th>
       <th>Corrective Action</th>
+    </tr></thead>`;
+
+const PCI_TABLE_HEAD = `<thead><tr>
+      <th class="col-ref">Req</th>
+      <th>Requirement</th>
+      <th class="col-req">Testing / intent</th>
+      <th class="col-outcome">Outcome</th>
+      <th>Notes / N/A reason</th>
+      <th>Implementation</th>
+      <th>Compensating control</th>
     </tr></thead>`;
 
 function renderCeplusSubControl(r: ExportControlRow): string {
@@ -166,19 +198,25 @@ function renderCeplusDomain(domainLabel: string, domainId: string, controls: Exp
 </details>`;
 }
 
-function renderSection(section: string, rows: ExportControlRow[]): string {
+function renderSection(section: string, rows: ExportControlRow[], isPci = false): string {
   const status = sectionStatus(rows);
   const icon = statusIcon(status);
+  const head = isPci ? PCI_TABLE_HEAD : TABLE_HEAD;
   return `<details class="section-block">
   <summary class="section-title">${icon}${esc(section)}</summary>
   <table class="controls-table">
-    ${TABLE_HEAD}
-    <tbody>${rows.map(renderControlRow).join("\n")}</tbody>
+    ${head}
+    <tbody>${rows.map((r) => renderControlRow(r, isPci)).join("\n")}</tbody>
   </table>
 </details>`;
 }
 
-function renderDomain(domainLabel: string, domainId: string, controls: ExportControlRow[]): string {
+function renderDomain(
+  domainLabel: string,
+  domainId: string,
+  controls: ExportControlRow[],
+  isPci = false
+): string {
   if (controls.length === 0) return "";
   const sections = groupBySection(controls);
   const domainStatus = sectionStatus(controls);
@@ -188,12 +226,19 @@ function renderDomain(domainLabel: string, domainId: string, controls: ExportCon
     application_security: `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="#060606" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5.25-3.4 9.74-8 11-4.6-1.26-8-5.75-8-11V6l8-4z"/></svg>`,
     operational_security: `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="#060606" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>`,
     data_handling: `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="#060606" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg>`,
+    pci_req_2: `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="#060606" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>`,
+    pci_req_3: `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="#060606" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg>`,
+    pci_req_6: `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="#060606" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5.25-3.4 9.74-8 11-4.6-1.26-8-5.75-8-11V6l8-4z"/></svg>`,
+    pci_req_8: `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="#060606" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>`,
+    pci_req_9: `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="#060606" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>`,
+    pci_req_11: `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="#060606" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>`,
+    pci_req_12: `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="#060606" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>`,
   };
   const domIcon = iconMap[domainId] ?? "";
 
   let body = "";
   for (const [sec, rows] of sections) {
-    body += renderSection(sec, rows);
+    body += renderSection(sec, rows, isPci);
   }
 
   return `<details class="domain-block">
@@ -227,11 +272,12 @@ export function renderAssessmentHtml(
 
   let domains = "";
   const isCeplus = data.frameworkId === CEPLUS_FRAMEWORK_ID;
+  const isPci = data.frameworkId === PCI_SAQU_A_FRAMEWORK_ID;
   for (const d of data.domains) {
     if (d.id === "ce_sampling") continue;
     domains += isCeplus
       ? renderCeplusDomain(d.label, d.id, d.controls)
-      : renderDomain(d.label, d.id, d.controls);
+      : renderDomain(d.label, d.id, d.controls, isPci);
   }
 
   return `<!DOCTYPE html>
@@ -361,6 +407,8 @@ details[open]>.sub-control-title::before{transform:rotate(90deg)}
 .badge-red{background:var(--red);color:var(--white);border-color:var(--red-ring)}
 .badge-amber{background:var(--amber);color:var(--black);border-color:var(--amber-ring)}
 .badge-slate{background:var(--slate);color:var(--white)}
+.badge-teal{background:#0d9488;color:var(--white);border-color:#0f766e}
+.badge-violet{background:#7c3aed;color:var(--white);border-color:#5b21b6}
 .badge-blue{background:var(--blue);color:var(--blue-text);border-color:var(--blue-ring)}
 .badge-grey{background:var(--grey-light);color:var(--muted)}
 

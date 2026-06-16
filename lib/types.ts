@@ -5,8 +5,13 @@ export type ControlOutcome =
   | "not_in_place"
   | "partially_in_place"
   | "not_applicable"
+  | "not_tested"
+  | "in_place_compensating"
   | "pending"
   | null;
+
+/** Which outcome buttons and fields a framework uses in the assessment UI. */
+export type OutcomeProfile = "microsoft" | "pci";
 
 export interface ControlDefinition {
   id: string;

@@ -7,6 +7,7 @@ import {
   getControlsForFramework,
   getDomainsForFramework,
   getControlsByDomain,
+  getOutcomeProfile,
 } from "@/lib/controls/catalog";
 import type {
   AssessmentMetadata,
@@ -54,6 +55,7 @@ export function AssessmentWorkspace({
 }) {
   const frameworkDomains = getDomainsForFramework(initialAssessment.frameworkId);
   const frameworkControls = getControlsForFramework(initialAssessment.frameworkId);
+  const outcomeProfile = getOutcomeProfile(initialAssessment.frameworkId);
   const searchParams = useSearchParams();
   const domain =
     (searchParams.get("domain") as DomainId) || frameworkDomains[0]?.id;
@@ -255,6 +257,7 @@ export function AssessmentWorkspace({
                     notInPlaceReason={st.notInPlaceReason}
                     assessorNotes={st.assessorNotes}
                     correctiveAction={st.correctiveAction}
+                    outcomeProfile={outcomeProfile}
                     onSave={(patch) => updateControl(control.id, patch)}
                     onSuggest={() =>
                       suggest(control.id, st.notInPlaceReason)

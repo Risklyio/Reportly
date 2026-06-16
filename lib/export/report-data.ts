@@ -1,5 +1,6 @@
 import {
   M365_FRAMEWORK_ID,
+  PCI_SAQU_A_FRAMEWORK_ID,
   getFrameworkById,
   getControlsForFramework,
   getDomainsForFramework,
@@ -13,6 +14,8 @@ export const OUTCOME_LABELS: Record<string, string> = {
   not_in_place: "Not in place",
   partially_in_place: "Partially in place",
   not_applicable: "Not applicable",
+  not_tested: "Not tested",
+  in_place_compensating: "In place via compensating control",
   pending: "Pending",
 };
 
@@ -28,6 +31,8 @@ export type ExportControlRow = {
   correctiveAction: string;
   assessorNotes: string;
   evidenceNotes: string;
+  implementation: string;
+  compensatingControl: string;
   hardFail: string;
 };
 
@@ -57,6 +62,8 @@ export type AssessmentExportData = {
     partiallyInPlace: number;
     notApplicable: number;
     pending: number;
+    notTested: number;
+    inPlaceCompensating: number;
     notReviewed: number;
     hardFailTotal: number;
     hardFailGaps: number;
@@ -66,9 +73,14 @@ export type AssessmentExportData = {
 function formatControlRow(
   control: ReturnType<typeof getControlsForFramework>[number],
   controlId: string,
-  states: Map<string, AssessmentControlState>
+  states: Map<string, AssessmentControlState>,
+  frameworkId: string
 ): ExportControlRow {
   const s = states.get(controlId);
+  const isPci = frameworkId === PCI_SAQU_A_FRAMEWORK_ID;
+  const outcomeKey = s?.outcome ?? "";
+  const inPlacePositive =
+    outcomeKey === "in_place" || outcomeKey === "in_place_compensating";
   return {
     ref: formatControlRef(control),
     number: control.number,
@@ -78,9 +90,14 @@ function formatControlRow(
     section: control.section ?? "",
     outcome: s?.outcome ? OUTCOME_LABELS[s.outcome] ?? s.outcome : "Not reviewed",
     reason: s?.notInPlaceReason ?? "",
-    correctiveAction: s?.correctiveAction ?? "",
+    correctiveAction: isPci && inPlacePositive ? "" : (s?.correctiveAction ?? ""),
     assessorNotes: s?.assessorNotes ?? "",
     evidenceNotes: s?.evidenceNotes ?? "",
+    implementation: isPci && inPlacePositive ? (s?.correctiveAction ?? "") : "",
+    compensatingControl:
+      isPci && outcomeKey === "in_place_compensating"
+        ? (s?.assessorNotes ?? "")
+        : "",
     hardFail: control.hardFail ? "Yes" : "No",
   };
 }
@@ -96,6 +113,10 @@ function computeSummary(rows: ExportControlRow[]) {
       .length,
     notApplicable: rows.filter((r) => r.outcome === "Not applicable").length,
     pending: rows.filter((r) => r.outcome === "Pending").length,
+    notTested: rows.filter((r) => r.outcome === "Not tested").length,
+    inPlaceCompensating: rows.filter(
+      (r) => r.outcome === "In place via compensating control"
+    ).length,
     notReviewed: rows.length - reviewed,
     hardFailTotal: rows.filter((r) => r.hardFail === "Yes").length,
     hardFailGaps: rows.filter(
@@ -125,10 +146,10 @@ export function buildExportData(
   const byDomain = (domain: string) =>
     frameworkControls.filter((c) => c.domain === domain)
       .sort(compareControls)
-      .map((c) => formatControlRow(c, c.id, stateMap));
+      .map((c) => formatControlRow(c, c.id, stateMap, frameworkId));
 
   const allControls = frameworkControls.map((c) =>
-    formatControlRow(c, c.id, stateMap)
+    formatControlRow(c, c.id, stateMap, frameworkId)
   );
   const domainRows = frameworkDomains.map((d) => ({
     id: d.id,

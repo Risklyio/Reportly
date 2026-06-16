@@ -11,6 +11,8 @@ const OUTCOME_LABELS: Record<string, string> = {
   not_in_place: "Not in place",
   partially_in_place: "Partially in place",
   not_applicable: "Not applicable",
+  not_tested: "Not tested",
+  in_place_compensating: "In place via compensating control",
   pending: "Pending",
 };
 

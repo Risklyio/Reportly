@@ -2,12 +2,15 @@ import type { ControlDefinition, DomainId } from "@/lib/types";
 import { applicationControls } from "./application-controls";
 import { operationalControls } from "./operational-controls";
 import { ceplusControls } from "./ceplus-controls";
+import { pciSaqAControls } from "./pci-saq-a-controls";
+import type { OutcomeProfile } from "@/lib/types";
 
 const DATA_BASE =
   "https://learn.microsoft.com/en-us/microsoft-365-app-certification/docs/seg2_data";
 
 export const M365_FRAMEWORK_ID = "m365-app-compliance";
 export const CEPLUS_FRAMEWORK_ID = "ncsc-cyber-essentials-plus-v3-2";
+export const PCI_SAQU_A_FRAMEWORK_ID = "pci-dss-saq-a";
 
 export function formatControlRef(c: ControlDefinition): string {
   return c.subId ? `${c.number}${c.subId}` : String(c.number);
@@ -86,6 +89,8 @@ export type FrameworkDefinition = {
   vendor: string;
   name: string;
   description: string;
+  /** Defaults to Microsoft-style outcomes (partially in place, pending). */
+  outcomeProfile?: OutcomeProfile;
   domains: {
     id: DomainId;
     label: string;
@@ -145,6 +150,44 @@ const ceplusDomains: FrameworkDefinition["domains"] = [
   },
 ];
 
+const pciSaqADomains: FrameworkDefinition["domains"] = [
+  {
+    id: "pci_req_2",
+    label: "Requirement 2: Secure configurations",
+    shortLabel: "Req 2",
+  },
+  {
+    id: "pci_req_3",
+    label: "Requirement 3: Protect stored account data",
+    shortLabel: "Req 3",
+  },
+  {
+    id: "pci_req_6",
+    label: "Requirement 6: Secure systems and software",
+    shortLabel: "Req 6",
+  },
+  {
+    id: "pci_req_8",
+    label: "Requirement 8: Identify users and authenticate access",
+    shortLabel: "Req 8",
+  },
+  {
+    id: "pci_req_9",
+    label: "Requirement 9: Restrict physical access",
+    shortLabel: "Req 9",
+  },
+  {
+    id: "pci_req_11",
+    label: "Requirement 11: Test security regularly",
+    shortLabel: "Req 11",
+  },
+  {
+    id: "pci_req_12",
+    label: "Requirement 12: Policies and programs",
+    shortLabel: "Req 12",
+  },
+];
+
 export const FRAMEWORKS: FrameworkDefinition[] = [
   {
     id: M365_FRAMEWORK_ID,
@@ -163,6 +206,16 @@ export const FRAMEWORKS: FrameworkDefinition[] = [
       "NCSC Cyber Essentials Plus technical test specification v3.2 aligned controls.",
     domains: ceplusDomains,
     controls: [...ceplusControls],
+  },
+  {
+    id: PCI_SAQU_A_FRAMEWORK_ID,
+    vendor: "PCI SSC",
+    name: "PCI DSS SAQ A",
+    description:
+      "PCI DSS v4.0.1 Self-Assessment Questionnaire A for merchants that fully outsource card processing to PCI DSS compliant third parties.",
+    outcomeProfile: "pci",
+    domains: pciSaqADomains,
+    controls: [...pciSaqAControls],
   },
 ];
 
@@ -197,4 +250,8 @@ export function getControlsByDomain(
 
 export function getControlById(id: string): ControlDefinition | undefined {
   return ALL_CONTROLS.find((c) => c.id === id);
+}
+
+export function getOutcomeProfile(frameworkId: string): OutcomeProfile {
+  return getFrameworkById(frameworkId).outcomeProfile ?? "microsoft";
 }

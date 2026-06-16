@@ -20,7 +20,15 @@ type RestorePayload = {
   };
   controls?: Array<{
     controlId: string;
-    outcome: "in_place" | "not_in_place" | "partially_in_place" | "not_applicable" | "pending" | null;
+    outcome:
+      | "in_place"
+      | "not_in_place"
+      | "partially_in_place"
+      | "not_applicable"
+      | "not_tested"
+      | "in_place_compensating"
+      | "pending"
+      | null;
     notInPlaceReason?: string;
     assessorNotes?: string;
     correctiveAction?: string;
