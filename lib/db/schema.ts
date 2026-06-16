@@ -66,6 +66,7 @@ export const assessmentControls = sqliteTable("assessment_controls", {
   pciExpectedTestingComments: text("pci_expected_testing_comments")
     .notNull()
     .default("[]"),
+  rocProcedureNotes: text("roc_procedure_notes").notNull().default("{}"),
   updatedAt: text("updated_at").notNull(),
 });
 

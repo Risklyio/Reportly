@@ -3,6 +3,7 @@ import { applicationControls } from "./application-controls";
 import { operationalControls } from "./operational-controls";
 import { ceplusControls } from "./ceplus-controls";
 import { pciSaqAControls } from "./pci-saq-a-controls";
+import { pciRocControls, PCI_ROC_FRAMEWORK_ID } from "./pci-roc-controls";
 import type { OutcomeProfile } from "@/lib/types";
 
 const DATA_BASE =
@@ -11,8 +12,10 @@ const DATA_BASE =
 export const M365_FRAMEWORK_ID = "m365-app-compliance";
 export const CEPLUS_FRAMEWORK_ID = "ncsc-cyber-essentials-plus-v3-2";
 export const PCI_SAQU_A_FRAMEWORK_ID = "pci-dss-saq-a";
+export { PCI_ROC_FRAMEWORK_ID };
 
 export function formatControlRef(c: ControlDefinition): string {
+  if (c.requirementRef) return c.requirementRef;
   return c.subId ? `${c.number}${c.subId}` : String(c.number);
 }
 
@@ -150,6 +153,24 @@ const ceplusDomains: FrameworkDefinition["domains"] = [
   },
 ];
 
+const pciRocDomains: FrameworkDefinition["domains"] = [
+  { id: "roc_req_1", label: "Requirement 1: Network security controls", shortLabel: "Req 1" },
+  { id: "roc_req_2", label: "Requirement 2: Secure configurations", shortLabel: "Req 2" },
+  { id: "roc_req_3", label: "Requirement 3: Protect stored account data", shortLabel: "Req 3" },
+  { id: "roc_req_4", label: "Requirement 4: Protect cardholder data in transit", shortLabel: "Req 4" },
+  { id: "roc_req_5", label: "Requirement 5: Protect systems from malware", shortLabel: "Req 5" },
+  { id: "roc_req_6", label: "Requirement 6: Develop secure systems", shortLabel: "Req 6" },
+  { id: "roc_req_7", label: "Requirement 7: Restrict access", shortLabel: "Req 7" },
+  { id: "roc_req_8", label: "Requirement 8: Identify users and authenticate", shortLabel: "Req 8" },
+  { id: "roc_req_9", label: "Requirement 9: Restrict physical access", shortLabel: "Req 9" },
+  { id: "roc_req_10", label: "Requirement 10: Log and monitor", shortLabel: "Req 10" },
+  { id: "roc_req_11", label: "Requirement 11: Test security regularly", shortLabel: "Req 11" },
+  { id: "roc_req_12", label: "Requirement 12: Policies and programs", shortLabel: "Req 12" },
+  { id: "roc_appendix_a1", label: "Appendix A1: Multi-tenant service providers", shortLabel: "A1" },
+  { id: "roc_appendix_a2", label: "Appendix A2: SSL/early TLS for POS POI", shortLabel: "A2" },
+  { id: "roc_appendix_a3", label: "Appendix A3: Designated entities (DESV)", shortLabel: "A3" },
+];
+
 const pciSaqADomains: FrameworkDefinition["domains"] = [
   {
     id: "pci_req_2",
@@ -209,13 +230,23 @@ export const FRAMEWORKS: FrameworkDefinition[] = [
   },
   {
     id: PCI_SAQU_A_FRAMEWORK_ID,
-    vendor: "PCI SSC",
+    vendor: "PCI DSS",
     name: "PCI DSS SAQ A",
     description:
       "PCI DSS v4.0.1 Self-Assessment Questionnaire A for merchants that fully outsource card processing to PCI DSS compliant third parties.",
     outcomeProfile: "pci",
     domains: pciSaqADomains,
     controls: [...pciSaqAControls],
+  },
+  {
+    id: PCI_ROC_FRAMEWORK_ID,
+    vendor: "PCI DSS",
+    name: "PCI DSS ROC (Report on Compliance)",
+    description:
+      "PCI DSS v4.0.1 Report on Compliance Template r3 — Part II Section 7 Findings and Observations for QSA assessments.",
+    outcomeProfile: "roc",
+    domains: pciRocDomains,
+    controls: [...pciRocControls],
   },
 ];
 

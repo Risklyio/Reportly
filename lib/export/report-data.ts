@@ -1,6 +1,5 @@
 import {
   M365_FRAMEWORK_ID,
-  PCI_SAQU_A_FRAMEWORK_ID,
   getFrameworkById,
   getControlsForFramework,
   getDomainsForFramework,
@@ -16,6 +15,7 @@ export const OUTCOME_LABELS: Record<string, string> = {
   not_applicable: "Not applicable",
   not_tested: "Not tested",
   in_place_compensating: "In place via compensating control",
+  customized_approach: "Customized Approach",
   pending: "Pending",
 };
 
@@ -77,10 +77,13 @@ function formatControlRow(
   frameworkId: string
 ): ExportControlRow {
   const s = states.get(controlId);
-  const isPci = frameworkId === PCI_SAQU_A_FRAMEWORK_ID;
+  const fw = getFrameworkById(frameworkId);
+  const isPci = fw.outcomeProfile === "pci" || fw.outcomeProfile === "roc";
   const outcomeKey = s?.outcome ?? "";
   const inPlacePositive =
-    outcomeKey === "in_place" || outcomeKey === "in_place_compensating";
+    outcomeKey === "in_place" ||
+    outcomeKey === "in_place_compensating" ||
+    outcomeKey === "customized_approach";
   return {
     ref: formatControlRef(control),
     number: control.number,
@@ -95,7 +98,9 @@ function formatControlRow(
     evidenceNotes: s?.evidenceNotes ?? "",
     implementation: isPci && inPlacePositive ? (s?.correctiveAction ?? "") : "",
     compensatingControl:
-      isPci && outcomeKey === "in_place_compensating"
+      isPci &&
+      (outcomeKey === "in_place_compensating" ||
+        outcomeKey === "customized_approach")
         ? (s?.assessorNotes ?? "")
         : "",
     hardFail: control.hardFail ? "Yes" : "No",

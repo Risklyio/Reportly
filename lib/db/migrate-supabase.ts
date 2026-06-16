@@ -81,6 +81,9 @@ export async function ensurePciExpectedTestingColumns(): Promise<void> {
 
       alter table assessment_controls
       add column if not exists pci_expected_testing_comments text not null default '[]';
+
+      alter table assessment_controls
+      add column if not exists roc_procedure_notes text not null default '{}';
     `);
     expectedTestingColumnsReady = true;
   } finally {

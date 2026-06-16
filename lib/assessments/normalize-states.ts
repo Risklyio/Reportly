@@ -47,6 +47,7 @@ export function normalizeControlStates(
       evidenceNotes: "",
       pciExpectedTestingDone: [],
       pciExpectedTestingComments: [],
+      rocProcedureNotes: {},
       updatedAt: now,
     };
   });

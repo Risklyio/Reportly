@@ -7,11 +7,27 @@ export type ControlOutcome =
   | "not_applicable"
   | "not_tested"
   | "in_place_compensating"
+  | "customized_approach"
   | "pending"
   | null;
 
 /** Which outcome buttons and fields a framework uses in the assessment UI. */
-export type OutcomeProfile = "microsoft" | "pci";
+export type OutcomeProfile = "microsoft" | "pci" | "roc";
+
+/** ROC Part II testing procedure row (e.g. 1.2.4.a). */
+export interface RocTestingProcedure {
+  ref: string;
+  procedure: string;
+  reportingInstructions: string[];
+}
+
+/** Per-procedure assessor notes stored on assessment control state. */
+export interface RocProcedureNote {
+  testingNotes: string;
+  reportingDetails: string[];
+}
+
+export type RocProcedureNotesMap = Record<string, RocProcedureNote>;
 
 export interface ControlDefinition {
   id: string;
@@ -27,6 +43,10 @@ export interface ControlDefinition {
   intent: string;
   /** PCI SAQ expected testing methods — shown as assessor guidance in the UI. */
   expectedTesting?: string[];
+  /** Full PCI DSS requirement reference for ROC (e.g. 1.2.4, A1.1.2). */
+  requirementRef?: string;
+  /** ROC Part II testing procedures with reporting instructions. */
+  rocTestingProcedures?: RocTestingProcedure[];
   evidenceRequirements: string[];
   docUrl: string;
   defaultNotInPlaceReasons: string[];
@@ -75,6 +95,8 @@ export interface AssessmentControlState {
    * Per expected-testing item notes (free text), aligned by index to the control definition's expectedTesting list.
    */
   pciExpectedTestingComments: string[];
+  /** ROC: JSON map of procedure ref → testing notes and Section 6 evidence refs. */
+  rocProcedureNotes: RocProcedureNotesMap;
   updatedAt: string;
 }
 

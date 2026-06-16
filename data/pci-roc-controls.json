@@ -1,0 +1,375 @@
+{
+  "version": "PCI DSS v4.0.1 ROC Template r3 (seed — run npm run parse-roc for full catalog)",
+  "generatedAt": "2026-06-16T00:00:00.000Z",
+  "controlCount": 17,
+  "controls": [
+    {
+      "domain": "roc_req_1",
+      "requirementRef": "1.1.1",
+      "section": "Requirement 1: Network security controls",
+      "title": "All security policies and operational procedures that are identified in Requirement 1 are documented, kept up to date, in use, and known to all affected parties.",
+      "rocTestingProcedures": [
+        {
+          "ref": "1.1.1",
+          "procedure": "Examine documentation and interview personnel to verify that security policies and operational procedures identified in Requirement 1 are managed in accordance with all elements specified in this requirement.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all documentation examined for this testing procedure.",
+            "Identify the evidence reference number(s) from Section 6 for all interviews conducted for this testing procedure."
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "roc_req_1",
+      "requirementRef": "1.1.2",
+      "section": "Requirement 1: Network security controls",
+      "title": "Roles and responsibilities for performing activities in Requirement 1 are documented, assigned, and understood.",
+      "rocTestingProcedures": [
+        {
+          "ref": "1.1.2.a",
+          "procedure": "Examine documentation to verify that descriptions of roles and responsibilities for performing activities in Requirement 1 are documented and assigned.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all documentation examined for this testing procedure."
+          ]
+        },
+        {
+          "ref": "1.1.2.b",
+          "procedure": "Interview personnel responsible for performing activities in Requirement 1 to verify that roles and responsibilities are assigned as documented and are understood.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all interviews conducted for this testing procedure."
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "roc_req_1",
+      "requirementRef": "1.2.1",
+      "section": "Requirement 1: Network security controls",
+      "title": "Configuration standards for NSC rulesets are defined, implemented, and maintained.",
+      "rocTestingProcedures": [
+        {
+          "ref": "1.2.1.a",
+          "procedure": "Examine the configuration standards for NSC rulesets to verify the standards are in accordance with all elements specified in this requirement.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all configuration standards examined for this testing procedure."
+          ]
+        },
+        {
+          "ref": "1.2.1.b",
+          "procedure": "Examine configuration settings for NSC rulesets to verify that rulesets are implemented according to the configuration standards.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all configuration settings examined for this testing procedure."
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "roc_req_1",
+      "requirementRef": "1.2.2",
+      "section": "Requirement 1: Network security controls",
+      "title": "All changes to network connections and to configurations of NSCs are approved and managed in accordance with the change control process defined at Requirement 6.5.1.",
+      "rocTestingProcedures": [
+        {
+          "ref": "1.2.2.a",
+          "procedure": "Examine documented procedures to verify that changes to network connections and configurations of NSCs are included in the formal change control process in accordance with Requirement 6.5.1.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all documented procedures examined for this testing procedure."
+          ]
+        },
+        {
+          "ref": "1.2.2.b",
+          "procedure": "Examine network configuration settings to identify changes made to network connections. Interview responsible personnel and examine change control records to verify that identified changes to network connections were approved and managed in accordance with Requirement 6.5.1.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all network configuration settings examined for this testing procedure.",
+            "Identify the evidence reference number(s) from Section 6 for all interviews conducted for this testing procedure.",
+            "Identify the evidence reference number(s) from Section 6 for all change control records examined for this testing procedure."
+          ]
+        },
+        {
+          "ref": "1.2.2.c",
+          "procedure": "Examine network configuration settings to identify changes made to configurations of NSCs. Interview responsible personnel and examine change control records to verify that identified changes to configurations of NSCs were approved and managed in accordance with Requirement 6.5.1.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all network configuration settings examined for this testing procedure.",
+            "Identify the evidence reference number(s) from Section 6 for all interviews conducted for this testing procedure.",
+            "Identify the evidence reference number(s) from Section 6 for all change control records examined for this testing procedure."
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "roc_req_1",
+      "requirementRef": "1.2.3",
+      "section": "Requirement 1: Network security controls",
+      "title": "An accurate network diagram(s) is maintained that shows all connections between the CDE and other networks, including any wireless networks.",
+      "rocTestingProcedures": [
+        {
+          "ref": "1.2.3.a",
+          "procedure": "Examine diagram(s) and network configurations to verify that an accurate network diagram(s) exists in accordance with all elements specified in this requirement.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all diagrams examined for this testing procedure.",
+            "Identify the evidence reference number(s) from Section 6 for all network configurations examined for this testing procedure."
+          ]
+        },
+        {
+          "ref": "1.2.3.b",
+          "procedure": "Examine documentation and interview responsible personnel to verify that the network diagram(s) is accurate and updated when there are changes to the environment.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all documentation examined for this testing procedure.",
+            "Identify the evidence reference number(s) from Section 6 for all interviews conducted for this testing procedure."
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "roc_req_1",
+      "requirementRef": "1.2.4",
+      "section": "Requirement 1: Network security controls",
+      "title": "An accurate data-flow diagram(s) is maintained that shows all account data flows across systems and networks and is updated as needed upon changes to the environment.",
+      "rocTestingProcedures": [
+        {
+          "ref": "1.2.4.a",
+          "procedure": "Examine data-flow diagram(s) and interview personnel to verify the diagram(s) show all account data flows in accordance with all elements specified in this requirement.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all data-flow diagram(s) examined for this testing procedure.",
+            "Identify the evidence reference number(s) from Section 6 for all interviews conducted for this testing procedure."
+          ]
+        },
+        {
+          "ref": "1.2.4.b",
+          "procedure": "Examine documentation and interview responsible personnel to verify that the data-flow diagram(s) is accurate and updated when there are changes to the environment.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all documentation examined for this testing procedure.",
+            "Identify the evidence reference number(s) from Section 6 for all interviews conducted for this testing procedure."
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "roc_req_1",
+      "requirementRef": "1.2.5",
+      "section": "Requirement 1: Network security controls",
+      "title": "All services, protocols, and ports allowed are identified, approved, and have a defined business need.",
+      "rocTestingProcedures": [
+        {
+          "ref": "1.2.5.a",
+          "procedure": "Examine documentation to verify that a list exists of all allowed services, protocols, and ports, including business justification and approval for each.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all documentation examined for this testing procedure."
+          ]
+        },
+        {
+          "ref": "1.2.5.b",
+          "procedure": "Examine configuration settings for NSCs to verify that only approved services, protocols, and ports are in use.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all configuration settings examined for this testing procedure."
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "roc_req_1",
+      "requirementRef": "1.2.6",
+      "section": "Requirement 1: Network security controls",
+      "title": "Security features are defined and implemented for all services, protocols, and ports that are in use and considered to be insecure, such that the risk is mitigated.",
+      "rocTestingProcedures": [
+        {
+          "ref": "1.2.6.a",
+          "procedure": "Examine documentation that identifies all insecure services, protocols, and ports in use to verify that for each, security features are defined to mitigate the risk.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all documentation examined for this testing procedure."
+          ]
+        },
+        {
+          "ref": "1.2.6.b",
+          "procedure": "Examine configuration settings for NSCs to verify that the defined security features are implemented for each identified insecure service, protocol, and port.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all configuration settings examined for this testing procedure."
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "roc_req_1",
+      "requirementRef": "1.2.7",
+      "section": "Requirement 1: Network security controls",
+      "title": "Configurations of NSCs are reviewed at least once every six months to confirm they are relevant and effective.",
+      "rocTestingProcedures": [
+        {
+          "ref": "1.2.7.a",
+          "procedure": "Examine documentation to verify procedures are defined for reviewing configurations of NSCs at least once every six months.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all documentation examined for this testing procedure."
+          ]
+        },
+        {
+          "ref": "1.2.7.b",
+          "procedure": "Examine documentation of reviews of configurations for NSCs and interview responsible personnel to verify that reviews occur at least once every six months.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all documentation examined for this testing procedure.",
+            "Identify the evidence reference number(s) from Section 6 for all interviews conducted for this testing procedure."
+          ]
+        },
+        {
+          "ref": "1.2.7.c",
+          "procedure": "Examine configurations for NSCs to verify that configurations identified as no longer being supported by a business justification are removed or updated.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all configurations examined for this testing procedure."
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "roc_req_1",
+      "requirementRef": "1.2.8",
+      "section": "Requirement 1: Network security controls",
+      "title": "Configuration files for NSCs are secured from unauthorized access and kept consistent with active network configurations.",
+      "rocTestingProcedures": [
+        {
+          "ref": "1.2.8",
+          "procedure": "Examine configuration files for NSCs to verify they are in accordance with all elements specified in this requirement.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all configuration files examined for this testing procedure."
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "roc_req_1",
+      "requirementRef": "1.3.1",
+      "section": "Requirement 1: Network security controls",
+      "title": "Inbound traffic to the CDE is restricted to only traffic that is necessary; all other traffic is specifically denied.",
+      "rocTestingProcedures": [
+        {
+          "ref": "1.3.1.a",
+          "procedure": "Examine configuration standards for NSCs to verify that they define restricting inbound traffic to the CDE is in accordance with all elements specified in this requirement.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all configuration standards examined for this testing procedure."
+          ]
+        },
+        {
+          "ref": "1.3.1.b",
+          "procedure": "Examine configurations of NSCs to verify that inbound traffic to the CDE is restricted in accordance with all elements specified in this requirement.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all configurations examined for this testing procedure."
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "roc_req_1",
+      "requirementRef": "1.3.2",
+      "section": "Requirement 1: Network security controls",
+      "title": "Outbound traffic from the CDE is restricted to only traffic that is necessary; all other traffic is specifically denied.",
+      "rocTestingProcedures": [
+        {
+          "ref": "1.3.2.a",
+          "procedure": "Examine configuration standards for NSCs to verify that they define restricting outbound traffic from the CDE in accordance with all elements specified in this requirement.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all configuration standards examined for this testing procedure."
+          ]
+        },
+        {
+          "ref": "1.3.2.b",
+          "procedure": "Examine configurations of NSCs to verify that outbound traffic from the CDE is restricted in accordance with all elements specified in this requirement.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all configurations examined for this testing procedure."
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "roc_req_1",
+      "requirementRef": "1.3.3",
+      "section": "Requirement 1: Network security controls",
+      "title": "NSCs are installed between all wireless networks and the CDE such that wireless traffic into the CDE is denied by default and only authorized business-purpose traffic is allowed.",
+      "rocTestingProcedures": [
+        {
+          "ref": "1.3.3",
+          "procedure": "Examine configuration settings and network diagrams to verify that NSCs are implemented between all wireless networks and the CDE, in accordance with all elements specified in this requirement.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all configuration settings examined for this testing procedure.",
+            "Identify the evidence reference number(s) from Section 6 for all network diagrams examined for this testing procedure."
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "roc_req_1",
+      "requirementRef": "1.4.1",
+      "section": "Requirement 1: Network security controls",
+      "title": "NSCs are implemented between trusted and untrusted networks.",
+      "rocTestingProcedures": [
+        {
+          "ref": "1.4.1.a",
+          "procedure": "Examine configuration standards and network diagrams to verify that NSCs are defined between trusted and untrusted networks.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all configuration standards examined for this testing procedure.",
+            "Identify the evidence reference number(s) from Section 6 for all network diagrams examined for this testing procedure."
+          ]
+        },
+        {
+          "ref": "1.4.1.b",
+          "procedure": "Examine network configurations to verify that NSCs are in place between trusted and untrusted networks, in accordance with the documented configuration standards and network diagrams.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all network configurations examined for this testing procedure."
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "roc_req_1",
+      "requirementRef": "1.4.2",
+      "section": "Requirement 1: Network security controls",
+      "title": "Inbound traffic from untrusted networks to trusted networks is restricted to authorized publicly accessible services, stateful responses, and denies all other traffic.",
+      "rocTestingProcedures": [
+        {
+          "ref": "1.4.2",
+          "procedure": "Examine vendor documentation and configurations of NSCs to verify that inbound traffic from untrusted networks to trusted networks is restricted in accordance with all elements specified in this requirement.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all vendor documentation examined for this testing procedure.",
+            "Identify the evidence reference number(s) from Section 6 for all configurations examined for this testing procedure."
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "roc_req_1",
+      "requirementRef": "1.4.3",
+      "section": "Requirement 1: Network security controls",
+      "title": "Anti-spoofing measures are implemented to detect and block forged source IP addresses from entering the trusted network.",
+      "rocTestingProcedures": [
+        {
+          "ref": "1.4.3",
+          "procedure": "Examine vendor documentation and configurations for NSCs to verify that anti-spoofing measures are implemented to detect and block forged source IP addresses from entering the trusted network.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all vendor documentation examined for this testing procedure.",
+            "Identify the evidence reference number(s) from Section 6 for all configurations examined for this testing procedure."
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "roc_req_1",
+      "requirementRef": "1.4.4",
+      "section": "Requirement 1: Network security controls",
+      "title": "System components that store cardholder data are not directly accessible from untrusted networks.",
+      "rocTestingProcedures": [
+        {
+          "ref": "1.4.4.a",
+          "procedure": "Examine the data-flow diagram and network diagram to verify that it is documented that system components storing cardholder data are not directly accessible from the untrusted networks.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all data-flow diagram examined for this testing procedure.",
+            "Identify the evidence reference number(s) from Section 6 for all network diagram examined for this testing procedure."
+          ]
+        },
+        {
+          "ref": "1.4.4.b",
+          "procedure": "Examine configurations of NSCs to verify that controls are implemented such that system components storing cardholder data are not directly accessible from untrusted networks.",
+          "reportingInstructions": [
+            "Identify the evidence reference number(s) from Section 6 for all configurations examined for this testing procedure."
+          ]
+        }
+      ]
+    }
+  ]
+}

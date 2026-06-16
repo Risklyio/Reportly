@@ -17,7 +17,10 @@ import type {
 } from "@/lib/types";
 import { PENTEST_LEAD_CONTROL_ID } from "@/lib/controls/pentest";
 import { ControlCard } from "./ControlCard";
+import { RocRequirementCard } from "./RocRequirementCard";
 import { MobileAssessmentNav } from "./MobileAssessmentNav";
+import { stringifyRocProcedureNotes } from "@/lib/roc/notes";
+import type { RocProcedureNotesMap } from "@/lib/types";
 
 type Filter = "all" | "open" | "not_in_place" | "hard_fail";
 
@@ -41,6 +44,7 @@ function buildStateMap(
         evidenceNotes: "",
         pciExpectedTestingDone: [],
         pciExpectedTestingComments: [],
+        rocProcedureNotes: {},
         updatedAt: new Date().toISOString(),
       }
     );
@@ -144,6 +148,7 @@ export function AssessmentWorkspace({
         correctiveAction: string;
         pciExpectedTestingDone: boolean[];
         pciExpectedTestingComments: string[];
+        rocProcedureNotes?: RocProcedureNotesMap;
       }>
     ) => {
       const res = await fetch(
@@ -252,6 +257,23 @@ export function AssessmentWorkspace({
             <div className="space-y-4">
               {controls.map((control) => {
                 const st = states.get(control.id)!;
+                if (outcomeProfile === "roc") {
+                  return (
+                    <RocRequirementCard
+                      key={control.id}
+                      control={control}
+                      outcome={st.outcome}
+                      notInPlaceReason={st.notInPlaceReason}
+                      rocProcedureNotesJson={stringifyRocProcedureNotes(
+                        st.rocProcedureNotes
+                      )}
+                      onSave={(patch) => updateControl(control.id, patch)}
+                      onOutcomeChange={(o) =>
+                        handleOutcomeChange(control.id, o)
+                      }
+                    />
+                  );
+                }
                 return (
                   <ControlCard
                     key={control.id}

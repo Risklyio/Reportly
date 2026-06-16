@@ -27,6 +27,7 @@ type RestorePayload = {
       | "not_applicable"
       | "not_tested"
       | "in_place_compensating"
+      | "customized_approach"
       | "pending"
       | null;
     notInPlaceReason?: string;
@@ -35,6 +36,7 @@ type RestorePayload = {
     evidenceNotes?: string;
     pciExpectedTestingDone?: boolean[];
     pciExpectedTestingComments?: string[];
+    rocProcedureNotes?: Record<string, { testingNotes: string; reportingDetails: string[] }>;
   }>;
 };
 
@@ -94,6 +96,7 @@ export async function POST(request: Request) {
         evidenceNotes: row.evidenceNotes ?? "",
         pciExpectedTestingDone: row.pciExpectedTestingDone ?? [],
         pciExpectedTestingComments: row.pciExpectedTestingComments ?? [],
+        rocProcedureNotes: row.rocProcedureNotes ?? {},
       });
     }
 

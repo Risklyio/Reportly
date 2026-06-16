@@ -13,6 +13,7 @@ const OUTCOME_LABELS: Record<string, string> = {
   not_applicable: "Not applicable",
   not_tested: "Not tested",
   in_place_compensating: "In place via compensating control",
+  customized_approach: "Customized Approach",
   pending: "Pending",
 };
 /** Wait after typing stops before autosave (reduces lag and API calls) */

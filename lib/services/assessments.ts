@@ -7,11 +7,16 @@ import {
   PENTEST_PENDING_CORRECTIVE_APP1,
   PENTEST_PENDING_CORRECTIVE_OTHER,
 } from "@/lib/controls/pentest";
+import {
+  parseRocProcedureNotes,
+  stringifyRocProcedureNotes,
+} from "@/lib/roc/notes";
 import type {
   AssessmentMetadata,
   AssessmentListItem,
   AssessmentControlState,
   ControlOutcome,
+  RocProcedureNotesMap,
 } from "@/lib/types";
 import { assertDatabaseReady, isSupabaseConfigured } from "@/lib/db";
 import {
@@ -426,6 +431,9 @@ export async function getAssessmentControlStates(
       pciExpectedTestingComments: parseStringArrayJson(
         (r as any).pci_expected_testing_comments ?? "[]"
       ),
+      rocProcedureNotes: parseRocProcedureNotes(
+        (r as any).roc_procedure_notes ?? "{}"
+      ),
       updatedAt: r.updated_at ?? "",
     }));
     await ensureAssessmentControlRows(
@@ -451,6 +459,9 @@ export async function getAssessmentControlStates(
       ),
       pciExpectedTestingComments: parseStringArrayJson(
         (r as any).pci_expected_testing_comments ?? "[]"
+      ),
+      rocProcedureNotes: parseRocProcedureNotes(
+        (r as any).roc_procedure_notes ?? "{}"
       ),
       updatedAt: r.updated_at ?? "",
     }));
@@ -488,6 +499,9 @@ export async function getAssessmentControlStates(
     pciExpectedTestingComments: parseStringArrayJson(
       (r as any).pciExpectedTestingComments ?? "[]"
     ),
+    rocProcedureNotes: parseRocProcedureNotes(
+      (r as any).rocProcedureNotes ?? "{}"
+    ),
     updatedAt: r.updatedAt,
   }));
 }
@@ -503,6 +517,7 @@ export async function updateAssessmentControl(
     evidenceNotes: string;
     pciExpectedTestingDone: boolean[];
     pciExpectedTestingComments: string[];
+    rocProcedureNotes: RocProcedureNotesMap;
   }>
 ): Promise<void> {
   await assertDatabaseReady();
@@ -525,6 +540,10 @@ export async function updateAssessmentControl(
     if (patch.pciExpectedTestingComments !== undefined)
       row.pci_expected_testing_comments = JSON.stringify(
         patch.pciExpectedTestingComments
+      );
+    if (patch.rocProcedureNotes !== undefined)
+      row.roc_procedure_notes = stringifyRocProcedureNotes(
+        patch.rocProcedureNotes
       );
 
     const { data: existing } = await sb
@@ -555,6 +574,9 @@ export async function updateAssessmentControl(
         pci_expected_testing_comments: JSON.stringify(
           patch.pciExpectedTestingComments ?? []
         ),
+        roc_procedure_notes: stringifyRocProcedureNotes(
+          patch.rocProcedureNotes ?? {}
+        ),
         updated_at: ts,
       });
       if (error) throw new Error(error.message);
@@ -580,6 +602,7 @@ export async function updateAssessmentControl(
     const setData: any = { ...patch, updatedAt: ts };
     delete setData.pciExpectedTestingDone;
     delete setData.pciExpectedTestingComments;
+    delete setData.rocProcedureNotes;
     if (patch.pciExpectedTestingDone !== undefined) {
       setData.pciExpectedTestingDone = JSON.stringify(
         patch.pciExpectedTestingDone
@@ -588,6 +611,11 @@ export async function updateAssessmentControl(
     if (patch.pciExpectedTestingComments !== undefined) {
       setData.pciExpectedTestingComments = JSON.stringify(
         patch.pciExpectedTestingComments
+      );
+    }
+    if (patch.rocProcedureNotes !== undefined) {
+      setData.rocProcedureNotes = stringifyRocProcedureNotes(
+        patch.rocProcedureNotes
       );
     }
 
@@ -612,6 +640,7 @@ export async function updateAssessmentControl(
         evidenceNotes: patch.evidenceNotes ?? "",
         pciExpectedTestingDone: JSON.stringify(patch.pciExpectedTestingDone ?? []),
         pciExpectedTestingComments: JSON.stringify(patch.pciExpectedTestingComments ?? []),
+        rocProcedureNotes: stringifyRocProcedureNotes(patch.rocProcedureNotes ?? {}),
         updatedAt: ts,
       })
       .run();
