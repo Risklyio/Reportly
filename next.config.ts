@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/assessments/*/export/roc": [
       "./data/roc-pdf-field-map.json",
+      "./lib/export/roc-pdf-field-map.generated.ts",
       "./public/templates/PCI-DSS-v4-0-1-ROC-Template-r3.pdf",
     ],
   },

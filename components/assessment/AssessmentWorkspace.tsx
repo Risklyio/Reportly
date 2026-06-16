@@ -306,7 +306,7 @@ export function AssessmentWorkspace({
           states.get(selectedRocControl.id)?.notInPlaceReason ?? ""
         }
         rocProcedureNotesJson={stringifyRocProcedureNotes(
-          states.get(selectedRocControl.id)?.rocProcedureNotes
+          states.get(selectedRocControl.id)?.rocProcedureNotes ?? {}
         )}
         onSave={(patch) => updateControl(selectedRocControl.id, patch)}
         onOutcomeChange={(o) => handleOutcomeChange(selectedRocControl.id, o)}

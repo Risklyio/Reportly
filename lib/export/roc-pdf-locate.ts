@@ -5,8 +5,9 @@ import type { RocPdfFieldEntry } from "./roc-pdf-types";
 
 type TextItem = { str: string; x: number; y: number; w: number; h: number };
 
-const CHECKBOX = "\u2610";
+const CHECKBOX_CHARS = /[\u2610\u25A1]/;
 const REQ_LINE = /^(A?\d+(?:\.\d+)+)\s+/;
+const REQ_ONLY = /^(A?\d+(?:\.\d+)+)$/;
 
 function groupLines(items: TextItem[], tolerance = 2.5): TextItem[][] {
   const sorted = [...items].sort((a, b) => b.y - a.y || a.x - b.x);
@@ -26,6 +27,27 @@ function lineText(line: TextItem[]): string {
   return line.map((i) => i.str).join(" ").replace(/\s+/g, " ").trim();
 }
 
+function countCheckboxes(text: string): number {
+  return text.match(/[\u2610\u25A1]/g)?.length ?? 0;
+}
+
+function parseRefFromLine(text: string): string | null {
+  const m = text.match(REQ_LINE);
+  if (m) return m[1]!;
+  if (REQ_ONLY.test(text)) return text;
+  return null;
+}
+
+function isProcedureRef(ref: string): boolean {
+  return /\.[a-z]$/i.test(ref);
+}
+
+function isNextRequirementLine(text: string, ref: string): boolean {
+  const nextRef = parseRefFromLine(text);
+  if (!nextRef || isProcedureRef(nextRef)) return false;
+  return nextRef !== ref;
+}
+
 function extractPrintedPage(items: TextItem[], pageWidth = 612): number | null {
   for (const item of items) {
     if (item.y > 55) continue;
@@ -36,12 +58,71 @@ function extractPrintedPage(items: TextItem[], pageWidth = 612): number | null {
   return null;
 }
 
+function findAssessmentFindingsIdx(
+  lines: TextItem[][],
+  startIdx: number,
+  ref: string
+): number {
+  for (let j = startIdx + 1; j < Math.min(startIdx + 28, lines.length); j++) {
+    const t = lineText(lines[j]!);
+    if (isNextRequirementLine(t, ref)) break;
+
+    if (/Assessment Findings/i.test(t)) return j;
+
+    if (j + 1 < lines.length) {
+      const combined = `${t} ${lineText(lines[j + 1]!)}`;
+      if (/Assessment Findings/i.test(combined)) return j;
+    }
+  }
+  return -1;
+}
+
+function findDescribeWhyIdx(
+  lines: TextItem[][],
+  startIdx: number,
+  ref: string
+): number {
+  for (let j = startIdx + 1; j < Math.min(startIdx + 28, lines.length); j++) {
+    const t = lineText(lines[j]!);
+    if (isNextRequirementLine(t, ref)) break;
+    if (/Describe why/i.test(t)) return j;
+  }
+  return -1;
+}
+
 function findCheckboxLine(lines: TextItem[][], startIdx: number): TextItem[] | null {
-  for (let i = startIdx; i < Math.min(startIdx + 15, lines.length); i++) {
+  for (let i = startIdx; i < Math.min(startIdx + 24, lines.length); i++) {
     const t = lineText(lines[i]!);
-    if ((t.match(/\u2610/g)?.length ?? 0) >= 4) return lines[i]!;
+    if (countCheckboxes(t) >= 4) return lines[i]!;
+    if (/In Place/i.test(t) && /Not Applicable/i.test(t)) {
+      if (countCheckboxes(t) >= 1) return lines[i]!;
+      if (i + 1 < lines.length && countCheckboxes(lineText(lines[i + 1]!)) >= 4) {
+        return lines[i + 1]!;
+      }
+    }
+    if (/Select if below/i.test(t) && i + 1 < lines.length) {
+      const next = lineText(lines[i + 1]!);
+      if (countCheckboxes(next) >= 4) return lines[i + 1]!;
+    }
   }
   return null;
+}
+
+function checkboxCenters(cbLine: TextItem[]): number[] {
+  const fromGlyphs = cbLine
+    .filter((i) => CHECKBOX_CHARS.test(i.str))
+    .map((i) => i.x + i.w / 2);
+  if (fromGlyphs.length >= 4) {
+    return fromGlyphs.sort((a, b) => a - b);
+  }
+  const t = lineText(cbLine);
+  const count = countCheckboxes(t);
+  if (count < 4) return [];
+  const minX = Math.min(...cbLine.map((c) => c.x));
+  const maxX = Math.max(...cbLine.map((c) => c.x + c.w));
+  const span = maxX - minX;
+  const step = span / Math.max(count - 1, 1);
+  return Array.from({ length: count }, (_, idx) => minX + step * idx);
 }
 
 function parseRequirementBlock(
@@ -53,42 +134,34 @@ function parseRequirementBlock(
   ref: string
 ): RocPdfFieldEntry | null {
   const startText = lineText(lines[startIdx]!);
-  const startMatch = startText.match(REQ_LINE);
-  if (!startMatch || startMatch[1] !== ref) return null;
+  const startRef = parseRefFromLine(startText);
+  if (!startRef || startRef !== ref || isProcedureRef(startRef)) return null;
 
   let assessmentFindingsIdx = -1;
   let describeWhyIdx = -1;
 
-  for (let j = startIdx + 1; j < Math.min(startIdx + 18, lines.length); j++) {
-    const t = lineText(lines[j]!);
-    const m = t.match(REQ_LINE);
-    if (m && !/\.[a-z]$/i.test(m[1] ?? "") && m[1] !== ref) break;
+  assessmentFindingsIdx = findAssessmentFindingsIdx(lines, startIdx, ref);
+  if (assessmentFindingsIdx < 0) return null;
 
-    if (/Assessment Findings\s*\(check one\)/i.test(t)) {
-      assessmentFindingsIdx = j;
-    }
-    if (/Describe why the assessment finding was selected/i.test(t)) {
-      describeWhyIdx = j;
-    }
-  }
-
-  if (assessmentFindingsIdx < 0 || describeWhyIdx < 0) return null;
+  describeWhyIdx = findDescribeWhyIdx(lines, startIdx, ref);
 
   const cbLine =
     findCheckboxLine(lines, assessmentFindingsIdx) ??
     findCheckboxLine(lines, startIdx + 1);
   if (!cbLine) return null;
 
-  const centers = cbLine
-    .filter((i) => i.str.includes(CHECKBOX))
-    .map((i) => i.x + i.w / 2)
-    .sort((a, b) => a - b);
+  const centers = checkboxCenters(cbLine);
   if (centers.length < 4) return null;
 
   const checkboxY = cbLine[0]!.y;
-  const describeLine = lines[describeWhyIdx]!;
-  const rationaleX = Math.min(...describeLine.map((c) => c.x));
-  const rationaleY = describeLine[0]!.y - 16;
+  let rationaleX = Math.min(...cbLine.map((c) => c.x));
+  let rationaleY = checkboxY - 36;
+
+  if (describeWhyIdx >= 0) {
+    const describeLine = lines[describeWhyIdx]!;
+    rationaleX = Math.min(...describeLine.map((c) => c.x));
+    rationaleY = describeLine[0]!.y - 16;
+  }
 
   return {
     requirementRef: ref,
@@ -109,7 +182,7 @@ function parseRequirementBlock(
 function scoreEntry(entry: RocPdfFieldEntry): number {
   let score = entry.page * 100;
   if (entry.printedPage != null) score += entry.printedPage * 10;
-  score += 50;
+  if (entry.rationale?.y) score += 50;
   return score;
 }
 
@@ -180,10 +253,8 @@ export async function buildFieldMapFromPdfBytes(
 
     for (let i = 0; i < lines.length; i++) {
       const text = lineText(lines[i]!);
-      const m = text.match(REQ_LINE);
-      if (!m) continue;
-      const ref = m[1]!;
-      if (/\.[a-z]$/i.test(ref)) continue;
+      const ref = parseRefFromLine(text);
+      if (!ref || isProcedureRef(ref)) continue;
       const entry = parseRequirementBlock(
         lines,
         i,

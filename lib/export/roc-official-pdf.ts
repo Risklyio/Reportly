@@ -48,7 +48,7 @@ export async function renderOfficialRocPdf(
   const cachedMap = loadCachedFieldMap(getRocFieldMapPath());
   if (!cachedMap) {
     throw new Error(
-      "ROC field map not found. Redeploy the app so the build step can generate data/roc-pdf-field-map.json from the official template."
+      "ROC field map not found or empty. Run npm run setup-roc-template && npm run build-roc-pdf-map locally, commit lib/export/roc-pdf-field-map.generated.ts, and redeploy."
     );
   }
 

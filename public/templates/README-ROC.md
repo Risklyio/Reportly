@@ -12,7 +12,14 @@ git push
 ```
 
 2. Field coordinates are generated automatically during `npm run build` (Vercel deploy).  
-   To regenerate locally: `npm run build-roc-pdf-map`
+   To regenerate locally:
+
+```powershell
+npm run setup-roc-template
+npm run build-roc-pdf-map
+```
+
+Commit both `data/roc-pdf-field-map.json` and `lib/export/roc-pdf-field-map.generated.ts` (bundled for serverless).
 
 ## Vercel
 
