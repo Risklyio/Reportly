@@ -1,3 +1,4 @@
+import { createRequire } from "node:module";
 import fs from "node:fs";
 import type { RocPdfFieldEntry } from "./roc-pdf-types";
 
@@ -76,7 +77,13 @@ function parseRequirementBlock(
 }
 
 async function loadPdfjs() {
-  return import("pdfjs-dist/legacy/build/pdf.mjs");
+  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const require = createRequire(import.meta.url);
+  const workerPath = require.resolve(
+    "pdfjs-dist/legacy/build/pdf.worker.mjs"
+  );
+  pdfjs.GlobalWorkerOptions.workerSrc = workerPath;
+  return pdfjs;
 }
 
 export async function locateRequirementInPdf(
@@ -84,7 +91,11 @@ export async function locateRequirementInPdf(
   requirementRef: string
 ): Promise<RocPdfFieldEntry | null> {
   const pdfjs = await loadPdfjs();
-  const doc = await pdfjs.getDocument({ data: pdfBytes, useSystemFonts: true }).promise;
+  const doc = await pdfjs.getDocument({
+    data: pdfBytes,
+    useSystemFonts: true,
+    disableFontFace: true,
+  }).promise;
 
   for (let pageNum = 1; pageNum <= doc.numPages; pageNum++) {
     const page = await doc.getPage(pageNum);
@@ -124,7 +135,11 @@ export async function buildFieldMapFromPdf(
 ): Promise<RocPdfFieldEntry[]> {
   const pdfBytes = new Uint8Array(fs.readFileSync(pdfPath));
   const pdfjs = await loadPdfjs();
-  const doc = await pdfjs.getDocument({ data: pdfBytes, useSystemFonts: true }).promise;
+  const doc = await pdfjs.getDocument({
+    data: pdfBytes,
+    useSystemFonts: true,
+    disableFontFace: true,
+  }).promise;
   const entries: RocPdfFieldEntry[] = [];
 
   for (let pageNum = 1; pageNum <= doc.numPages; pageNum++) {
@@ -166,16 +181,4 @@ export async function buildFieldMapFromPdf(
   return Array.from(byRef.values());
 }
 
-export function loadCachedFieldMap(
-  mapPath: string
-): Map<string, RocPdfFieldEntry> | null {
-  if (!fs.existsSync(mapPath)) return null;
-  try {
-    const data = JSON.parse(fs.readFileSync(mapPath, "utf8")) as {
-      entries: RocPdfFieldEntry[];
-    };
-    return new Map(data.entries.map((e) => [e.requirementRef, e]));
-  } catch {
-    return null;
-  }
-}
+export { loadCachedFieldMap, getRocFieldMapPath } from "./roc-field-map";

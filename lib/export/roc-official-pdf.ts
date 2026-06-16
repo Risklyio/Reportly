@@ -1,5 +1,3 @@
-import fs from "node:fs";
-import path from "node:path";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import {
   getControlsForFramework,
@@ -7,14 +5,9 @@ import {
   formatControlRef,
 } from "@/lib/controls/catalog";
 import type { AssessmentControlState } from "@/lib/types";
-import { getRocTemplatePath } from "./roc-template-path";
-import {
-  loadCachedFieldMap,
-  locateRequirementInPdf,
-} from "./roc-pdf-locate";
+import { resolveRocTemplateBytes } from "./roc-template-path";
+import { loadCachedFieldMap, getRocFieldMapPath } from "./roc-field-map";
 import { ROC_OUTCOME_COLUMN } from "./roc-pdf-types";
-
-const MAP_PATH = path.join(process.cwd(), "data", "roc-pdf-field-map.json");
 
 function wrapText(text: string, maxChars: number, maxLines: number): string[] {
   const words = text.replace(/\s+/g, " ").trim().split(" ");
@@ -47,12 +40,16 @@ export type RocOfficialExportInput = {
 export async function renderOfficialRocPdf(
   input: RocOfficialExportInput
 ): Promise<Uint8Array> {
-  const templateBytes = fs.readFileSync(getRocTemplatePath());
-  const templateUint8 = new Uint8Array(templateBytes);
-  const pdfDoc = await PDFDocument.load(templateBytes);
+  const templateUint8 = await resolveRocTemplateBytes();
+  const pdfDoc = await PDFDocument.load(templateUint8);
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-  const cachedMap = loadCachedFieldMap(MAP_PATH);
+  const cachedMap = loadCachedFieldMap(getRocFieldMapPath());
+  if (!cachedMap) {
+    throw new Error(
+      "ROC field map not found. Redeploy the app so the build step can generate data/roc-pdf-field-map.json from the official template."
+    );
+  }
 
   const controls = getControlsForFramework(PCI_ROC_FRAMEWORK_ID);
   const stateByControl = new Map(input.states.map((s) => [s.controlId, s]));
@@ -81,9 +78,7 @@ export async function renderOfficialRocPdf(
     if (!state?.outcome) continue;
     const outcome = state.outcome;
 
-    const field =
-      cachedMap?.get(ref) ??
-      (await locateRequirementInPdf(templateUint8, ref));
+    const field = cachedMap.get(ref);
     if (!field) continue;
 
     const page = pages[field.page - 1];

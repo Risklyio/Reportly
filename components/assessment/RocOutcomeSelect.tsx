@@ -14,9 +14,11 @@ const ROC_OPTIONS: { value: ControlOutcome; label: string }[] = [
 export function RocOutcomeSelect({
   value,
   onChange,
+  className = "",
 }: {
   value: ControlOutcome;
   onChange: (v: ControlOutcome) => void | Promise<void>;
+  className?: string;
 }) {
   return (
     <select
@@ -25,7 +27,7 @@ export function RocOutcomeSelect({
         const v = e.target.value;
         void onChange(v ? (v as ControlOutcome) : null);
       }}
-      className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-text focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary-ring"
+      className={`rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-text focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary-ring ${className}`}
     >
       <option value="">Select assessment finding…</option>
       {ROC_OPTIONS.map((o) => (

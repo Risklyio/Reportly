@@ -12,6 +12,10 @@ import type {
   ControlOutcome,
   RocProcedureNotesMap,
 } from "@/lib/types";
+import {
+  getReportingDetailLabel,
+  getReportingDetailPlaceholder,
+} from "@/lib/roc/reporting-labels";
 import { RocOutcomeSelect } from "./RocOutcomeSelect";
 
 const AUTOSAVE_DELAY_MS = 1200;
@@ -168,11 +172,11 @@ export function RocRequirementCard({
 
       {expanded && (
         <div className="space-y-4 border-t border-border px-4 py-4">
-          <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+          <div className="rounded-xl border-2 border-primary/45 bg-primary/[0.04] p-4 shadow-sm">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-primary">
               PCI DSS Requirement
             </h3>
-            <p className="mt-1 text-sm leading-relaxed text-text">
+            <p className="mt-2 text-sm leading-relaxed text-text">
               {control.title}
             </p>
           </div>
@@ -182,6 +186,7 @@ export function RocRequirementCard({
               Assessment findings
             </h3>
             <RocOutcomeSelect
+              className="w-full max-w-xs"
               value={outcome}
               onChange={async (v) => {
                 if (onOutcomeChange) await onOutcomeChange(v);
@@ -287,6 +292,10 @@ export function RocRequirementCard({
                           {proc.reportingInstructions.map((instruction, idx) => {
                             const reportKey = `${proc.ref}-${idx}`;
                             const reportOpen = openReporting[reportKey] ?? false;
+                            const detailLabel =
+                              getReportingDetailLabel(instruction);
+                            const detailPlaceholder =
+                              getReportingDetailPlaceholder(instruction);
                             return (
                               <div
                                 key={reportKey}
@@ -304,7 +313,7 @@ export function RocRequirementCard({
                                 >
                                   <Chevron open={reportOpen} />
                                   <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">
-                                    Reporting instruction {idx + 1}
+                                    {detailLabel}
                                   </span>
                                 </button>
                                 {reportOpen && (
@@ -317,13 +326,13 @@ export function RocRequirementCard({
                                         htmlFor={`roc-detail-${control.id}-${reportKey}`}
                                         className="text-xs font-medium text-text-muted"
                                       >
-                                        Section 6 evidence reference(s)
+                                        {detailLabel}
                                       </label>
                                       <input
                                         id={`roc-detail-${control.id}-${reportKey}`}
                                         type="text"
                                         className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm text-text"
-                                        placeholder="e.g. Doc-1, Int-02, Evidence-3"
+                                        placeholder={detailPlaceholder}
                                         value={note.reportingDetails[idx] ?? ""}
                                         onChange={(e) =>
                                           updateProcedureNote(

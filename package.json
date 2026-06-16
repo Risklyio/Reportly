@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "node scripts/ensure-roc-template.mjs && next build",
+    "build": "node scripts/ensure-roc-template.mjs && node scripts/build-roc-pdf-field-map.mjs && next build",
     "start": "next start",
     "lint": "next lint",
     "db:seed": "npx tsx scripts/seed.ts",
@@ -12,7 +12,7 @@
     "export-seeds": "npx tsx scripts/write-json-seeds.ts",
     "parse-roc": "npx tsx scripts/parse-roc-template.ts",
     "setup-roc-template": "node scripts/setup-roc-template.mjs",
-    "build-roc-pdf-map": "npx tsx scripts/build-roc-pdf-field-map.ts",
+    "build-roc-pdf-map": "node scripts/build-roc-pdf-field-map.mjs",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate"
   },
