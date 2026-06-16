@@ -370,6 +370,19 @@ export function ControlCard({
         {control.intent}
       </p>
 
+      {control.expectedTesting && control.expectedTesting.length > 0 && (
+        <div className="mb-4 rounded-lg border border-border bg-muted/30 px-4 py-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+            Expected testing (assessor guidance)
+          </p>
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text">
+            {control.expectedTesting.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <div id={`${control.id}-panel`} className="space-y-4">
         {isSamplingControl ? (
           <>

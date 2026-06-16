@@ -31,6 +31,7 @@ function pci(
     section,
     hardFail: extra.hardFail ?? false,
     intent,
+    expectedTesting: extra.expectedTesting,
     evidenceRequirements: extra.evidenceRequirements ?? [
       "Provide evidence per PCI DSS v4.0.1 SAQ A expected testing methods.",
     ],
@@ -55,6 +56,13 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Vendor default accounts",
     "Vendor default accounts are managed as follows: if used, the default password is changed per Requirement 8.3.6; if not used, the account is removed or disabled. Applies to e-commerce merchants’ vendor default accounts on web servers.",
     {
+      expectedTesting: [
+        "Examine system configuration standards.",
+        "Examine vendor documentation.",
+        "Observe a system administrator logging on using vendor default accounts.",
+        "Examine configuration files.",
+        "Interview personnel.",
+      ],
       defaultNotInPlaceReasons: [
         "Default vendor accounts still enabled with unchanged passwords",
         "Unused default accounts not removed or disabled",
@@ -70,6 +78,10 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Security policies and operational procedures",
     "All security policies and operational procedures identified in Requirement 3 are documented, kept up to date, in use, and known to all affected parties. Applies when the merchant stores paper records with account data.",
     {
+      expectedTesting: [
+        "Examine documentation.",
+        "Interview personnel.",
+      ],
       defaultNotInPlaceReasons: [
         "Policies for paper account data storage are not documented",
         "Personnel are unaware of data protection procedures",
@@ -84,6 +96,12 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Account data storage minimized",
     "Account data storage is kept to a minimum through data retention and disposal policies covering all storage locations, retention limits, business justification, secure deletion, and quarterly verification that expired data is destroyed.",
     {
+      expectedTesting: [
+        "Examine the data retention and disposal policies, procedures, and processes.",
+        "Interview personnel.",
+        "Examine files and system records on system components where account data is stored.",
+        "Observe the mechanisms used to render account data unrecoverable.",
+      ],
       defaultNotInPlaceReasons: [
         "Paper records retained beyond defined retention period",
         "No documented retention and disposal policy",
@@ -99,6 +117,12 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Security vulnerabilities identified and managed",
     "New security vulnerabilities are identified from industry-recognized sources, assigned risk rankings, and high-risk or critical vulnerabilities are identified. Applies to merchant servers with redirect or embedded payment pages.",
     {
+      expectedTesting: [
+        "Examine policies and procedures.",
+        "Interview responsible personnel.",
+        "Examine documentation.",
+        "Observe processes.",
+      ],
       defaultNotInPlaceReasons: [
         "No process to monitor industry vulnerability sources",
         "Vulnerabilities not risk-ranked",
@@ -113,6 +137,11 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Security patches within one month",
     "All system components are protected from known vulnerabilities by installing applicable security patches; critical vulnerabilities are patched within one month of release.",
     {
+      expectedTesting: [
+        "Examine policies and procedures.",
+        "Examine system components and related software.",
+        "Compare list of security patches installed to recent vendor patch lists.",
+      ],
       defaultNotInPlaceReasons: [
         "Critical patches not applied within one month",
         "Patch compliance not verified on in-scope servers",
@@ -128,6 +157,10 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Unique user IDs",
     "All users are assigned a unique ID before access to system components or cardholder data is allowed.",
     {
+      expectedTesting: [
+        "Interview responsible personnel.",
+        "Examine audit logs and other evidence.",
+      ],
       defaultNotInPlaceReasons: [
         "Shared or duplicate user identifiers in use",
         "New users provisioned without unique IDs",
@@ -141,6 +174,11 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Group, shared, or generic IDs",
     "Group, shared, or generic IDs are only used when necessary on an exception basis and are managed with documented justification, management approval, time limits, and attributable actions.",
     {
+      expectedTesting: [
+        "Examine user account lists on system components and applicable documentation.",
+        "Examine authentication policies and procedures.",
+        "Interview system administrators.",
+      ],
       defaultNotInPlaceReasons: [
         "Shared accounts used without documented exception",
         "Management approval or justification missing",
@@ -154,6 +192,11 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Terminated user access revoked",
     "Access for terminated users is immediately revoked.",
     {
+      expectedTesting: [
+        "Examine information sources for terminated users.",
+        "Review current user access lists.",
+        "Interview responsible personnel.",
+      ],
       defaultNotInPlaceReasons: [
         "Terminated users retain active accounts",
         "Deprovisioning process is not timely",
@@ -167,6 +210,10 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Strong authentication factors",
     "All user and administrator access to system components is authenticated via at least one authentication factor (something you know, have, or are).",
     {
+      expectedTesting: [
+        "Examine documentation describing the authentication factor(s) used.",
+        "For each type of authentication factor used with each type of system component, observe the authentication process.",
+      ],
       defaultNotInPlaceReasons: [
         "Authentication not enforced for administrative access",
         "Weak or missing authentication on in-scope systems",
@@ -180,6 +227,10 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Password set and reset",
     "If passwords are used, they are set to a unique value for first-time use and upon reset, and users are forced to change passwords immediately after first use.",
     {
+      expectedTesting: [
+        "Examine procedures for setting and resetting passwords/passphrases.",
+        "Observe security personnel.",
+      ],
       defaultNotInPlaceReasons: [
         "Default or reused passwords issued to users",
         "First-login password change not enforced",
@@ -193,6 +244,7 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Password complexity",
     "If passwords are used, they meet minimum complexity: at least 12 characters (or 8 if the system cannot support 12) and contain both numeric and alphabetic characters.",
     {
+      expectedTesting: ["Examine system configuration settings."],
       defaultNotInPlaceReasons: [
         "Password length or complexity policy below PCI minimum",
         "System settings do not enforce complexity requirements",
@@ -206,6 +258,7 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Password history",
     "Individuals cannot submit a new password that matches any of the last four passwords used.",
     {
+      expectedTesting: ["Examine system configuration settings."],
       defaultNotInPlaceReasons: [
         "Password history not enforced",
         "Users can reuse recent passwords",
@@ -219,6 +272,7 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Password change or dynamic analysis",
     "If passwords are the only authentication factor, passwords are changed at least every 90 days OR account security posture is dynamically analyzed to determine real-time access.",
     {
+      expectedTesting: ["Inspect system configuration settings."],
       defaultNotInPlaceReasons: [
         "Passwords not rotated within 90 days where required",
         "No dynamic account risk analysis in place",
@@ -233,6 +287,7 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Media with cardholder data physically secured",
     "All media with cardholder data is physically secured. Applies to merchants with paper records containing account data.",
     {
+      expectedTesting: ["Examine documentation."],
       defaultNotInPlaceReasons: [
         "Paper media with account data not stored securely",
         "No locked storage for physical cardholder data",
@@ -246,6 +301,11 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Offline media backups secured",
     "Offline media backups with cardholder data are stored in a secure location.",
     {
+      expectedTesting: [
+        "Examine documented procedures.",
+        "Examine logs or other documentation.",
+        "Interview responsible personnel at the storage location(s).",
+      ],
       defaultNotInPlaceReasons: [
         "Offline backups not stored in a secure location",
         "Backup storage controls not documented",
@@ -259,6 +319,10 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Media classification",
     "All media with cardholder data is classified in accordance with the sensitivity of the data.",
     {
+      expectedTesting: [
+        "Examine documented procedures.",
+        "Examine media logs or other documentation.",
+      ],
       defaultNotInPlaceReasons: [
         "Media classification procedures missing",
         "Sensitive paper media not labeled or classified",
@@ -272,6 +336,12 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Media sent outside the facility",
     "Media with cardholder data sent outside the facility is secured and sent by a tracked delivery method.",
     {
+      expectedTesting: [
+        "Examine documented procedures.",
+        "Interview personnel.",
+        "Examine records.",
+        "Examine offsite tracking logs for all media.",
+      ],
       defaultNotInPlaceReasons: [
         "Offsite media shipments not tracked or secured",
         "Courier or tracking controls not in place",
@@ -285,6 +355,11 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Management approval for offsite media",
     "Management approves all media with cardholder data moved outside the facility.",
     {
+      expectedTesting: [
+        "Examine documented procedures.",
+        "Examine offsite media tracking logs.",
+        "Interview responsible personnel.",
+      ],
       defaultNotInPlaceReasons: [
         "Offsite media movements lack management approval",
         "Approval records not maintained",
@@ -298,6 +373,12 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Hard-copy destruction",
     "Hard-copy materials with cardholder data are destroyed when no longer needed via cross-cut shredding, incineration, or pulping, with secure storage containers used prior to destruction.",
     {
+      expectedTesting: [
+        "Examine the periodic media destruction policy.",
+        "Observe processes.",
+        "Interview personnel.",
+        "Observe storage containers.",
+      ],
       defaultNotInPlaceReasons: [
         "Paper destruction process not defined or followed",
         "Insecure disposal of materials with account data",
@@ -313,6 +394,7 @@ export const pciSaqAControls: ControlDefinition[] = [
     "External vulnerability scans are performed at least quarterly by a PCI SSC Approved Scanning Vendor, vulnerabilities are resolved, and rescans confirm passing results per the ASV Program Guide.",
     {
       hardFail: true,
+      expectedTesting: ["Examine ASV scan reports."],
       defaultNotInPlaceReasons: [
         "Most recent ASV scan did not pass",
         "Quarterly scanning not performed",
@@ -327,6 +409,11 @@ export const pciSaqAControls: ControlDefinition[] = [
     "External scans after significant change",
     "External vulnerability scans are performed after any significant change; CVSS 4.0+ vulnerabilities are resolved and rescans conducted by qualified personnel with organizational independence.",
     {
+      expectedTesting: [
+        "Examine change control documentation.",
+        "Interview personnel.",
+        "Examine external scan, and as applicable rescan reports.",
+      ],
       defaultNotInPlaceReasons: [
         "No scan performed after significant infrastructure change",
         "High-severity findings from post-change scan remain open",
@@ -341,6 +428,10 @@ export const pciSaqAControls: ControlDefinition[] = [
     "TPSP list maintained",
     "A list of all third-party service providers with which account data is shared or that could affect account data security is maintained, including a description of services provided.",
     {
+      expectedTesting: [
+        "Examine policies and procedures.",
+        "Examine list of TPSPs.",
+      ],
       defaultNotInPlaceReasons: [
         "TPSP inventory incomplete or outdated",
         "Service descriptions missing from TPSP list",
@@ -354,6 +445,10 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Written agreements with TPSPs",
     "Written agreements are maintained with all relevant TPSPs and include acknowledgments that TPSPs are responsible for the security of account data they handle or that could impact the merchant CDE.",
     {
+      expectedTesting: [
+        "Examine policies and procedures.",
+        "Examine written agreements with TPSPs.",
+      ],
       defaultNotInPlaceReasons: [
         "Written TPSP agreements missing or incomplete",
         "TPSP security acknowledgments not documented",
@@ -367,6 +462,11 @@ export const pciSaqAControls: ControlDefinition[] = [
     "TPSP due diligence",
     "An established process is implemented for engaging TPSPs, including proper due diligence prior to engagement.",
     {
+      expectedTesting: [
+        "Examine policies and procedures.",
+        "Examine evidence.",
+        "Interview responsible personnel.",
+      ],
       defaultNotInPlaceReasons: [
         "No due diligence process before engaging TPSPs",
         "Due diligence evidence not retained",
@@ -380,6 +480,11 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Monitor TPSP PCI DSS compliance",
     "A program is implemented to monitor TPSPs’ PCI DSS compliance status at least once every 12 months.",
     {
+      expectedTesting: [
+        "Examine policies and procedures.",
+        "Examine documentation.",
+        "Interview responsible personnel.",
+      ],
       defaultNotInPlaceReasons: [
         "TPSP compliance status not reviewed annually",
         "AOC or compliance evidence not collected from TPSPs",
@@ -393,6 +498,11 @@ export const pciSaqAControls: ControlDefinition[] = [
     "TPSP responsibility matrix",
     "Information is maintained about which PCI DSS requirements are managed by each TPSP, which are managed by the entity, and any that are shared.",
     {
+      expectedTesting: [
+        "Examine policies and procedures.",
+        "Examine documentation.",
+        "Interview responsible personnel.",
+      ],
       defaultNotInPlaceReasons: [
         "Shared responsibility matrix not documented",
         "TPSP vs merchant responsibilities unclear",
@@ -406,6 +516,11 @@ export const pciSaqAControls: ControlDefinition[] = [
     "Incident response plan",
     "An incident response plan exists and is ready to be activated, including roles, communication strategies, containment procedures, recovery, backup processes, legal reporting requirements, and payment brand references.",
     {
+      expectedTesting: [
+        "Examine the incident response plan.",
+        "Interview personnel.",
+        "Examine documentation from previously reported incidents.",
+      ],
       defaultNotInPlaceReasons: [
         "Incident response plan not documented",
         "Plan not reviewed or available to personnel",

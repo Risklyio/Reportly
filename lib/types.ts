@@ -25,6 +25,8 @@ export interface ControlDefinition {
   section: string;
   hardFail: boolean;
   intent: string;
+  /** PCI SAQ expected testing methods — shown as assessor guidance in the UI. */
+  expectedTesting?: string[];
   evidenceRequirements: string[];
   docUrl: string;
   defaultNotInPlaceReasons: string[];
