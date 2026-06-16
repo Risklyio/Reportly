@@ -7,7 +7,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.1.1",
     "page": 41,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -28,7 +27,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.8",
     "page": 22,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       206.58,
@@ -49,7 +47,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.1.2",
     "page": 42,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -70,7 +67,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.2.1",
     "page": 43,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -91,7 +87,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.2.2",
     "page": 44,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -112,7 +107,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.2.3",
     "page": 46,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -133,7 +127,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.2.4",
     "page": 47,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -154,7 +147,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.2.5",
     "page": 48,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -175,7 +167,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.2.6",
     "page": 49,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -196,7 +187,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.2.7",
     "page": 50,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -217,7 +207,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.2.8",
     "page": 51,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -238,7 +227,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.3.1",
     "page": 52,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.82786,
@@ -259,7 +247,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.3.2",
     "page": 53,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.82786,
@@ -280,7 +267,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.3.3",
     "page": 54,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.82786,
@@ -301,7 +287,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.4.1",
     "page": 55,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -322,7 +307,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.4.2",
     "page": 56,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94000000000001,
@@ -343,7 +327,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.4.3",
     "page": 57,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -364,7 +347,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.4.4",
     "page": 58,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -385,7 +367,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.4.5",
     "page": 59,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -406,7 +387,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "1.5.1",
     "page": 60,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -427,7 +407,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "2.1.1",
     "page": 62,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94000000000001,
@@ -448,7 +427,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "2.1.2",
     "page": 63,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -469,7 +447,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "2.2.1",
     "page": 64,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -490,7 +467,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "2.2.2",
     "page": 65,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -511,7 +487,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "2.2.3",
     "page": 67,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -532,7 +507,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "2.2.4",
     "page": 69,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -553,7 +527,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "2.2.5",
     "page": 70,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -574,7 +547,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "2.2.6",
     "page": 71,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -595,7 +567,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "2.2.7",
     "page": 72,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -616,7 +587,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "2.3.1",
     "page": 74,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -637,7 +607,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "2.3.2",
     "page": 76,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -658,7 +627,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.1.1",
     "page": 77,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -679,7 +647,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.1.2",
     "page": 78,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -700,7 +667,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.2.1",
     "page": 79,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       126.06786000000001,
@@ -721,7 +687,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.3.1",
     "page": 81,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94000000000001,
@@ -741,7 +706,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.3.1.1",
     "page": 82,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -761,7 +725,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.3.1.2",
     "page": 83,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.46786,
@@ -781,7 +744,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.3.1.3",
     "page": 83,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -801,7 +763,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.3.2",
     "page": 84,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.58786,
@@ -821,7 +782,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.3.3",
     "page": 85,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.58786,
@@ -842,7 +802,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.4.1",
     "page": 86,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.58786,
@@ -863,7 +822,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.4.2",
     "page": 88,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.58786,
@@ -884,7 +842,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.5.1",
     "page": 89,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       130.38786,
@@ -905,7 +862,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.5.1.1",
     "page": 91,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.74786,
@@ -926,7 +882,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.5.1.2",
     "page": 92,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.70786000000001,
@@ -947,7 +902,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.5.1.3",
     "page": 94,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.70786000000001,
@@ -968,7 +922,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.6.1",
     "page": 95,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.70786000000001,
@@ -989,7 +942,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.6.1.1",
     "page": 96,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.90786,
@@ -1010,7 +962,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.6.1.2",
     "page": 97,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.90786,
@@ -1031,7 +982,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.6.1.3",
     "page": 99,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.74786,
@@ -1052,7 +1002,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.6.1.4",
     "page": 100,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.74786,
@@ -1073,7 +1022,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.7.1",
     "page": 101,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.90786,
@@ -1094,7 +1042,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.7.2",
     "page": 102,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.90786,
@@ -1115,7 +1062,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.7.3",
     "page": 103,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       132.06,
@@ -1136,7 +1082,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.7.4",
     "page": 104,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       132.06786,
@@ -1157,7 +1102,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.7.5",
     "page": 106,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       132.06786,
@@ -1178,7 +1122,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.7.6",
     "page": 107,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.38786,
@@ -1199,7 +1142,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.7.7",
     "page": 108,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       132.18786,
@@ -1220,7 +1162,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.7.8",
     "page": 109,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.54786,
@@ -1241,7 +1182,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "3.7.9",
     "page": 110,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.38786,
@@ -1262,7 +1202,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "4.1.1",
     "page": 111,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -1283,7 +1222,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "4.1.2",
     "page": 112,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -1304,7 +1242,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "4.2.1",
     "page": 113,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.38786,
@@ -1325,7 +1262,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "4.2.1.1",
     "page": 114,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.50786000000001,
@@ -1346,7 +1282,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "4.2.1.2",
     "page": 115,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.50786000000001,
@@ -1367,7 +1302,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "4.2.2",
     "page": 116,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.38786,
@@ -1388,7 +1322,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "5.1.1",
     "page": 117,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       131.34786,
@@ -1409,7 +1342,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "5.1.2",
     "page": 118,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       128.70786,
@@ -1430,7 +1362,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "5.2.1",
     "page": 119,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       133.14785999999998,
@@ -1451,7 +1382,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "5.2.2",
     "page": 120,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       133.14785999999998,
@@ -1472,7 +1402,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "5.2.3",
     "page": 121,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       131.10786,
@@ -1493,7 +1422,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "5.2.3.1",
     "page": 123,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       128.46786,
@@ -1514,7 +1442,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "5.3.1",
     "page": 124,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       130.14786,
@@ -1535,7 +1462,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "5.3.2",
     "page": 125,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       130.14786,
@@ -1556,7 +1482,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "5.3.2.1",
     "page": 127,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       130.14,
@@ -1577,7 +1502,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "5.3.3",
     "page": 128,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       130.14786,
@@ -1598,7 +1522,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "5.3.4",
     "page": 129,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       126.78786000000001,
@@ -1619,7 +1542,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "5.3.5",
     "page": 130,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.02786,
@@ -1640,7 +1562,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "5.4.1",
     "page": 131,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.50786000000001,
@@ -1661,7 +1582,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "6.1.1",
     "page": 132,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.62786,
@@ -1682,7 +1602,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "6.1.2",
     "page": 133,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.62786,
@@ -1703,7 +1622,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "6.2.1",
     "page": 134,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.62786,
@@ -1724,7 +1642,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "6.2.2",
     "page": 135,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       133.86785999999998,
@@ -1745,7 +1662,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "6.2.3",
     "page": 136,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       133.86785999999998,
@@ -1766,7 +1682,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "6.2.3.1",
     "page": 137,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       131.82786,
@@ -1787,7 +1702,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "6.2.4",
     "page": 138,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.18786,
@@ -1808,7 +1722,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "6.3.1",
     "page": 139,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.78786,
@@ -1829,7 +1742,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "6.3.2",
     "page": 141,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.78786,
@@ -1850,7 +1762,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "6.3.3",
     "page": 142,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.78786,
@@ -1871,7 +1782,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "6.4.1",
     "page": 143,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       134.46786,
@@ -1892,7 +1802,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "6.4.2",
     "page": 145,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       134.46786,
@@ -1913,7 +1822,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "6.4.3",
     "page": 146,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.02786,
@@ -1934,7 +1842,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "6.5.1",
     "page": 148,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.62786,
@@ -1955,7 +1862,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "6.5.2",
     "page": 150,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       134.70785999999998,
@@ -1976,7 +1882,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "6.5.3",
     "page": 151,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       134.70785999999998,
@@ -1997,7 +1902,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "6.5.4",
     "page": 152,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.3,
@@ -2018,7 +1922,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "6.5.5",
     "page": 153,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       131.82786,
@@ -2039,7 +1942,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "6.5.6",
     "page": 155,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.78786,
@@ -2060,7 +1962,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "7.1.1",
     "page": 156,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.62786,
@@ -2081,7 +1982,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "7.1.2",
     "page": 157,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.62786,
@@ -2102,7 +2002,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "7.2.1",
     "page": 158,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.62786,
@@ -2123,7 +2022,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "7.2.2",
     "page": 159,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       131.82,
@@ -2144,7 +2042,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "7.2.3",
     "page": 160,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       131.82786,
@@ -2165,7 +2062,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "7.2.4",
     "page": 161,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.02786,
@@ -2186,7 +2082,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "7.2.5",
     "page": 163,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.74786,
@@ -2207,7 +2102,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "7.2.5.1",
     "page": 164,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.62786,
@@ -2228,7 +2122,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "7.2.6",
     "page": 166,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.74786,
@@ -2249,7 +2142,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "7.3.1",
     "page": 167,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.74786,
@@ -2270,7 +2162,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "7.3.2",
     "page": 168,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       132.42785999999998,
@@ -2291,7 +2182,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "7.3.3",
     "page": 169,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.78786,
@@ -2312,7 +2202,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.1.1",
     "page": 170,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.62786,
@@ -2333,7 +2222,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.1.2",
     "page": 171,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.74786,
@@ -2354,7 +2242,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.2.1",
     "page": 172,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.62786,
@@ -2375,7 +2262,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.2.2",
     "page": 173,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.78786,
@@ -2396,7 +2282,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.2.3",
     "page": 175,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.78786,
@@ -2417,7 +2302,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.2.4",
     "page": 176,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.78786,
@@ -2438,7 +2322,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.2.5",
     "page": 177,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.78786,
@@ -2459,7 +2342,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.2.6",
     "page": 178,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.78786,
@@ -2480,7 +2362,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.2.7",
     "page": 179,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.78786,
@@ -2501,7 +2382,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.2.8",
     "page": 180,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.74786,
@@ -2522,7 +2402,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.3.1",
     "page": 181,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       131.82786,
@@ -2543,7 +2422,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.3.2",
     "page": 182,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       131.82786,
@@ -2564,7 +2442,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.3.3",
     "page": 183,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.02000000000001,
@@ -2585,7 +2462,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.3.4",
     "page": 184,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.74786,
@@ -2606,7 +2482,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.3.5",
     "page": 185,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.74786,
@@ -2627,7 +2502,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.3.6",
     "page": 186,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       132.54786,
@@ -2648,7 +2522,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.3.7",
     "page": 187,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.90786,
@@ -2669,7 +2542,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.3.8",
     "page": 188,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.74786,
@@ -2690,7 +2562,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.3.9",
     "page": 189,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.74786,
@@ -2711,7 +2582,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.3.10",
     "page": 190,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.74786,
@@ -2732,7 +2602,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.3.10.1",
     "page": 191,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       132.66786,
@@ -2753,7 +2622,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.3.11",
     "page": 192,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       130.02786,
@@ -2774,7 +2642,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.4.1",
     "page": 194,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.62786,
@@ -2795,7 +2662,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.4.2",
     "page": 195,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.62786,
@@ -2816,7 +2682,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.4.3",
     "page": 196,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.70786000000001,
@@ -2837,7 +2702,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.5.1",
     "page": 197,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.62786,
@@ -2858,7 +2722,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.6.1",
     "page": 199,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       134.46786,
@@ -2879,7 +2742,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.6.2",
     "page": 200,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       134.46786,
@@ -2900,7 +2762,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "8.6.3",
     "page": 201,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.14786000000001,
@@ -2921,7 +2782,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.1.1",
     "page": 203,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       132.06786,
@@ -2942,7 +2802,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.1.2",
     "page": 204,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.30786,
@@ -2963,7 +2822,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.2.1",
     "page": 205,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.26786,
@@ -2984,7 +2842,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.2.1.1",
     "page": 206,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.26786,
@@ -3005,7 +2862,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.2.2",
     "page": 208,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.30786,
@@ -3026,7 +2882,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.2.3",
     "page": 209,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.30786,
@@ -3047,7 +2902,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.2.4",
     "page": 210,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.26786,
@@ -3068,7 +2922,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.3.1",
     "page": 211,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       131.34786,
@@ -3089,7 +2942,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.3.1.1",
     "page": 212,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.18786,
@@ -3110,7 +2962,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.3.2",
     "page": 214,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.26786,
@@ -3131,7 +2982,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.3.3",
     "page": 216,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       131.82786,
@@ -3152,7 +3002,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.3.4",
     "page": 217,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.18786,
@@ -3173,7 +3022,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.4.1",
     "page": 219,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.26786,
@@ -3194,7 +3042,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.4.1.1",
     "page": 220,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -3215,7 +3062,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.4.1.2",
     "page": 221,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -3236,7 +3082,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.4.2",
     "page": 222,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       131.94786,
@@ -3257,7 +3102,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.4.3",
     "page": 223,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.30786,
@@ -3278,7 +3122,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.4.4",
     "page": 224,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       132.06786,
@@ -3299,7 +3142,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.4.5",
     "page": 225,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -3320,7 +3162,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.4.5.1",
     "page": 226,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.30786,
@@ -3341,7 +3182,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.4.6",
     "page": 227,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.30786,
@@ -3362,7 +3202,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.4.7",
     "page": 229,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.26786,
@@ -3383,7 +3222,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.5.1",
     "page": 230,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.26786,
@@ -3404,7 +3242,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.5.1.1",
     "page": 231,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.38786,
@@ -3425,7 +3262,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.5.1.2",
     "page": 232,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       127.38786,
@@ -3446,7 +3282,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.5.1.2.1",
     "page": 233,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       132.06786,
@@ -3467,7 +3302,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "9.5.1.3",
     "page": 234,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -3488,7 +3322,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.1.1",
     "page": 235,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       134.10786,
@@ -3509,7 +3342,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.1.2",
     "page": 236,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       131.46786,
@@ -3530,7 +3362,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.2.1",
     "page": 237,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -3551,7 +3382,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.2.1.1",
     "page": 238,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       131.46786,
@@ -3572,7 +3402,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.2.1.2",
     "page": 239,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       131.46786,
@@ -3593,7 +3422,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.2.1.3",
     "page": 240,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -3614,7 +3442,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.2.1.4",
     "page": 241,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       132.18786,
@@ -3635,7 +3462,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.2.1.5",
     "page": 242,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       132.18786,
@@ -3656,7 +3482,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.2.1.6",
     "page": 243,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -3677,7 +3502,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.2.1.7",
     "page": 244,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       131.46786,
@@ -3698,7 +3522,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.2.2",
     "page": 245,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       134.22786,
@@ -3719,7 +3542,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.3.1",
     "page": 246,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -3740,7 +3562,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.3.2",
     "page": 247,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.54786,
@@ -3761,7 +3582,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.3.3",
     "page": 248,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       134.82786,
@@ -3782,7 +3602,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.3.4",
     "page": 249,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -3803,7 +3622,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.4.1",
     "page": 250,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       128.82786,
@@ -3824,7 +3642,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.4.1.1",
     "page": 251,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -3845,7 +3662,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.4.2",
     "page": 252,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -3866,7 +3682,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.4.2.1",
     "page": 253,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -3887,7 +3702,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.4.3",
     "page": 254,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -3908,7 +3722,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.5.1",
     "page": 255,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -3929,7 +3742,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.6.1",
     "page": 257,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -3950,7 +3762,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.6.2",
     "page": 258,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       128.70786,
@@ -3971,7 +3782,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.6.3",
     "page": 259,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -3992,7 +3802,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.7.1",
     "page": 260,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42,
@@ -4013,7 +3822,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.7.2",
     "page": 262,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       128.82786,
@@ -4034,7 +3842,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "10.7.3",
     "page": 264,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4055,7 +3862,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.1.1",
     "page": 266,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4076,7 +3882,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.1.2",
     "page": 267,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4097,7 +3902,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.2.1",
     "page": 268,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4118,7 +3922,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.2.2",
     "page": 270,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4139,7 +3942,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.3.1",
     "page": 271,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       128.70786,
@@ -4160,7 +3962,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.3.1.1",
     "page": 273,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.30786,
@@ -4181,7 +3982,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.3.1.2",
     "page": 274,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       131.58786,
@@ -4202,7 +4002,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.3.1.3",
     "page": 276,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       128.82786,
@@ -4223,7 +4022,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.3.2",
     "page": 278,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.30786,
@@ -4243,7 +4041,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.3.2.1",
     "page": 279,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4264,7 +4061,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.4.1",
     "page": 281,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       128.70786,
@@ -4285,7 +4081,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.4.2",
     "page": 282,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.30786,
@@ -4306,7 +4101,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.4.3",
     "page": 283,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4327,7 +4121,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.4.4",
     "page": 285,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4348,7 +4141,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.4.5",
     "page": 286,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4369,7 +4161,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.4.6",
     "page": 287,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4390,7 +4181,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.4.7",
     "page": 289,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4411,7 +4201,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.5.1",
     "page": 290,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4432,7 +4221,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.5.1.1",
     "page": 291,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4453,7 +4241,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.5.2",
     "page": 293,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4474,7 +4261,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "11.6.1",
     "page": 294,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       128.82786,
@@ -4495,7 +4281,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.1.1",
     "page": 296,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4516,7 +4301,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.1.2",
     "page": 297,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4537,7 +4321,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.1.3",
     "page": 298,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.30786,
@@ -4558,7 +4341,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.1.4",
     "page": 299,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.30786,
@@ -4579,7 +4361,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.2.1",
     "page": 300,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4600,7 +4381,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.3.1",
     "page": 301,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4621,7 +4401,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.3.2",
     "page": 302,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4641,7 +4420,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.3.3",
     "page": 303,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       128.82786,
@@ -4662,7 +4440,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.3.4",
     "page": 304,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4683,7 +4460,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.4.1",
     "page": 305,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4704,7 +4480,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.4.2",
     "page": 306,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4725,7 +4500,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.4.2.1",
     "page": 308,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4746,7 +4520,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.5.1",
     "page": 309,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4767,7 +4540,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.5.2",
     "page": 310,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4788,7 +4560,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.5.2.1",
     "page": 311,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42,
@@ -4809,7 +4580,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.5.3",
     "page": 312,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4830,7 +4600,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.6.1",
     "page": 314,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4851,7 +4620,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.6.2",
     "page": 315,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4872,7 +4640,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.6.3",
     "page": 316,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4893,7 +4660,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.6.3.1",
     "page": 317,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4914,7 +4680,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.6.3.2",
     "page": 318,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4935,7 +4700,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.7.1",
     "page": 319,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4956,7 +4720,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.8.1",
     "page": 320,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4977,7 +4740,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.8.2",
     "page": 321,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -4998,7 +4760,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.8.3",
     "page": 322,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -5019,7 +4780,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.8.4",
     "page": 323,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -5040,7 +4800,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.8.5",
     "page": 324,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -5061,7 +4820,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.9.1",
     "page": 325,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.54786,
@@ -5082,7 +4840,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.9.2",
     "page": 326,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -5103,7 +4860,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.10.1",
     "page": 327,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -5124,7 +4880,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.10.2",
     "page": 328,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -5145,7 +4900,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.10.3",
     "page": 329,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       129.42786,
@@ -5166,7 +4920,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.10.4",
     "page": 330,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       128.82786,
@@ -5187,7 +4940,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.10.4.1",
     "page": 331,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       128.82786,
@@ -5208,7 +4960,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.10.5",
     "page": 332,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       128.82786,
@@ -5229,7 +4980,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.10.6",
     "page": 333,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       128.82786,
@@ -5250,7 +5000,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "12.10.7",
     "page": 334,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       128.70786,
@@ -5271,7 +5020,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "A1.1.1",
     "page": 336,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -5292,7 +5040,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "A1.1.2",
     "page": 337,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -5313,7 +5060,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "A1.1.3",
     "page": 338,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -5334,7 +5080,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "A1.1.4",
     "page": 339,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -5355,7 +5100,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "A1.2.1",
     "page": 340,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -5376,7 +5120,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "A1.2.2",
     "page": 341,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -5397,7 +5140,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "A1.2.3",
     "page": 342,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -5418,7 +5160,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "A2.1.1",
     "page": 343,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -5438,7 +5179,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "A2.1.2",
     "page": 344,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,
@@ -5458,7 +5198,6 @@ export const ROC_PDF_FIELD_MAP_ENTRIES: RocPdfFieldEntry[] = [
   {
     "requirementRef": "A2.1.3",
     "page": 345,
-    "printedPage": null,
     "pageHeight": 612,
     "checkboxes": [
       125.94786,

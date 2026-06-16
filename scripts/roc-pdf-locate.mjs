@@ -150,7 +150,7 @@ function parseRequirementBlock(lines, startIdx, page, pageHeight, printedPage, r
   return {
     requirementRef: ref,
     page,
-    printedPage,
+    ...(printedPage != null ? { printedPage } : {}),
     pageHeight,
     checkboxes: centers,
     checkboxY,
