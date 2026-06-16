@@ -13,10 +13,17 @@ export const ROC_OUTCOME_COLUMN: Partial<Record<NonNullable<ControlOutcome>, num
 
 export type RocPdfFieldEntry = {
   requirementRef: string;
+  /** 1-based PDF page index used by pdf-lib. */
   page: number;
+  /** Printed page number from footer (bottom-right), when detected. */
+  printedPage?: number;
+  /** Page height when coordinates were captured (pdf.js user space). */
+  pageHeight?: number;
   /** X centers for the six assessment-finding checkboxes on that row. */
   checkboxes: number[];
-  /** Where to write “Describe why the assessment finding was selected”. */
+  /** Y baseline for checkbox row (pdf.js user space). */
+  checkboxY?: number;
+  /** Where to write assessment finding rationale below “Describe why…”. */
   rationale: { x: number; y: number; maxWidth: number; maxLines?: number };
 };
 

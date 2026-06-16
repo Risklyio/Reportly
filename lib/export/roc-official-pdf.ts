@@ -7,6 +7,7 @@ import {
 import type { AssessmentControlState } from "@/lib/types";
 import { resolveRocTemplateBytes } from "./roc-template-path";
 import { loadCachedFieldMap, getRocFieldMapPath } from "./roc-field-map";
+import { getCheckboxDrawY, getRationaleDrawY, mapFieldY } from "./roc-pdf-coords";
 import { ROC_OUTCOME_COLUMN } from "./roc-pdf-types";
 
 function wrapText(text: string, maxChars: number, maxLines: number): string[] {
@@ -87,9 +88,9 @@ export async function renderOfficialRocPdf(
     const col = ROC_OUTCOME_COLUMN[outcome];
     if (col != null && field.checkboxes[col] != null) {
       page.drawText("X", {
-        x: field.checkboxes[col]! - 3,
-        y: field.rationale.y + 28,
-        size: 9,
+        x: field.checkboxes[col]! - 4,
+        y: getCheckboxDrawY(field, page),
+        size: 8,
         font: fontBold,
         color: rgb(0, 0, 0),
       });
@@ -101,9 +102,9 @@ export async function renderOfficialRocPdf(
       const lines = wrapText(
         rationale,
         maxChars,
-        field.rationale.maxLines ?? 6
+        field.rationale.maxLines ?? 8
       );
-      let y = field.rationale.y;
+      let y = getRationaleDrawY(field, page);
       for (const line of lines) {
         page.drawText(line, {
           x: field.rationale.x,
@@ -117,7 +118,7 @@ export async function renderOfficialRocPdf(
     }
 
     const procNotes = state.rocProcedureNotes ?? {};
-    let detailY = field.rationale.y - 54;
+    let detailY = getRationaleDrawY(field, page) - 48;
     for (const proc of control.rocTestingProcedures ?? []) {
       const note = procNotes[proc.ref];
       if (!note) continue;
@@ -130,7 +131,7 @@ export async function renderOfficialRocPdf(
         .join(" | ");
       if (!detail) continue;
       for (const line of wrapText(`${proc.ref}: ${detail}`, 90, 2)) {
-        if (detailY < 40) break;
+        if (detailY < mapFieldY(field, 36, page)) break;
         page.drawText(line, {
           x: field.rationale.x + 280,
           y: detailY,
