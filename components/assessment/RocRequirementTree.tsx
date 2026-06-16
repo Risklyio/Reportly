@@ -98,7 +98,7 @@ export function RocRequirementTree({
   }
 
   return (
-    <aside className="sticky top-0 hidden max-h-[calc(100vh-3.5rem)] w-72 shrink-0 flex-col self-start border-l border-border bg-sidebar lg:flex">
+    <aside className="flex h-full w-72 shrink-0 flex-col border-l border-border bg-sidebar max-md:hidden">
       <div className="border-b border-border px-4 py-3">
         <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
           Requirements
@@ -106,6 +106,11 @@ export function RocRequirementTree({
         <p className="mt-0.5 text-sm font-medium text-text">PCI DSS ROC</p>
       </div>
       <nav className="flex-1 overflow-y-auto px-2 py-3">
+        {tree.length === 0 ? (
+          <p className="px-2 text-xs text-text-muted">
+            No requirements loaded for this framework.
+          </p>
+        ) : (
         <ul className="space-y-1">
           {tree.map((domain) => {
             const open = openDomains[domain.domainId] ?? false;
@@ -170,6 +175,22 @@ export function RocRequirementTree({
             );
           })}
         </ul>
+        )}
+        {filter !== "all" &&
+          tree.every((domain) =>
+            domain.children.every(
+              (c) =>
+                !controlVisible(
+                  c.controlId,
+                  states.get(c.controlId)?.outcome ?? null
+                )
+            )
+          ) && (
+            <p className="mt-2 px-2 text-xs text-text-muted">
+              No requirements match this filter. Try &ldquo;All&rdquo; in the left
+              sidebar.
+            </p>
+          )}
       </nav>
     </aside>
   );

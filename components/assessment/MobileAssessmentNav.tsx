@@ -51,7 +51,7 @@ export function MobileAssessmentNav({
   if (isRoc) {
     const tree = buildRocRequirementTree(frameworkId);
     return (
-      <div className="mb-4 space-y-3 lg:hidden">
+      <div className="mb-4 space-y-3 md:hidden">
         <div className="flex gap-2">
           <Link
             href={`/assessments/${assessmentId}?view=dashboard`}

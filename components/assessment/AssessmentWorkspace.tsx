@@ -319,8 +319,8 @@ export function AssessmentWorkspace({
 
   if (isRoc) {
     return (
-      <div className="flex min-h-[calc(100vh-3.5rem)] w-full">
-        <div className="min-w-0 flex-1 px-4 py-8 lg:pl-6 lg:pr-6 lg:py-10">
+      <div className="flex h-[calc(100vh-3.5rem)] w-full overflow-hidden">
+        <div className="min-w-0 flex-1 overflow-y-auto px-4 py-8 lg:pl-6 lg:pr-4 lg:py-10">
           {showDashboard ? (
             <RocAssessmentDashboard assessment={assessment} states={states} />
           ) : (
